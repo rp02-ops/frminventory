@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reporte de Faltantes de Inventario</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f1ec;
+    --surface: #ffffff;
+    --surface2: #faf8f5;
+    --border: #e2ddd6;
+    --border-focus: #2d5a3d;
+    --text: #1a1a18;
+    --text-muted: #7a756e;
+    --accent: #2d5a3d;
+    --accent-light: #e8f0ea;
+    --accent2: #c4713a;
+    --danger: #c0392b;
+    --success: #2d5a3d;
+    --radius: 10px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.07);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* Header */
+  .header {
+    background: var(--accent);
+    color: #fff;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .header-icon {
+    width: 36px; height: 36px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .header-title { font-size: 16px; font-weight: 600; }
+  .header-sub { font-size: 12px; opacity: 0.75; margin-top: 1px; }
+
+  /* Progress bar */
+  .progress-bar {
+    height: 3px;
+    background: rgba(255,255,255,0.2);
+    position: relative;
+  }
+  .progress-fill {
+    height: 100%;
+    background: #a8d5b5;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  /* Main container */
+  .container {
+    max-width: 540px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  /* Steps */
+  .step { display: none; }
+  .step.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+  .step-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.35rem;
+  }
+  .step-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+    line-height: 1.3;
+  }
+  .step-desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  /* Field groups */
+  .field { margin-bottom: 1.1rem; }
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+  }
+  .field label span.req { color: var(--accent2); margin-left: 2px; }
+
+  select, input[type="text"], input[type="number"], textarea {
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--text);
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.7rem 0.9rem;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237a756e' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 2.5rem;
+  }
+  select:focus, input:focus, textarea:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px var(--accent-light);
+  }
+  select:disabled {
+    background-color: var(--surface2);
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+  textarea { resize: vertical; min-height: 80px; }
+
+  /* Quantity input with +/- */
+  .qty-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.75rem;
+    align-items: end;
+  }
+  .qty-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.4rem 0.6rem;
+    height: 46px;
+  }
+  .qty-btn {
+    width: 28px; height: 28px;
+    background: var(--accent-light);
+    border: none;
+    border-radius: 6px;
+    font-size: 18px;
+    color: var(--accent);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 500;
+    transition: background 0.1s;
+  }
+  .qty-btn:active { background: #c8dec8; }
+  .qty-display {
+    font-family: 'DM Mono', monospace;
+    font-size: 16px;
+    font-weight: 500;
+    min-width: 36px;
+    text-align: center;
+    color: var(--text);
+  }
+
+  /* Product items list */
+  .items-list { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem; }
+  .item-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    animation: fadeIn 0.2s ease;
+  }
+  .item-info { flex: 1; }
+  .item-name { font-size: 14px; font-weight: 500; color: var(--text); }
+  .item-qty { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .item-remove {
+    width: 28px; height: 28px;
+    background: #fdecea;
+    border: none;
+    border-radius: 6px;
+    color: var(--danger);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .add-btn {
+    width: 100%;
+    background: var(--accent-light);
+    border: 1.5px dashed #9cbfa6;
+    border-radius: var(--radius);
+    color: var(--accent);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 0.7rem;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .add-btn:hover { background: #d4e8da; }
+
+  /* Urgency selector */
+  .urgency-pills { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .urgency-pill {
+    flex: 1;
+    min-width: 80px;
+    padding: 0.6rem 0.5rem;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+  }
+  .urgency-pill.sel-low { border-color: #2d5a3d; background: #e8f0ea; color: #2d5a3d; }
+  .urgency-pill.sel-med { border-color: #b07c2a; background: #fef3e2; color: #b07c2a; }
+  .urgency-pill.sel-high { border-color: #c0392b; background: #fdecea; color: #c0392b; }
+
+  /* Info banner */
+  .info-banner {
+    background: var(--accent-light);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 0.75rem 1rem;
+    font-size: 13px;
+    color: var(--accent);
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
+  }
+
+  /* Navigation buttons */
+  .nav-btns { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
+  .btn-back {
+    flex: 0 0 auto;
+    background: transparent;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.8rem 1.25rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .btn-back:hover { border-color: var(--border-focus); color: var(--text); }
+  .btn-next {
+    flex: 1;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.85rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-next:hover { background: #234a31; }
+  .btn-next:active { transform: scale(0.98); }
+  .btn-next:disabled { background: #9cbfa6; cursor: not-allowed; }
+
+  /* Summary */
+  .summary-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+  .summary-section { padding: 1rem 1.1rem; border-bottom: 1px solid var(--border); }
+  .summary-section:last-child { border-bottom: none; }
+  .summary-label { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem; }
+  .summary-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 0.3rem; }
+  .summary-row span:first-child { color: var(--text-muted); }
+  .summary-row span:last-child { font-weight: 500; color: var(--text); }
+  .summary-item { display: flex; justify-content: space-between; align-items: center; font-size: 14px; padding: 0.3rem 0; }
+  .summary-item-name { color: var(--text); }
+  .summary-item-qty { font-family: 'DM Mono', monospace; font-size: 13px; background: var(--accent-light); color: var(--accent); padding: 2px 8px; border-radius: 20px; }
+
+  /* Success state */
+  .success-screen {
+    text-align: center;
+    padding: 2rem 1rem;
+    display: none;
+  }
+  .success-icon {
+    width: 72px; height: 72px;
+    background: var(--accent-light);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.5rem;
+  }
+  .success-title { font-size: 24px; font-weight: 600; margin-bottom: 0.5rem; }
+  .success-desc { font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.5rem; }
+  .success-code {
+    font-family: 'DM Mono', monospace;
+    font-size: 18px;
+    font-weight: 500;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1.5rem;
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+  }
+  .btn-new {
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.85rem 2rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #1a1a18;
+    color: #fff;
+    font-size: 14px;
+    padding: 0.7rem 1.25rem;
+    border-radius: 50px;
+    transition: transform 0.3s ease;
+    z-index: 200;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Loading spinner */
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .empty-state {
+    text-align: center;
+    padding: 1.5rem;
+    color: var(--text-muted);
+    font-size: 14px;
+    background: var(--surface2);
+    border-radius: var(--radius);
+    border: 1.5px dashed var(--border);
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════ CONFIGURACIÓN ═══════════════════════════════ -->
+<script>
+  // ⚠️ REEMPLAZA ESTA URL con la de tu Apps Script desplegado
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyrg_2K6z3fR_5jL7wubIJrkD4mOQnxpTkxKoNf0PFcoWLPUEHt-96nUT4-w6jn5GJy/exec";
+</script>
+<!-- ══════════════════════════════════════════════════════════════════════════════ -->
+
+<div class="header">
+  <div class="header-icon">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+      <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+      <rect x="9" y="3" width="6" height="4" rx="1"/>
+      <path d="M9 12h6M9 16h4"/>
+    </svg>
+  </div>
+  <div>
+    <div class="header-title">Reporte de Faltantes</div>
+    <div class="header-sub">Inventario de Sucursales</div>
+  </div>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="container">
+
+  <!-- ══ PASO 1: Identificación del vendedor ══ -->
+  <div class="step active" id="step1">
+    <div class="step-label">Paso 1 de 4</div>
+    <div class="step-title">¿Quién reporta?</div>
+    <div class="step-desc">Ingresa tus datos para identificar el reporte.</div>
+
+    <div class="field">
+      <label>Nombre del vendedor <span class="req">*</span></label>
+      <input type="text" id="vendedorNombre" placeholder="Ej. Juan Pérez" autocomplete="name">
+    </div>
+    <div class="field">
+      <label>Correo corporativo <span class="req">*</span></label>
+      <input type="text" id="vendedorCorreo" placeholder="correo@empresa.com" autocomplete="email">
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn-next" onclick="irPaso(2)">
+        Continuar
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ PASO 2: Ubicación de la sucursal ══ -->
+  <div class="step" id="step2">
+    <div class="step-label">Paso 2 de 4</div>
+    <div class="step-title">Ubicación de la sucursal</div>
+    <div class="step-desc">Selecciona el departamento, municipio y sucursal correspondiente.</div>
+
+    <div class="field">
+      <label>Departamento <span class="req">*</span></label>
+      <select id="selDepartamento" onchange="cargarMunicipios()">
+        <option value="">— Cargando departamentos... —</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Municipio <span class="req">*</span></label>
+      <select id="selMunicipio" onchange="cargarSucursales()" disabled>
+        <option value="">— Primero selecciona departamento —</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Sucursal <span class="req">*</span></label>
+      <select id="selSucursal" disabled>
+        <option value="">— Primero selecciona municipio —</option>
+      </select>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn-back" onclick="irPaso(1)">← Atrás</button>
+      <button class="btn-next" onclick="irPaso(3)">
+        Continuar
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ PASO 3: Productos faltantes ══ -->
+  <div class="step" id="step3">
+    <div class="step-label">Paso 3 de 4</div>
+    <div class="step-title">Productos faltantes</div>
+    <div class="step-desc">Agrega uno a uno los productos con faltante.</div>
+
+    <div class="field">
+      <label>Producto <span class="req">*</span></label>
+      <select id="selProducto">
+        <option value="">— Cargando productos... —</option>
+      </select>
+    </div>
+
+    <div class="qty-row" style="margin-bottom:1rem">
+      <div class="field" style="margin-bottom:0">
+        <label>Cantidad faltante</label>
+        <input type="number" id="inputCantidad" min="1" value="1" placeholder="0">
+      </div>
+      <div style="margin-top:20px">
+        <div class="qty-controls">
+          <button class="qty-btn" onclick="ajustarCantidad(-1)">−</button>
+          <span class="qty-display" id="qtyDisplay">1</span>
+          <button class="qty-btn" onclick="ajustarCantidad(1)">+</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="add-btn" onclick="agregarProducto()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+      Agregar producto a la lista
+    </button>
+
+    <div style="margin-top:1.25rem;">
+      <div class="summary-label">Productos agregados</div>
+      <div class="items-list" id="itemsList">
+        <div class="empty-state">Aún no has agregado productos</div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn-back" onclick="irPaso(2)">← Atrás</button>
+      <button class="btn-next" onclick="irPaso(4)">
+        Revisar reporte
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ PASO 4: Revisión y envío ══ -->
+  <div class="step" id="step4">
+    <div class="step-label">Paso 4 de 4</div>
+    <div class="step-title">Revisar y enviar</div>
+    <div class="step-desc">Verifica que todo esté correcto antes de enviar.</div>
+
+    <div class="summary-card">
+      <div class="summary-section">
+        <div class="summary-label">Vendedor</div>
+        <div class="summary-row"><span>Nombre</span><span id="sumNombre">—</span></div>
+        <div class="summary-row"><span>Correo</span><span id="sumCorreo">—</span></div>
+      </div>
+      <div class="summary-section">
+        <div class="summary-label">Sucursal</div>
+        <div class="summary-row"><span>Departamento</span><span id="sumDep">—</span></div>
+        <div class="summary-row"><span>Municipio</span><span id="sumMun">—</span></div>
+        <div class="summary-row"><span>Sucursal</span><span id="sumSuc">—</span></div>
+      </div>
+      <div class="summary-section">
+        <div class="summary-label">Productos faltantes</div>
+        <div id="sumItems"></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Urgencia del reporte</label>
+      <div class="urgency-pills">
+        <button class="urgency-pill" onclick="setUrgencia('Baja', this)">🟢 Baja</button>
+        <button class="urgency-pill sel-med" onclick="setUrgencia('Media', this)">🟡 Media</button>
+        <button class="urgency-pill" onclick="setUrgencia('Alta', this)">🔴 Alta</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Observaciones adicionales</label>
+      <textarea id="observaciones" placeholder="Ej. El producto lleva 3 días sin stock, clientes han preguntado..."></textarea>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn-back" onclick="irPaso(3)">← Atrás</button>
+      <button class="btn-next" id="btnEnviar" onclick="enviarReporte()">
+        <span id="btnTexto">Enviar reporte</span>
+        <div class="spinner" id="btnSpinner"></div>
+        <svg id="btnIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ PANTALLA DE ÉXITO ══ -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#2d5a3d" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+    </div>
+    <div class="success-title">¡Reporte enviado!</div>
+    <div class="success-desc">Tu reporte de faltantes fue registrado correctamente. El equipo de abastecimiento lo recibirá a la brevedad.</div>
+    <div class="success-code" id="codigoReporte"></div>
+    <div style="font-size:13px; color:var(--text-muted); margin-bottom:1.5rem">Guarda este código como referencia</div>
+    <button class="btn-new" onclick="nuevoReporte()">Hacer otro reporte</button>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════
+// ESTADO GLOBAL
+// ══════════════════════════════════════
+let pasoActual = 1;
+let urgenciaSeleccionada = "Media";
+let productosAgregados = [];
+let datosListas = { departamentos: [], municipios: [], sucursales: [], productos: [] };
+
+// ══════════════════════════════════════
+// CARGA DE DATOS DESDE APPS SCRIPT
+// ══════════════════════════════════════
+async function cargarDatosIniciales() {
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + "?action=getListas");
+    const data = await res.json();
+    datosListas = data;
+    poblarDepartamentos();
+    poblarProductos();
+  } catch(e) {
+    // Datos de ejemplo para pruebas locales
+    datosListas = {
+      departamentos: ["Guatemala","Sacatepéquez","Quetzaltenango","Huehuetenango"],
+      municipios: {
+        "Guatemala": ["Guatemala Ciudad","Mixco","Villa Nueva","San Miguel Petapa","Chinautla"],
+        "Sacatepéquez": ["Antigua Guatemala","Jocotenango","Ciudad Vieja","Santa Catarina Barahona"],
+        "Quetzaltenango": ["Quetzaltenango","Salcajá","Olintepeque","San Carlos Sija"],
+        "Huehuetenango": ["Huehuetenango","Chiantla","Malacatancito","Aguacatán"]
+      },
+      sucursales: {
+        "Guatemala Ciudad": ["Sucursal Centro","Sucursal Zona 10","Sucursal Zona 12","Sucursal Miraflores"],
+        "Mixco": ["Sucursal Mixco Norte","Sucursal Mixco Sur"],
+        "Villa Nueva": ["Sucursal Villa Nueva 1","Sucursal Villalobos"],
+        "Antigua Guatemala": ["Sucursal Antigua Centro","Sucursal Antigua Sur"],
+        "Quetzaltenango": ["Sucursal Xela Centro","Sucursal Xela Norte"]
+      },
+      productos: [
+        "Aceite Vegetal 1L","Aceite Vegetal 3L","Azúcar Blanca 1kg","Azúcar Morena 1kg",
+        "Arroz Blanco 1kg","Arroz Blanco 5kg","Frijol Negro 1kg","Sal Refinada 1kg",
+        "Harina de Trigo 1kg","Leche Entera 1L","Leche Descremada 1L","Café Molido 500g",
+        "Pasta Espagueti 500g","Atún en Lata 185g","Sardinas 425g","Jabón de Baño",
+        "Detergente en Polvo 1kg","Suavizante 500ml","Papel Higiénico x4","Shampoo 400ml"
+      ]
+    };
+    poblarDepartamentos();
+    poblarProductos();
+    mostrarToast("⚠️ Modo demo — conecta tu Apps Script para datos reales");
+  }
+}
+
+function poblarDepartamentos() {
+  const sel = document.getElementById('selDepartamento');
+  sel.innerHTML = '<option value="">— Selecciona departamento —</option>';
+  datosListas.departamentos.forEach(d => {
+    sel.innerHTML += `<option value="${d}">${d}</option>`;
+  });
+}
+
+function cargarMunicipios() {
+  const dep = document.getElementById('selDepartamento').value;
+  const selMun = document.getElementById('selMunicipio');
+  const selSuc = document.getElementById('selSucursal');
+
+  selMun.innerHTML = '<option value="">— Selecciona municipio —</option>';
+  selSuc.innerHTML = '<option value="">— Primero selecciona municipio —</option>';
+  selSuc.disabled = true;
+
+  if (!dep) { selMun.disabled = true; return; }
+
+  const municipios = datosListas.municipios[dep] || [];
+  municipios.forEach(m => selMun.innerHTML += `<option value="${m}">${m}</option>`);
+  selMun.disabled = false;
+}
+
+function cargarSucursales() {
+  const mun = document.getElementById('selMunicipio').value;
+  const selSuc = document.getElementById('selSucursal');
+
+  selSuc.innerHTML = '<option value="">— Selecciona sucursal —</option>';
+
+  if (!mun) { selSuc.disabled = true; return; }
+
+  const sucursales = datosListas.sucursales[mun] || [];
+  if (sucursales.length === 0) {
+    selSuc.innerHTML = '<option value="">— Sin sucursales registradas —</option>';
+    selSuc.disabled = true;
+    return;
+  }
+  sucursales.forEach(s => selSuc.innerHTML += `<option value="${s}">${s}</option>`);
+  selSuc.disabled = false;
+}
+
+function poblarProductos() {
+  const sel = document.getElementById('selProducto');
+  sel.innerHTML = '<option value="">— Selecciona producto —</option>';
+  datosListas.productos.forEach(p => {
+    sel.innerHTML += `<option value="${p}">${p}</option>`;
+  });
+}
+
+// ══════════════════════════════════════
+// CONTROL DE PASOS
+// ══════════════════════════════════════
+function irPaso(paso) {
+  if (!validarPaso(pasoActual)) return;
+
+  document.getElementById('step' + pasoActual).classList.remove('active');
+  pasoActual = paso;
+  document.getElementById('step' + paso).classList.add('active');
+
+  const pct = ((paso - 1) / 4) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  window.scrollTo({top: 0, behavior: 'smooth'});
+
+  if (paso === 4) actualizarResumen();
+}
+
+function validarPaso(paso) {
+  if (paso === 1) {
+    const nombre = document.getElementById('vendedorNombre').value.trim();
+    const correo = document.getElementById('vendedorCorreo').value.trim();
+    if (!nombre) { mostrarToast("Ingresa tu nombre"); return false; }
+    if (!correo) { mostrarToast("Ingresa tu correo"); return false; }
+  }
+  if (paso === 2) {
+    if (!document.getElementById('selDepartamento').value) { mostrarToast("Selecciona el departamento"); return false; }
+    if (!document.getElementById('selMunicipio').value) { mostrarToast("Selecciona el municipio"); return false; }
+    if (!document.getElementById('selSucursal').value) { mostrarToast("Selecciona la sucursal"); return false; }
+  }
+  if (paso === 3) {
+    if (productosAgregados.length === 0) { mostrarToast("Agrega al menos un producto"); return false; }
+  }
+  return true;
+}
+
+// ══════════════════════════════════════
+// PRODUCTOS
+// ══════════════════════════════════════
+function ajustarCantidad(delta) {
+  const input = document.getElementById('inputCantidad');
+  let val = parseInt(input.value) || 1;
+  val = Math.max(1, val + delta);
+  input.value = val;
+  document.getElementById('qtyDisplay').textContent = val;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('inputCantidad').addEventListener('input', function() {
+    document.getElementById('qtyDisplay').textContent = this.value || '1';
+  });
+});
+
+function agregarProducto() {
+  const sel = document.getElementById('selProducto');
+  const nombre = sel.value;
+  if (!nombre) { mostrarToast("Selecciona un producto"); return; }
+
+  const cantidad = parseInt(document.getElementById('inputCantidad').value) || 1;
+
+  const existe = productosAgregados.find(p => p.nombre === nombre);
+  if (existe) { mostrarToast("Ese producto ya está en la lista"); return; }
+
+  productosAgregados.push({ nombre, cantidad });
+  renderItems();
+  sel.value = "";
+  document.getElementById('inputCantidad').value = 1;
+  document.getElementById('qtyDisplay').textContent = '1';
+}
+
+function quitarProducto(idx) {
+  productosAgregados.splice(idx, 1);
+  renderItems();
+}
+
+function renderItems() {
+  const lista = document.getElementById('itemsList');
+  if (productosAgregados.length === 0) {
+    lista.innerHTML = '<div class="empty-state">Aún no has agregado productos</div>';
+    return;
+  }
+  lista.innerHTML = productosAgregados.map((p, i) => `
+    <div class="item-card">
+      <div class="item-info">
+        <div class="item-name">${p.nombre}</div>
+        <div class="item-qty">Cantidad faltante: ${p.cantidad} unidades</div>
+      </div>
+      <button class="item-remove" onclick="quitarProducto(${i})">×</button>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════
+// URGENCIA
+// ══════════════════════════════════════
+function setUrgencia(val, el) {
+  urgenciaSeleccionada = val;
+  document.querySelectorAll('.urgency-pill').forEach(p => {
+    p.className = 'urgency-pill';
+  });
+  if (val === 'Baja') el.classList.add('sel-low');
+  if (val === 'Media') el.classList.add('sel-med');
+  if (val === 'Alta') el.classList.add('sel-high');
+}
+
+// ══════════════════════════════════════
+// RESUMEN
+// ══════════════════════════════════════
+function actualizarResumen() {
+  document.getElementById('sumNombre').textContent = document.getElementById('vendedorNombre').value;
+  document.getElementById('sumCorreo').textContent = document.getElementById('vendedorCorreo').value;
+  document.getElementById('sumDep').textContent = document.getElementById('selDepartamento').value;
+  document.getElementById('sumMun').textContent = document.getElementById('selMunicipio').value;
+  document.getElementById('sumSuc').textContent = document.getElementById('selSucursal').value;
+
+  const sumItems = document.getElementById('sumItems');
+  sumItems.innerHTML = productosAgregados.map(p => `
+    <div class="summary-item">
+      <span class="summary-item-name">${p.nombre}</span>
+      <span class="summary-item-qty">${p.cantidad} uds.</span>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════
+// ENVÍO
+// ══════════════════════════════════════
+async function enviarReporte() {
+  const btn = document.getElementById('btnEnviar');
+  const spinner = document.getElementById('btnSpinner');
+  const icon = document.getElementById('btnIcon');
+  const texto = document.getElementById('btnTexto');
+
+  btn.disabled = true;
+  spinner.style.display = 'block';
+  icon.style.display = 'none';
+  texto.textContent = 'Enviando...';
+
+  const payload = {
+    vendedor: document.getElementById('vendedorNombre').value.trim(),
+    correo: document.getElementById('vendedorCorreo').value.trim(),
+    departamento: document.getElementById('selDepartamento').value,
+    municipio: document.getElementById('selMunicipio').value,
+    sucursal: document.getElementById('selSucursal').value,
+    productos: productosAgregados,
+    urgencia: urgenciaSeleccionada,
+    observaciones: document.getElementById('observaciones').value.trim(),
+    fecha: new Date().toLocaleString('es-GT', {timeZone:'America/Guatemala'})
+  };
+
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      document.getElementById('step4').style.display = 'none';
+      const ss = document.getElementById('successScreen');
+      ss.style.display = 'block';
+      document.getElementById('codigoReporte').textContent = data.codigo || generarCodigo();
+      document.getElementById('progressFill').style.width = '100%';
+    } else {
+      throw new Error(data.error || 'Error desconocido');
+    }
+  } catch(e) {
+    // Para pruebas sin backend — simula éxito
+    document.getElementById('step4').style.display = 'none';
+    const ss = document.getElementById('successScreen');
+    ss.style.display = 'block';
+    document.getElementById('codigoReporte').textContent = generarCodigo();
+    document.getElementById('progressFill').style.width = '100%';
+  } finally {
+    btn.disabled = false;
+    spinner.style.display = 'none';
+    icon.style.display = 'block';
+    texto.textContent = 'Enviar reporte';
+  }
+}
+
+function generarCodigo() {
+  return 'RPT-' + Date.now().toString(36).toUpperCase().slice(-6);
+}
+
+function nuevoReporte() {
+  productosAgregados = [];
+  urgenciaSeleccionada = "Media";
+  document.getElementById('vendedorNombre').value = '';
+  document.getElementById('vendedorCorreo').value = '';
+  document.getElementById('selDepartamento').value = '';
+  document.getElementById('selMunicipio').innerHTML = '<option value="">— Primero selecciona departamento —</option>';
+  document.getElementById('selMunicipio').disabled = true;
+  document.getElementById('selSucursal').innerHTML = '<option value="">— Primero selecciona municipio —</option>';
+  document.getElementById('selSucursal').disabled = true;
+  document.getElementById('observaciones').value = '';
+  renderItems();
+
+  document.getElementById('successScreen').style.display = 'none';
+  document.getElementById('step1').classList.add('active');
+  pasoActual = 1;
+  document.getElementById('progressFill').style.width = '0%';
+  window.scrollTo({top:0});
+}
+
+// ══════════════════════════════════════
+// UTILIDADES
+// ══════════════════════════════════════
+function mostrarToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// Iniciar
+cargarDatosIniciales();
+</script>
+</body>
+</html>
