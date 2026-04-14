@@ -468,7 +468,7 @@
 <!-- ═══════════════════════════════ CONFIGURACIÓN ═══════════════════════════════ -->
 <script>
   // ⚠️ REEMPLAZA ESTA URL con la de tu Apps Script desplegado
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyrg_2K6z3fR_5jL7wubIJrkD4mOQnxpTkxKoNf0PFcoWLPUEHt-96nUT4-w6jn5GJy/exec";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/TU_SCRIPT_ID/exec";
 </script>
 <!-- ══════════════════════════════════════════════════════════════════════════════ -->
 
@@ -704,6 +704,11 @@ function initCombo(wrapId, inputId, dropId, opciones, onSelect) {
 
   if (!input || !opciones) return;
 
+  // Eliminar listeners previos clonando el nodo
+  const newInput = input.cloneNode(true);
+  input.parentNode.replaceChild(newInput, input);
+  const inp = document.getElementById(inputId);
+
   function renderOpciones(filtro) {
     const q = (filtro || "").toLowerCase().trim();
     const filtradas = q ? opciones.filter(o => o.toLowerCase().includes(q)) : opciones;
@@ -720,22 +725,30 @@ function initCombo(wrapId, inputId, dropId, opciones, onSelect) {
     if (chev) chev.classList.add('open');
   }
 
-  input.addEventListener('focus', () => renderOpciones(input.value));
-  input.addEventListener('input', () => renderOpciones(input.value));
-  input.addEventListener('blur', () => {
-    setTimeout(() => {
-      drop.classList.remove('open');
-      const chev = wrap.querySelector('.combo-chevron');
-      if (chev) chev.classList.remove('open');
-      // Si el texto no coincide con ninguna opción, limpiar
-      const key = wrapId.replace('combo','').toLowerCase();
-      if (input.value !== comboVal[key]) {
-        input.value = comboVal[key] || "";
-      }
-    }, 200);
+  inp.addEventListener('focus', () => renderOpciones(inp.value));
+  inp.addEventListener('input', () => renderOpciones(inp.value));
+  inp.addEventListener('blur', () => {
+    // Solo cerrar si NO hay una selección en curso (mousedown activo)
+    if (wrap._selecting) return;
+    drop.classList.remove('open');
+    const chev = wrap.querySelector('.combo-chevron');
+    if (chev) chev.classList.remove('open');
+    // Si el texto no coincide con ninguna opción válida, restaurar el valor guardado
+    const key = wrapId.replace('combo','').toLowerCase();
+    if (inp.value !== comboVal[key]) {
+      inp.value = comboVal[key] || "";
+    }
   });
 
   wrap._onSelect = onSelect;
+  wrap._selecting = false;
+
+  // Marcar que hay una selección en curso al presionar sobre el dropdown
+  drop.addEventListener('mousedown', () => { wrap._selecting = true; });
+  drop.addEventListener('mouseup',   () => { wrap._selecting = false; });
+  // Soporte táctil
+  drop.addEventListener('touchstart', () => { wrap._selecting = true; }, { passive: true });
+  drop.addEventListener('touchend',   () => { wrap._selecting = false; }, { passive: true });
 }
 
 function seleccionarCombo(wrapId, inputId, dropId, valor) {
