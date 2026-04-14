@@ -15,7 +15,7 @@
     --text: #1a1a18;
     --text-muted: #7a756e;
     --accent: #2d5a3d;
-    --accent-light: #e8f0ea;https://github.com/rp02-ops/frminventory/tree/main
+    --accent-light: #e8f0ea;
     --accent2: #c4713a;
     --danger: #c0392b;
     --success: #2d5a3d;
@@ -387,6 +387,80 @@
     border-radius: var(--radius);
     border: 1.5px dashed var(--border);
   }
+
+  /* ── Combobox ── */
+  .combo-wrap { position: relative; }
+  .combo-input-row {
+    display: flex;
+    align-items: center;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    overflow: hidden;
+  }
+  .combo-input-row:focus-within {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px var(--accent-light);
+  }
+  .combo-input-row.disabled {
+    background: var(--surface2);
+    cursor: not-allowed;
+  }
+  .combo-input {
+    flex: 1;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--text);
+    background: transparent;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    padding: 0.7rem 0.9rem;
+    min-width: 0;
+  }
+  .combo-input:disabled { color: var(--text-muted); cursor: not-allowed; }
+  .combo-input::placeholder { color: var(--text-muted); }
+  .combo-chevron {
+    padding: 0 12px;
+    color: var(--text-muted);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform 0.2s;
+    background: transparent;
+    border: none;
+    display: flex; align-items: center;
+  }
+  .combo-chevron.open { transform: rotate(180deg); }
+  .combo-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0; right: 0;
+    background: var(--surface);
+    border: 1.5px solid var(--border-focus);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    z-index: 50;
+    max-height: 220px;
+    overflow-y: auto;
+  }
+  .combo-dropdown.open { display: block; }
+  .combo-option {
+    padding: 0.65rem 0.9rem;
+    font-size: 14px;
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .combo-option:hover, .combo-option.focused { background: var(--accent-light); color: var(--accent); }
+  .combo-option.selected { font-weight: 500; color: var(--accent); }
+  .combo-no-results {
+    padding: 0.75rem 0.9rem;
+    font-size: 13px;
+    color: var(--text-muted);
+    text-align: center;
+  }
 </style>
 </head>
 <body>
@@ -446,21 +520,39 @@
 
     <div class="field">
       <label>Departamento <span class="req">*</span></label>
-      <select id="selDepartamento" onchange="cargarMunicipios()">
-        <option value="">— Cargando departamentos... —</option>
-      </select>
+      <div class="combo-wrap" id="comboDep">
+        <div class="combo-input-row">
+          <input class="combo-input" id="inputDep" type="text" placeholder="— Escribe o selecciona —" autocomplete="off">
+          <button type="button" class="combo-chevron" onclick="toggleCombo('comboDep')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+        </div>
+        <div class="combo-dropdown" id="dropDep"></div>
+      </div>
     </div>
     <div class="field">
       <label>Municipio <span class="req">*</span></label>
-      <select id="selMunicipio" onchange="cargarSucursales()" disabled>
-        <option value="">— Primero selecciona departamento —</option>
-      </select>
+      <div class="combo-wrap" id="comboMun">
+        <div class="combo-input-row disabled">
+          <input class="combo-input" id="inputMun" type="text" placeholder="— Primero selecciona departamento —" autocomplete="off" disabled>
+          <button type="button" class="combo-chevron" onclick="toggleCombo('comboMun')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+        </div>
+        <div class="combo-dropdown" id="dropMun"></div>
+      </div>
     </div>
     <div class="field">
       <label>Sucursal <span class="req">*</span></label>
-      <select id="selSucursal" disabled>
-        <option value="">— Primero selecciona municipio —</option>
-      </select>
+      <div class="combo-wrap" id="comboSuc">
+        <div class="combo-input-row disabled">
+          <input class="combo-input" id="inputSuc" type="text" placeholder="— Primero selecciona municipio —" autocomplete="off" disabled>
+          <button type="button" class="combo-chevron" onclick="toggleCombo('comboSuc')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+        </div>
+        <div class="combo-dropdown" id="dropSuc"></div>
+      </div>
     </div>
 
     <div class="nav-btns">
@@ -480,9 +572,15 @@
 
     <div class="field">
       <label>Producto <span class="req">*</span></label>
-      <select id="selProducto">
-        <option value="">— Cargando productos... —</option>
-      </select>
+      <div class="combo-wrap" id="comboProd">
+        <div class="combo-input-row">
+          <input class="combo-input" id="inputProd" type="text" placeholder="— Escribe o selecciona producto —" autocomplete="off">
+          <button type="button" class="combo-chevron" onclick="toggleCombo('comboProd')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+        </div>
+        <div class="combo-dropdown" id="dropProd"></div>
+      </div>
     </div>
 
     <div class="qty-row" style="margin-bottom:1rem">
@@ -593,6 +691,109 @@ let urgenciaSeleccionada = "Media";
 let productosAgregados = [];
 let datosListas = { departamentos: [], municipios: [], sucursales: [], productos: [] };
 
+// Valores seleccionados en cada combo
+const comboVal = { dep: "", mun: "", suc: "", prod: "" };
+
+// ══════════════════════════════════════
+// MOTOR DE COMBOBOX
+// ══════════════════════════════════════
+function initCombo(wrapId, inputId, dropId, opciones, onSelect) {
+  const input = document.getElementById(inputId);
+  const drop  = document.getElementById(dropId);
+  const wrap  = document.getElementById(wrapId);
+
+  if (!input || !opciones) return;
+
+  function renderOpciones(filtro) {
+    const q = (filtro || "").toLowerCase().trim();
+    const filtradas = q ? opciones.filter(o => o.toLowerCase().includes(q)) : opciones;
+    if (filtradas.length === 0) {
+      drop.innerHTML = '<div class="combo-no-results">Sin resultados</div>';
+    } else {
+      drop.innerHTML = filtradas.map(o =>
+        `<div class="combo-option${comboVal[wrapId.replace('combo','').toLowerCase()] === o ? ' selected' : ''}"
+          onmousedown="seleccionarCombo('${wrapId}','${inputId}','${dropId}',${JSON.stringify(o)})">${o}</div>`
+      ).join('');
+    }
+    drop.classList.add('open');
+    const chev = wrap.querySelector('.combo-chevron');
+    if (chev) chev.classList.add('open');
+  }
+
+  input.addEventListener('focus', () => renderOpciones(input.value));
+  input.addEventListener('input', () => renderOpciones(input.value));
+  input.addEventListener('blur', () => {
+    setTimeout(() => {
+      drop.classList.remove('open');
+      const chev = wrap.querySelector('.combo-chevron');
+      if (chev) chev.classList.remove('open');
+      // Si el texto no coincide con ninguna opción, limpiar
+      const key = wrapId.replace('combo','').toLowerCase();
+      if (input.value !== comboVal[key]) {
+        input.value = comboVal[key] || "";
+      }
+    }, 200);
+  });
+
+  wrap._onSelect = onSelect;
+}
+
+function seleccionarCombo(wrapId, inputId, dropId, valor) {
+  const input = document.getElementById(inputId);
+  const drop  = document.getElementById(dropId);
+  const wrap  = document.getElementById(wrapId);
+  const key   = wrapId.replace('combo','').toLowerCase();
+
+  input.value = valor;
+  comboVal[key] = valor;
+  drop.classList.remove('open');
+  const chev = wrap.querySelector('.combo-chevron');
+  if (chev) chev.classList.remove('open');
+
+  if (wrap._onSelect) wrap._onSelect(valor);
+}
+
+function toggleCombo(wrapId) {
+  const wrap  = document.getElementById(wrapId);
+  const input = wrap.querySelector('.combo-input');
+  const drop  = wrap.querySelector('.combo-dropdown');
+  if (input.disabled) return;
+  if (drop.classList.contains('open')) {
+    drop.classList.remove('open');
+    wrap.querySelector('.combo-chevron').classList.remove('open');
+  } else {
+    input.focus();
+  }
+}
+
+function habilitarCombo(wrapId, placeholder) {
+  const wrap  = document.getElementById(wrapId);
+  const input = wrap.querySelector('.combo-input');
+  const row   = wrap.querySelector('.combo-input-row');
+  input.disabled = false;
+  input.placeholder = placeholder || "— Escribe o selecciona —";
+  row.classList.remove('disabled');
+}
+
+function deshabilitarCombo(wrapId, placeholder, limpiar) {
+  const wrap  = document.getElementById(wrapId);
+  const input = wrap.querySelector('.combo-input');
+  const drop  = wrap.querySelector('.combo-dropdown');
+  const row   = wrap.querySelector('.combo-input-row');
+  const chev  = wrap.querySelector('.combo-chevron');
+  input.disabled = true;
+  input.placeholder = placeholder || "—";
+  row.classList.add('disabled');
+  drop.classList.remove('open');
+  if (chev) chev.classList.remove('open');
+  if (limpiar) {
+    input.value = "";
+    const key = wrapId.replace('combo','').toLowerCase();
+    comboVal[key] = "";
+    drop.innerHTML = "";
+  }
+}
+
 // ══════════════════════════════════════
 // CARGA DE DATOS DESDE APPS SCRIPT
 // ══════════════════════════════════════
@@ -601,10 +802,8 @@ async function cargarDatosIniciales() {
     const res = await fetch(APPS_SCRIPT_URL + "?action=getListas");
     const data = await res.json();
     datosListas = data;
-    poblarDepartamentos();
-    poblarProductos();
+    inicializarCombos();
   } catch(e) {
-    // Datos de ejemplo para pruebas locales
     datosListas = {
       departamentos: ["Guatemala","Sacatepéquez","Quetzaltenango","Huehuetenango"],
       municipios: {
@@ -628,61 +827,54 @@ async function cargarDatosIniciales() {
         "Detergente en Polvo 1kg","Suavizante 500ml","Papel Higiénico x4","Shampoo 400ml"
       ]
     };
-    poblarDepartamentos();
-    poblarProductos();
+    inicializarCombos();
     mostrarToast("⚠️ Modo demo — conecta tu Apps Script para datos reales");
   }
 }
 
-function poblarDepartamentos() {
-  const sel = document.getElementById('selDepartamento');
-  sel.innerHTML = '<option value="">— Selecciona departamento —</option>';
-  datosListas.departamentos.forEach(d => {
-    sel.innerHTML += `<option value="${d}">${d}</option>`;
+function inicializarCombos() {
+  // Departamentos
+  initCombo('comboDep', 'inputDep', 'dropDep', datosListas.departamentos, (dep) => {
+    comboVal.dep = dep;
+    // Resetear municipio y sucursal
+    deshabilitarCombo('comboMun', '— Primero selecciona departamento —', true);
+    deshabilitarCombo('comboSuc', '— Primero selecciona municipio —', true);
+    // Cargar municipios del departamento elegido
+    const muns = datosListas.municipios[dep] || [];
+    habilitarCombo('comboMun', '— Escribe o selecciona municipio —');
+    initCombo('comboMun', 'inputMun', 'dropMun', muns, (mun) => {
+      comboVal.mun = mun;
+      deshabilitarCombo('comboSuc', '— Primero selecciona municipio —', true);
+      const sucs = datosListas.sucursales[mun] || [];
+      if (sucs.length === 0) {
+        deshabilitarCombo('comboSuc', '— Sin sucursales para este municipio —', true);
+        return;
+      }
+      habilitarCombo('comboSuc', '— Escribe o selecciona sucursal —');
+      initCombo('comboSuc', 'inputSuc', 'dropSuc', sucs, (suc) => {
+        comboVal.suc = suc;
+      });
+    });
+  });
+
+  // Productos
+  initCombo('comboProd', 'inputProd', 'dropProd', datosListas.productos, (prod) => {
+    comboVal.prod = prod;
   });
 }
 
-function cargarMunicipios() {
-  const dep = document.getElementById('selDepartamento').value;
-  const selMun = document.getElementById('selMunicipio');
-  const selSuc = document.getElementById('selSucursal');
-
-  selMun.innerHTML = '<option value="">— Selecciona municipio —</option>';
-  selSuc.innerHTML = '<option value="">— Primero selecciona municipio —</option>';
-  selSuc.disabled = true;
-
-  if (!dep) { selMun.disabled = true; return; }
-
-  const municipios = datosListas.municipios[dep] || [];
-  municipios.forEach(m => selMun.innerHTML += `<option value="${m}">${m}</option>`);
-  selMun.disabled = false;
-}
-
-function cargarSucursales() {
-  const mun = document.getElementById('selMunicipio').value;
-  const selSuc = document.getElementById('selSucursal');
-
-  selSuc.innerHTML = '<option value="">— Selecciona sucursal —</option>';
-
-  if (!mun) { selSuc.disabled = true; return; }
-
-  const sucursales = datosListas.sucursales[mun] || [];
-  if (sucursales.length === 0) {
-    selSuc.innerHTML = '<option value="">— Sin sucursales registradas —</option>';
-    selSuc.disabled = true;
-    return;
-  }
-  sucursales.forEach(s => selSuc.innerHTML += `<option value="${s}">${s}</option>`);
-  selSuc.disabled = false;
-}
-
-function poblarProductos() {
-  const sel = document.getElementById('selProducto');
-  sel.innerHTML = '<option value="">— Selecciona producto —</option>';
-  datosListas.productos.forEach(p => {
-    sel.innerHTML += `<option value="${p}">${p}</option>`;
+// Cerrar dropdowns al hacer click fuera
+document.addEventListener('click', (e) => {
+  ['comboDep','comboMun','comboSuc','comboProd'].forEach(id => {
+    const wrap = document.getElementById(id);
+    if (wrap && !wrap.contains(e.target)) {
+      const drop = wrap.querySelector('.combo-dropdown');
+      const chev = wrap.querySelector('.combo-chevron');
+      if (drop) drop.classList.remove('open');
+      if (chev) chev.classList.remove('open');
+    }
   });
-}
+});
 
 // ══════════════════════════════════════
 // CONTROL DE PASOS
@@ -709,9 +901,9 @@ function validarPaso(paso) {
     if (!correo) { mostrarToast("Ingresa tu correo"); return false; }
   }
   if (paso === 2) {
-    if (!document.getElementById('selDepartamento').value) { mostrarToast("Selecciona el departamento"); return false; }
-    if (!document.getElementById('selMunicipio').value) { mostrarToast("Selecciona el municipio"); return false; }
-    if (!document.getElementById('selSucursal').value) { mostrarToast("Selecciona la sucursal"); return false; }
+    if (!comboVal.dep) { mostrarToast("Selecciona el departamento"); return false; }
+    if (!comboVal.mun) { mostrarToast("Selecciona el municipio"); return false; }
+    if (!comboVal.suc) { mostrarToast("Selecciona la sucursal"); return false; }
   }
   if (paso === 3) {
     if (productosAgregados.length === 0) { mostrarToast("Agrega al menos un producto"); return false; }
@@ -737,8 +929,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function agregarProducto() {
-  const sel = document.getElementById('selProducto');
-  const nombre = sel.value;
+  const nombre = comboVal.prod;
   if (!nombre) { mostrarToast("Selecciona un producto"); return; }
 
   const cantidad = parseInt(document.getElementById('inputCantidad').value) || 1;
@@ -748,7 +939,9 @@ function agregarProducto() {
 
   productosAgregados.push({ nombre, cantidad });
   renderItems();
-  sel.value = "";
+  // Limpiar combo producto
+  document.getElementById('inputProd').value = "";
+  comboVal.prod = "";
   document.getElementById('inputCantidad').value = 1;
   document.getElementById('qtyDisplay').textContent = '1';
 }
@@ -794,9 +987,9 @@ function setUrgencia(val, el) {
 function actualizarResumen() {
   document.getElementById('sumNombre').textContent = document.getElementById('vendedorNombre').value;
   document.getElementById('sumCorreo').textContent = document.getElementById('vendedorCorreo').value;
-  document.getElementById('sumDep').textContent = document.getElementById('selDepartamento').value;
-  document.getElementById('sumMun').textContent = document.getElementById('selMunicipio').value;
-  document.getElementById('sumSuc').textContent = document.getElementById('selSucursal').value;
+  document.getElementById('sumDep').textContent = comboVal.dep;
+  document.getElementById('sumMun').textContent = comboVal.mun;
+  document.getElementById('sumSuc').textContent = comboVal.suc;
 
   const sumItems = document.getElementById('sumItems');
   sumItems.innerHTML = productosAgregados.map(p => `
@@ -824,9 +1017,9 @@ async function enviarReporte() {
   const payload = {
     vendedor: document.getElementById('vendedorNombre').value.trim(),
     correo: document.getElementById('vendedorCorreo').value.trim(),
-    departamento: document.getElementById('selDepartamento').value,
-    municipio: document.getElementById('selMunicipio').value,
-    sucursal: document.getElementById('selSucursal').value,
+    departamento: comboVal.dep,
+    municipio: comboVal.mun,
+    sucursal: comboVal.suc,
     productos: productosAgregados,
     urgencia: urgenciaSeleccionada,
     observaciones: document.getElementById('observaciones').value.trim(),
@@ -873,11 +1066,16 @@ function nuevoReporte() {
   urgenciaSeleccionada = "Media";
   document.getElementById('vendedorNombre').value = '';
   document.getElementById('vendedorCorreo').value = '';
-  document.getElementById('selDepartamento').value = '';
-  document.getElementById('selMunicipio').innerHTML = '<option value="">— Primero selecciona departamento —</option>';
-  document.getElementById('selMunicipio').disabled = true;
-  document.getElementById('selSucursal').innerHTML = '<option value="">— Primero selecciona municipio —</option>';
-  document.getElementById('selSucursal').disabled = true;
+  // Reset combos
+  comboVal.dep = ""; comboVal.mun = ""; comboVal.suc = ""; comboVal.prod = "";
+  document.getElementById('inputDep').value = "";
+  document.getElementById('inputMun').value = "";
+  document.getElementById('inputMun').disabled = true;
+  document.getElementById('inputSuc').value = "";
+  document.getElementById('inputSuc').disabled = true;
+  document.getElementById('inputProd').value = "";
+  document.getElementById('comboMun').querySelector('.combo-input-row').classList.add('disabled');
+  document.getElementById('comboSuc').querySelector('.combo-input-row').classList.add('disabled');
   document.getElementById('observaciones').value = '';
   renderItems();
 
