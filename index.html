@@ -16,19 +16,25 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
+  /* ── Header ── */
   .header { background: var(--accent); color: #fff; padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
   .header-icon { width: 36px; height: 36px; background: rgba(255,255,255,0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
   .header-title { font-size: 16px; font-weight: 600; }
-  .header-sub { font-size: 12px; opacity: 0.75; margin-top: 1px; }
-  .progress-bar { height: 3px; background: rgba(255,255,255,0.2); }
+  .header-sub   { font-size: 12px; opacity: 0.75; margin-top: 1px; }
+  .progress-bar  { height: 3px; background: rgba(255,255,255,0.2); }
   .progress-fill { height: 100%; background: #a8d5b5; transition: width 0.4s ease; width: 0%; }
+
+  /* ── Layout ── */
   .container { max-width: 540px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
   .step { display: none; }
   .step.active { display: block; animation: fadeIn 0.3s ease; }
   @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
   .step-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.35rem; }
   .step-title { font-size: 22px; font-weight: 600; margin-bottom: 0.4rem; line-height: 1.3; }
-  .step-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.6; }
+  .step-desc  { font-size: 14px; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.6; }
+
+  /* ── Fields ── */
   .field { margin-bottom: 1.1rem; }
   .field label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 0.4rem; }
   .field label .req { color: var(--accent2); margin-left: 2px; }
@@ -41,21 +47,21 @@
   input:focus, textarea:focus { border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--accent-light); }
   textarea { resize: vertical; min-height: 80px; }
 
-  /* Combobox */
+  /* ── Combobox ── */
   .cb-wrap { position: relative; }
   .cb-box {
     display: flex; align-items: center;
     background: var(--surface); border: 1.5px solid var(--border);
     border-radius: var(--radius); transition: border-color 0.15s, box-shadow 0.15s;
   }
-  .cb-box.cb-focused { border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--accent-light); }
+  .cb-box.cb-focused  { border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--accent-light); }
   .cb-box.cb-disabled { background: var(--surface2); }
   .cb-input {
     flex: 1; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text);
     background: transparent; border: none; outline: none; padding: 0.7rem 0.9rem; min-width: 0;
   }
   .cb-input::placeholder { color: var(--text-muted); }
-  .cb-input:disabled { color: var(--text-muted); cursor: not-allowed; }
+  .cb-input:disabled     { color: var(--text-muted); cursor: not-allowed; }
   .cb-arrow {
     padding: 0 12px; background: none; border: none; cursor: pointer;
     color: var(--text-muted); display: flex; align-items: center;
@@ -69,63 +75,77 @@
     z-index: 999; max-height: 220px; overflow-y: auto;
   }
   .cb-drop.cb-open { display: block; }
-  .cb-opt { padding: 0.65rem 0.9rem; font-size: 14px; color: var(--text); cursor: pointer; }
+  .cb-opt   { padding: 0.65rem 0.9rem; font-size: 14px; color: var(--text); cursor: pointer; }
   .cb-opt:hover { background: var(--accent-light); color: var(--accent); }
   .cb-empty { padding: 0.75rem 0.9rem; font-size: 13px; color: var(--text-muted); text-align: center; }
 
-  /* Quantity */
+  /* ── Quantity ── */
   .qty-row { display: grid; grid-template-columns: 1fr auto; gap: 0.75rem; align-items: end; }
   .qty-controls { display: flex; align-items: center; gap: 6px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.4rem 0.6rem; height: 46px; }
   .qty-btn { width: 28px; height: 28px; background: var(--accent-light); border: none; border-radius: 6px; font-size: 18px; color: var(--accent); cursor: pointer; display: flex; align-items: center; justify-content: center; }
   .qty-btn:active { background: #c8dec8; }
   .qty-display { font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 500; min-width: 36px; text-align: center; }
 
-  /* Items */
+  /* ── Items ── */
   .items-list { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem; }
-  .item-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; }
-  .item-name { font-size: 14px; font-weight: 500; }
-  .item-qty  { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .item-card  { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; }
+  .item-name  { font-size: 14px; font-weight: 500; }
+  .item-meta  { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
   .item-remove { width: 28px; height: 28px; background: #fdecea; border: none; border-radius: 6px; color: var(--danger); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-  .add-btn { width: 100%; background: var(--accent-light); border: 1.5px dashed #9cbfa6; border-radius: var(--radius); color: var(--accent); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; padding: 0.7rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .add-btn { width: 100%; background: var(--accent-light); border: 1.5px dashed #9cbfa6; border-radius: var(--radius); color: var(--accent); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; padding: 0.7rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: background 0.15s; }
   .add-btn:hover { background: #d4e8da; }
   .empty-state { text-align: center; padding: 1.5rem; color: var(--text-muted); font-size: 14px; background: var(--surface2); border-radius: var(--radius); border: 1.5px dashed var(--border); }
 
-  /* Urgency */
+  /* ── Urgency ── */
   .urgency-pills { display: flex; gap: 0.5rem; }
   .u-pill { flex: 1; padding: 0.6rem 0.5rem; border: 1.5px solid var(--border); border-radius: var(--radius); background: var(--surface); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--text-muted); cursor: pointer; text-align: center; transition: all 0.15s; }
   .u-low  { border-color: #2d5a3d; background: #e8f0ea; color: #2d5a3d; }
   .u-med  { border-color: #b07c2a; background: #fef3e2; color: #b07c2a; }
   .u-high { border-color: #c0392b; background: #fdecea; color: #c0392b; }
 
-  /* Nav */
+  /* ── Navigation ── */
   .nav-btns { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
-  .btn-back { flex: 0 0 auto; background: transparent; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.8rem 1.25rem; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; color: var(--text-muted); cursor: pointer; }
+  .btn-back { flex: 0 0 auto; background: transparent; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.8rem 1.25rem; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; color: var(--text-muted); cursor: pointer; transition: border-color 0.15s; }
   .btn-back:hover { border-color: var(--border-focus); color: var(--text); }
   .btn-next { flex: 1; background: var(--accent); border: none; border-radius: var(--radius); padding: 0.85rem; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.15s; }
-  .btn-next:hover { background: #234a31; }
+  .btn-next:hover    { background: #234a31; }
   .btn-next:disabled { background: #9cbfa6; cursor: not-allowed; }
 
-  /* Summary */
+  /* ── Summary ── */
   .sum-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 1rem; }
-  .sum-sec { padding: 1rem 1.1rem; border-bottom: 1px solid var(--border); }
+  .sum-sec  { padding: 1rem 1.1rem; border-bottom: 1px solid var(--border); }
   .sum-sec:last-child { border-bottom: none; }
-  .sum-lbl { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem; }
-  .sum-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 0.3rem; }
+  .sum-lbl  { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem; }
+  .sum-row  { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 0.3rem; }
   .sum-row span:first-child { color: var(--text-muted); }
-  .sum-row span:last-child { font-weight: 500; }
+  .sum-row span:last-child  { font-weight: 500; }
   .sum-item { display: flex; justify-content: space-between; align-items: center; font-size: 14px; padding: 0.3rem 0; }
-  .sum-qty-badge { font-family: 'DM Mono', monospace; font-size: 13px; background: var(--accent-light); color: var(--accent); padding: 2px 8px; border-radius: 20px; }
+  .sum-badge { font-family: 'DM Mono', monospace; font-size: 13px; background: var(--accent-light); color: var(--accent); padding: 2px 8px; border-radius: 20px; }
 
-  /* Success */
+  /* ── Success ── */
   .success-screen { text-align: center; padding: 2rem 1rem; display: none; }
-  .success-icon { width: 72px; height: 72px; background: var(--accent-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; }
+  .success-icon  { width: 72px; height: 72px; background: var(--accent-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; }
   .success-title { font-size: 24px; font-weight: 600; margin-bottom: 0.5rem; }
-  .success-desc { font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.5rem; }
-  .success-code { font-family: 'DM Mono', monospace; font-size: 18px; font-weight: 500; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.75rem 1.5rem; display: inline-block; margin-bottom: 0.5rem; letter-spacing: 0.1em; color: var(--accent); }
-  .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
+  .success-desc  { font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.5rem; }
+  .success-code  { font-family: 'DM Mono', monospace; font-size: 18px; font-weight: 500; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.75rem 1.5rem; display: inline-block; margin-bottom: 0.5rem; letter-spacing: 0.1em; color: var(--accent); }
+
+  /* ── Access denied screen ── */
+  .access-screen { display: none; text-align: center; padding: 2.5rem 1rem; }
+  .access-icon   { width: 72px; height: 72px; background: #fdecea; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; }
+  .access-title  { font-size: 20px; font-weight: 600; color: var(--danger); margin-bottom: 0.5rem; }
+  .access-desc   { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+
+  /* ── Loading screen ── */
+  .loading-screen { text-align: center; padding: 3rem 1rem; }
+  .loading-ring   { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
   @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-txt { font-size: 14px; color: var(--text-muted); }
+
+  /* ── Misc ── */
+  .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
   .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(80px); background: #1a1a18; color: #fff; font-size: 14px; padding: 0.7rem 1.25rem; border-radius: 50px; transition: transform 0.3s ease; z-index: 9999; white-space: nowrap; }
   .toast.show { transform: translateX(-50%) translateY(0); }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 0.5rem 0 1rem; }
 </style>
 </head>
 <body>
@@ -151,31 +171,76 @@
 
 <div class="container">
 
-  <!-- PASO 1 -->
-  <div class="step active" id="step1">
+  <!-- CARGANDO -->
+  <div class="loading-screen" id="screenLoading">
+    <div class="loading-ring"></div>
+    <div class="loading-txt">Cargando formulario...</div>
+  </div>
+
+  <!-- ACCESO DENEGADO -->
+  <div class="access-screen" id="screenAcceso">
+    <div class="access-icon">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c0392b" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/>
+      </svg>
+    </div>
+    <div class="access-title">Acceso denegado</div>
+    <div class="access-desc">Tu correo no está autorizado para usar este formulario.<br>Contacta a tu supervisor para solicitar acceso.</div>
+  </div>
+
+  <!-- PASO 1: Identificación -->
+  <div class="step" id="step1">
     <div class="step-label">Paso 1 de 4</div>
     <div class="step-title">¿Quién reporta?</div>
-    <div class="step-desc">Ingresa tus datos para identificar el reporte.</div>
+    <div class="step-desc">Selecciona tu nombre y confirma tu correo corporativo.</div>
+
     <div class="field">
-      <label>Nombre del vendedor <span class="req">*</span></label>
-      <input type="text" id="vendedorNombre" placeholder="Ej. Juan Pérez" autocomplete="name">
+      <label>Ejecutivo <span class="req">*</span></label>
+      <div class="cb-wrap">
+        <div class="cb-box" id="boxEjec">
+          <input class="cb-input" id="inEjec" type="text" placeholder="— Escribe o selecciona tu nombre —" autocomplete="off">
+          <button type="button" class="cb-arrow" id="arrEjec">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+        </div>
+        <div class="cb-drop" id="dropEjec"></div>
+      </div>
     </div>
+
     <div class="field">
       <label>Correo corporativo <span class="req">*</span></label>
       <input type="text" id="vendedorCorreo" placeholder="correo@empresa.com" autocomplete="email">
+      <div style="font-size:12px;color:var(--text-muted);margin-top:5px">Este correo se verificará contra la lista de ejecutivos autorizados.</div>
     </div>
+
     <div class="nav-btns">
-      <button class="btn-next" onclick="irPaso(2)">Continuar
+      <button class="btn-next" onclick="verificarAcceso()">
+        Verificar y continuar
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
       </button>
     </div>
   </div>
 
-  <!-- PASO 2 -->
+  <!-- PASO 2: Ubicación -->
   <div class="step" id="step2">
     <div class="step-label">Paso 2 de 4</div>
     <div class="step-title">Ubicación de la sucursal</div>
-    <div class="step-desc">Selecciona departamento, municipio y sucursal.</div>
+    <div class="step-desc">Selecciona canal, departamento, municipio y sucursal.</div>
+
+    <div class="field">
+      <label>Canal <span class="req">*</span></label>
+      <div class="cb-wrap">
+        <div class="cb-box" id="boxCanal">
+          <input class="cb-input" id="inCanal" type="text" placeholder="— Escribe o selecciona canal —" autocomplete="off">
+          <button type="button" class="cb-arrow" id="arrCanal">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+        </div>
+        <div class="cb-drop" id="dropCanal"></div>
+      </div>
+    </div>
+
+    <hr class="divider">
 
     <div class="field">
       <label>Departamento <span class="req">*</span></label>
@@ -224,17 +289,30 @@
     </div>
   </div>
 
-  <!-- PASO 3 -->
+  <!-- PASO 3: Productos -->
   <div class="step" id="step3">
     <div class="step-label">Paso 3 de 4</div>
     <div class="step-title">Productos faltantes</div>
-    <div class="step-desc">Agrega uno a uno los productos con faltante.</div>
+    <div class="step-desc">Selecciona marca y luego el producto faltante.</div>
+
+    <div class="field">
+      <label>Marca <span class="req">*</span></label>
+      <div class="cb-wrap">
+        <div class="cb-box" id="boxMarca">
+          <input class="cb-input" id="inMarca" type="text" placeholder="— Escribe o selecciona marca —" autocomplete="off">
+          <button type="button" class="cb-arrow" id="arrMarca">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+        </div>
+        <div class="cb-drop" id="dropMarca"></div>
+      </div>
+    </div>
 
     <div class="field">
       <label>Producto <span class="req">*</span></label>
       <div class="cb-wrap">
-        <div class="cb-box" id="boxProd">
-          <input class="cb-input" id="inProd" type="text" placeholder="— Escribe o selecciona producto —" autocomplete="off">
+        <div class="cb-box cb-disabled" id="boxProd">
+          <input class="cb-input" id="inProd" type="text" placeholder="— Primero selecciona marca —" autocomplete="off" disabled>
           <button type="button" class="cb-arrow" id="arrProd">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
           </button>
@@ -277,7 +355,7 @@
     </div>
   </div>
 
-  <!-- PASO 4 -->
+  <!-- PASO 4: Revisión y envío -->
   <div class="step" id="step4">
     <div class="step-label">Paso 4 de 4</div>
     <div class="step-title">Revisar y enviar</div>
@@ -285,12 +363,13 @@
 
     <div class="sum-card">
       <div class="sum-sec">
-        <div class="sum-lbl">Vendedor</div>
+        <div class="sum-lbl">Ejecutivo</div>
         <div class="sum-row"><span>Nombre</span><span id="sumNombre">—</span></div>
         <div class="sum-row"><span>Correo</span><span id="sumCorreo">—</span></div>
       </div>
       <div class="sum-sec">
         <div class="sum-lbl">Sucursal</div>
+        <div class="sum-row"><span>Canal</span><span id="sumCanal">—</span></div>
         <div class="sum-row"><span>Departamento</span><span id="sumDep">—</span></div>
         <div class="sum-row"><span>Municipio</span><span id="sumMun">—</span></div>
         <div class="sum-row"><span>Sucursal</span><span id="sumSuc">—</span></div>
@@ -337,52 +416,53 @@
     <button class="btn-next" style="max-width:220px;margin:0 auto" onclick="nuevoReporte()">Hacer otro reporte</button>
   </div>
 
-</div>
+</div><!-- /container -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ════════════════════════════
+// ══════════════════════════════════
 // ESTADO GLOBAL
-// ════════════════════════════
-var pasoActual = 1;
-var urgenciaSeleccionada = "Media";
-var productosAgregados = [];
-var datos = { departamentos: [], municipios: {}, sucursales: {}, productos: [] };
-var valDep = "", valMun = "", valSuc = "", valProd = "";
+// ══════════════════════════════════
+var pasoActual      = 1;
+var urgencia        = "Media";
+var productosAgr    = [];
+var datos           = { ejecutivos:[], canales:[], departamentos:[], municipios:{}, sucursales:{}, marcas:[], productos:{} };
+var valEjec  = "", valCorreo = "";
+var valCanal = "", valDep = "", valMun = "", valSuc = "";
+var valMarca = "", valProd  = "";
 
-// ════════════════════════════
-// MOTOR COMBOBOX
-// Crea un combobox que filtra mientras escribes
-// ════════════════════════════
-function hacerCombo(inputId, dropId, boxId, arrowId, opciones, cbSeleccion, cbLimpiar) {
-  var input  = document.getElementById(inputId);
-  var drop   = document.getElementById(dropId);
-  var box    = document.getElementById(boxId);
-  var arrow  = document.getElementById(arrowId);
+// ══════════════════════════════════
+// MOTOR COMBOBOX REUTILIZABLE
+// ══════════════════════════════════
+function hacerCombo(cfg) {
+  // cfg: inputId, dropId, boxId, arrowId, opciones[], onSelect(v), onClear()
+  var input = document.getElementById(cfg.inputId);
+  var drop  = document.getElementById(cfg.dropId);
+  var box   = document.getElementById(cfg.boxId);
+  var arrow = document.getElementById(cfg.arrowId);
 
-  function mostrarDrop(filtro) {
-    var q = (filtro || "").toLowerCase();
-    var lista = q
-      ? opciones.filter(function(o) { return o.toLowerCase().indexOf(q) !== -1; })
-      : opciones.slice();
+  // Guardar referencia al cfg en el elemento para poder actualizar opciones después
+  box._comboCfg = cfg;
 
-    if (lista.length === 0) {
+  function render(filtro) {
+    var q    = (filtro || "").toLowerCase();
+    var list = q ? cfg.opciones.filter(function(o){ return o.toLowerCase().indexOf(q) !== -1; }) : cfg.opciones.slice();
+    if (list.length === 0) {
       drop.innerHTML = '<div class="cb-empty">Sin resultados</div>';
     } else {
       var html = "";
-      for (var i = 0; i < lista.length; i++) {
-        html += '<div class="cb-opt">' + lista[i] + '</div>';
+      for (var i = 0; i < list.length; i++) {
+        html += '<div class="cb-opt" data-v="' + list[i].replace(/"/g,'&quot;') + '">' + list[i] + '</div>';
       }
       drop.innerHTML = html;
       var opts = drop.querySelectorAll('.cb-opt');
       for (var j = 0; j < opts.length; j++) {
-        (function(el) {
-          el.addEventListener('mousedown', function(e) {
+        (function(el){
+          el.addEventListener('mousedown', function(e){
             e.preventDefault();
-            var v = el.textContent;
-            input.value = v;
-            cerrarDrop();
-            if (cbSeleccion) cbSeleccion(v);
+            input.value = el.getAttribute('data-v');
+            cerrar();
+            if (cfg.onSelect) cfg.onSelect(el.getAttribute('data-v'));
           });
         })(opts[j]);
       }
@@ -392,170 +472,209 @@ function hacerCombo(inputId, dropId, boxId, arrowId, opciones, cbSeleccion, cbLi
     box.classList.add('cb-focused');
   }
 
-  function cerrarDrop() {
+  function cerrar() {
     drop.classList.remove('cb-open');
     arrow.classList.remove('cb-open');
     box.classList.remove('cb-focused');
   }
 
-  input.addEventListener('focus', function() {
-    if (!input.disabled) mostrarDrop(input.value);
-  });
-
-  input.addEventListener('input', function() {
-    if (!input.disabled) mostrarDrop(input.value);
-  });
-
-  input.addEventListener('blur', function() {
-    setTimeout(function() {
-      cerrarDrop();
-      var encontrado = false;
-      for (var i = 0; i < opciones.length; i++) {
-        if (opciones[i] === input.value) { encontrado = true; break; }
+  input.addEventListener('focus', function(){ if (!input.disabled) render(input.value); });
+  input.addEventListener('input', function(){ if (!input.disabled) render(input.value); });
+  input.addEventListener('blur',  function(){
+    setTimeout(function(){
+      cerrar();
+      var ok = false;
+      for (var i = 0; i < cfg.opciones.length; i++) {
+        if (cfg.opciones[i] === input.value) { ok = true; break; }
       }
-      if (!encontrado) {
+      if (!ok) {
         input.value = "";
-        if (cbLimpiar) cbLimpiar();
+        if (cfg.onClear) cfg.onClear();
       }
     }, 200);
   });
-
-  arrow.addEventListener('click', function() {
+  arrow.addEventListener('click', function(){
     if (input.disabled) return;
-    if (drop.classList.contains('cb-open')) {
-      cerrarDrop();
-      input.blur();
-    } else {
-      input.focus();
-    }
+    if (drop.classList.contains('cb-open')) { cerrar(); input.blur(); }
+    else { input.focus(); }
   });
 }
 
-// ════════════════════════════
-// CARGA DE DATOS
-// ════════════════════════════
+// Habilitar / deshabilitar combos
+function habilitarCombo(inputId, boxId, placeholder, opciones) {
+  var input = document.getElementById(inputId);
+  var box   = document.getElementById(boxId);
+  input.disabled    = false;
+  input.value       = "";
+  input.placeholder = placeholder;
+  box.classList.remove('cb-disabled');
+  // Actualizar opciones en el cfg guardado
+  if (box._comboCfg) box._comboCfg.opciones = opciones || [];
+}
+
+function deshabilitarCombo(inputId, boxId, placeholder) {
+  var input = document.getElementById(inputId);
+  var box   = document.getElementById(boxId);
+  var drop  = box.parentElement.querySelector('.cb-drop');
+  var arrow = box.querySelector('.cb-arrow');
+  input.disabled    = true;
+  input.value       = "";
+  input.placeholder = placeholder || "—";
+  box.classList.add('cb-disabled');
+  if (drop)  drop.classList.remove('cb-open');
+  if (arrow) arrow.classList.remove('cb-open');
+  box.classList.remove('cb-focused');
+}
+
+// ══════════════════════════════════
+// CARGA DE DATOS DESDE APPS SCRIPT
+// ══════════════════════════════════
 function cargarDatos() {
   fetch(APPS_SCRIPT_URL + "?action=getListas")
-    .then(function(r) { return r.json(); })
-    .then(function(d) {
+    .then(function(r){ return r.json(); })
+    .then(function(d){
       datos = d;
-      arrancarCombos();
+      iniciar();
     })
-    .catch(function() {
-      // Datos demo para Guatemala
+    .catch(function(){
+      // ── DEMO DATA ──
       datos = {
-        departamentos: [
-          "Alta Verapaz","Baja Verapaz","Chimaltenango","Chiquimula",
-          "El Progreso","Escuintla","Guatemala","Huehuetenango",
-          "Izabal","Jalapa","Jutiapa","Petén","Quetzaltenango",
-          "Quiché","Retalhuleu","Sacatepéquez","San Marcos",
-          "Santa Rosa","Sololá","Suchitepéquez","Totonicapán","Zacapa"
+        ejecutivos: [
+          { nombre: "Ana García",     correo: "ana.garcia@empresa.com"     },
+          { nombre: "Carlos López",   correo: "carlos.lopez@empresa.com"   },
+          { nombre: "María Pérez",    correo: "maria.perez@empresa.com"    },
+          { nombre: "Juan Rodríguez", correo: "juan.rodriguez@empresa.com" }
         ],
+        canales: ["Supermercados","Mayoristas","Distribuidores","Tiendas de Conveniencia","Canal Tradicional"],
+        departamentos: ["Guatemala","Sacatepéquez","Quetzaltenango","Huehuetenango","Escuintla","Alta Verapaz","Izabal","San Marcos"],
         municipios: {
           "Guatemala":      ["Guatemala Ciudad","Mixco","Villa Nueva","San Miguel Petapa","Chinautla","Amatitlán"],
           "Sacatepéquez":   ["Antigua Guatemala","Jocotenango","Ciudad Vieja","San Lucas Sacatepéquez"],
-          "Quetzaltenango": ["Quetzaltenango","Salcajá","Olintepeque","San Carlos Sija","Almolonga"],
+          "Quetzaltenango": ["Quetzaltenango","Salcajá","Olintepeque","San Carlos Sija"],
           "Escuintla":      ["Escuintla","Santa Lucía Cotzumalguapa","La Democracia","Palín"],
-          "Huehuetenango":  ["Huehuetenango","Chiantla","Malacatancito","Aguacatán","Cuilco"],
-          "Chimaltenango":  ["Chimaltenango","San Andrés Itzapa","Patzún","Tecpán Guatemala"],
-          "Alta Verapaz":   ["Cobán","Santa Cruz Verapaz","San Cristóbal Verapaz","Tactic"],
-          "Izabal":         ["Puerto Barrios","Morales","Livingston","Los Amates"],
-          "San Marcos":     ["San Marcos","Malacatán","Ayutla","Tacaná","Coatepeque"]
+          "Huehuetenango":  ["Huehuetenango","Chiantla","Malacatancito","Aguacatán"],
+          "Alta Verapaz":   ["Cobán","Santa Cruz Verapaz","Tactic"],
+          "Izabal":         ["Puerto Barrios","Morales","Livingston"],
+          "San Marcos":     ["San Marcos","Malacatán","Ayutla","Coatepeque"]
         },
         sucursales: {
-          "Guatemala Ciudad":    ["Sucursal Centro","Sucursal Zona 10","Sucursal Zona 12","Sucursal Miraflores","Sucursal Zona 18"],
-          "Mixco":               ["Sucursal Mixco Norte","Sucursal Mixco Sur","Sucursal Condado"],
-          "Villa Nueva":         ["Sucursal Villa Nueva Central","Sucursal Villalobos"],
-          "Antigua Guatemala":   ["Sucursal Antigua Centro","Sucursal Antigua Sur"],
-          "Quetzaltenango":      ["Sucursal Xela Centro","Sucursal Xela Norte","Sucursal Pradera Xela"],
-          "Escuintla":           ["Sucursal Escuintla Central","Sucursal Escuintla Norte"],
-          "Cobán":               ["Sucursal Cobán Centro"],
-          "Puerto Barrios":      ["Sucursal Puerto Barrios"],
-          "Huehuetenango":       ["Sucursal Huehue Centro"],
-          "Malacatán":           ["Sucursal Malacatán"]
+          "Guatemala Ciudad":  ["Sucursal Centro","Sucursal Zona 10","Sucursal Zona 12","Sucursal Miraflores","Sucursal Zona 18"],
+          "Mixco":             ["Sucursal Mixco Norte","Sucursal Mixco Sur","Sucursal Condado"],
+          "Villa Nueva":       ["Sucursal Villa Nueva Central","Sucursal Villalobos"],
+          "Antigua Guatemala": ["Sucursal Antigua Centro","Sucursal Antigua Sur"],
+          "Quetzaltenango":    ["Sucursal Xela Centro","Sucursal Xela Norte"],
+          "Escuintla":         ["Sucursal Escuintla Central"],
+          "Cobán":             ["Sucursal Cobán Centro"],
+          "Puerto Barrios":    ["Sucursal Puerto Barrios"],
+          "Huehuetenango":     ["Sucursal Huehue Centro"],
+          "Malacatán":         ["Sucursal Malacatán"]
         },
-        productos: [
-          "Aceite Vegetal 1L","Aceite Vegetal 3L","Azúcar Blanca 1kg","Azúcar Morena 1kg",
-          "Arroz Blanco 1kg","Arroz Blanco 5kg","Frijol Negro 1kg","Frijol Rojo 1kg",
-          "Sal Refinada 1kg","Harina de Trigo 1kg","Leche Entera 1L","Leche Descremada 1L",
-          "Café Molido 500g","Pasta Espagueti 500g","Atún en Lata 185g","Sardinas 425g",
-          "Jabón de Baño","Detergente en Polvo 1kg","Suavizante 500ml",
-          "Papel Higiénico x4","Papel Higiénico x12","Shampoo 400ml","Acondicionador 400ml",
-          "Pasta Dental","Cepillo de Dientes","Desodorante","Pañales T-1","Pañales T-2","Pañales T-3"
-        ]
+        marcas: ["Marca A","Marca B","Marca C","Marca D"],
+        productos: {
+          "Marca A": ["Aceite Vegetal 1L","Aceite Vegetal 3L","Margarina 400g"],
+          "Marca B": ["Azúcar Blanca 1kg","Azúcar Morena 1kg","Azúcar Refinada 2kg"],
+          "Marca C": ["Arroz Blanco 1kg","Arroz Blanco 5kg","Frijol Negro 1kg","Frijol Rojo 1kg"],
+          "Marca D": ["Shampoo 400ml","Acondicionador 400ml","Jabón de Baño","Detergente 1kg","Suavizante 500ml"]
+        }
       };
       mostrarToast("⚠️ Modo demo — conecta tu Apps Script para datos reales");
-      arrancarCombos();
+      iniciar();
     });
 }
 
-function arrancarCombos() {
-  // Combo Departamento
-  hacerCombo('inDep', 'dropDep', 'boxDep', 'arrDep',
-    datos.departamentos,
-    function(dep) {
+function iniciar() {
+  document.getElementById('screenLoading').style.display = 'none';
+  mostrarPaso(1);
+  registrarTodosCombos();
+}
+
+// ══════════════════════════════════
+// REGISTRAR TODOS LOS COMBOS
+// ══════════════════════════════════
+function registrarTodosCombos() {
+
+  // ── Ejecutivos ──
+  var nombresEjec = datos.ejecutivos.map(function(e){ return e.nombre; });
+  hacerCombo({
+    inputId: 'inEjec', dropId: 'dropEjec', boxId: 'boxEjec', arrowId: 'arrEjec',
+    opciones: nombresEjec,
+    onSelect: function(nombre) {
+      valEjec = nombre;
+      // Autocompletar correo si el ejecutivo tiene uno registrado
+      for (var i = 0; i < datos.ejecutivos.length; i++) {
+        if (datos.ejecutivos[i].nombre === nombre) {
+          document.getElementById('vendedorCorreo').value = datos.ejecutivos[i].correo;
+          break;
+        }
+      }
+    },
+    onClear: function() { valEjec = ""; }
+  });
+
+  // ── Canal ──
+  hacerCombo({
+    inputId: 'inCanal', dropId: 'dropCanal', boxId: 'boxCanal', arrowId: 'arrCanal',
+    opciones: datos.canales,
+    onSelect: function(c) { valCanal = c; },
+    onClear:  function()  { valCanal = ""; }
+  });
+
+  // ── Departamento ──
+  hacerCombo({
+    inputId: 'inDep', dropId: 'dropDep', boxId: 'boxDep', arrowId: 'arrDep',
+    opciones: datos.departamentos,
+    onSelect: function(dep) {
       valDep = dep; valMun = ""; valSuc = "";
-      // Habilitar municipio
-      var inMun  = document.getElementById('inMun');
-      var boxMun = document.getElementById('boxMun');
-      inMun.disabled = false;
-      inMun.value = "";
-      inMun.placeholder = "— Escribe o selecciona municipio —";
-      boxMun.classList.remove('cb-disabled');
-      // Deshabilitar sucursal
-      resetCombo('inSuc','boxSuc','— Primero selecciona municipio —');
-      // Registrar municipio con nuevas opciones
       var muns = datos.municipios[dep] || [];
-      hacerCombo('inMun', 'dropMun', 'boxMun', 'arrMun',
-        muns,
-        function(mun) {
+      habilitarCombo('inMun', 'boxMun', '— Escribe o selecciona municipio —', muns);
+      deshabilitarCombo('inSuc','boxSuc','— Primero selecciona municipio —');
+      hacerCombo({
+        inputId:'inMun', dropId:'dropMun', boxId:'boxMun', arrowId:'arrMun',
+        opciones: muns,
+        onSelect: function(mun) {
           valMun = mun; valSuc = "";
           var sucs = datos.sucursales[mun] || [];
-          if (sucs.length === 0) {
-            resetCombo('inSuc','boxSuc','— Sin sucursales para este municipio —');
-            return;
-          }
-          var inSuc  = document.getElementById('inSuc');
-          var boxSuc = document.getElementById('boxSuc');
-          inSuc.disabled = false;
-          inSuc.value = "";
-          inSuc.placeholder = "— Escribe o selecciona sucursal —";
-          boxSuc.classList.remove('cb-disabled');
-          hacerCombo('inSuc', 'dropSuc', 'boxSuc', 'arrSuc',
-            sucs,
-            function(suc) { valSuc = suc; },
-            function()    { valSuc = ""; }
-          );
+          if (sucs.length === 0) { deshabilitarCombo('inSuc','boxSuc','— Sin sucursales registradas —'); return; }
+          habilitarCombo('inSuc','boxSuc','— Escribe o selecciona sucursal —', sucs);
+          hacerCombo({
+            inputId:'inSuc', dropId:'dropSuc', boxId:'boxSuc', arrowId:'arrSuc',
+            opciones: sucs,
+            onSelect: function(suc) { valSuc = suc; },
+            onClear:  function()    { valSuc = ""; }
+          });
         },
-        function() { valMun = ""; valSuc = ""; resetCombo('inSuc','boxSuc','— Primero selecciona municipio —'); }
-      );
+        onClear: function(){ valMun=""; valSuc=""; deshabilitarCombo('inSuc','boxSuc','— Primero selecciona municipio —'); }
+      });
     },
-    function() {
-      valDep = ""; valMun = ""; valSuc = "";
-      resetCombo('inMun','boxMun','— Primero selecciona departamento —');
-      resetCombo('inSuc','boxSuc','— Primero selecciona municipio —');
+    onClear: function(){
+      valDep=""; valMun=""; valSuc="";
+      deshabilitarCombo('inMun','boxMun','— Primero selecciona departamento —');
+      deshabilitarCombo('inSuc','boxSuc','— Primero selecciona municipio —');
     }
-  );
+  });
 
-  // Combo Producto
-  hacerCombo('inProd', 'dropProd', 'boxProd', 'arrProd',
-    datos.productos,
-    function(p)  { valProd = p; },
-    function()   { valProd = ""; }
-  );
+  // ── Marca ──
+  hacerCombo({
+    inputId: 'inMarca', dropId: 'dropMarca', boxId: 'boxMarca', arrowId: 'arrMarca',
+    opciones: datos.marcas,
+    onSelect: function(marca) {
+      valMarca = marca; valProd = "";
+      var prods = datos.productos[marca] || [];
+      if (prods.length === 0) { deshabilitarCombo('inProd','boxProd','— Sin productos para esta marca —'); return; }
+      habilitarCombo('inProd','boxProd','— Escribe o selecciona producto —', prods);
+      hacerCombo({
+        inputId:'inProd', dropId:'dropProd', boxId:'boxProd', arrowId:'arrProd',
+        opciones: prods,
+        onSelect: function(p) { valProd = p; },
+        onClear:  function()  { valProd = ""; }
+      });
+    },
+    onClear: function(){ valMarca=""; valProd=""; deshabilitarCombo('inProd','boxProd','— Primero selecciona marca —'); }
+  });
 }
 
-function resetCombo(inputId, boxId, placeholder) {
-  var el  = document.getElementById(inputId);
-  var box = document.getElementById(boxId);
-  el.disabled = true;
-  el.value = "";
-  el.placeholder = placeholder || "—";
-  box.classList.add('cb-disabled');
-}
-
-// Cerrar dropdowns al click fuera
-document.addEventListener('click', function(e) {
+// Cerrar dropdowns al hacer clic fuera
+document.addEventListener('click', function(e){
   var wraps = document.querySelectorAll('.cb-wrap');
   for (var i = 0; i < wraps.length; i++) {
     if (!wraps[i].contains(e.target)) {
@@ -569,9 +688,54 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// ════════════════════════════
+// ══════════════════════════════════
+// CONTROL DE ACCESO
+// ══════════════════════════════════
+function verificarAcceso() {
+  var nombre = document.getElementById('inEjec').value.trim();
+  var correo = document.getElementById('vendedorCorreo').value.trim().toLowerCase();
+
+  if (!nombre) { mostrarToast("Selecciona tu nombre"); return; }
+  if (!correo)  { mostrarToast("Ingresa tu correo corporativo"); return; }
+
+  // Buscar si el correo coincide con el ejecutivo seleccionado
+  var autorizado = false;
+  for (var i = 0; i < datos.ejecutivos.length; i++) {
+    var ejec = datos.ejecutivos[i];
+    if (ejec.nombre === nombre && ejec.correo.toLowerCase() === correo) {
+      autorizado = true; break;
+    }
+  }
+
+  if (!autorizado) {
+    // Verificar también si el correo existe aunque no coincida el nombre
+    var correoExiste = false;
+    for (var j = 0; j < datos.ejecutivos.length; j++) {
+      if (datos.ejecutivos[j].correo.toLowerCase() === correo) { correoExiste = true; break; }
+    }
+    if (!correoExiste) {
+      // Correo no está en la lista → acceso denegado total
+      document.getElementById('step1').classList.remove('active');
+      document.getElementById('screenAcceso').style.display = 'block';
+    } else {
+      mostrarToast("El correo no coincide con el ejecutivo seleccionado");
+    }
+    return;
+  }
+
+  valEjec   = nombre;
+  valCorreo = correo;
+  irPaso(2);
+}
+
+// ══════════════════════════════════
 // NAVEGACIÓN
-// ════════════════════════════
+// ══════════════════════════════════
+function mostrarPaso(paso) {
+  document.getElementById('step' + paso).classList.add('active');
+  document.getElementById('progressFill').style.width = (((paso-1)/4)*100) + '%';
+}
+
 function irPaso(paso) {
   if (!validarPaso(pasoActual)) return;
   document.getElementById('step' + pasoActual).classList.remove('active');
@@ -583,142 +747,145 @@ function irPaso(paso) {
 }
 
 function validarPaso(paso) {
-  if (paso === 1) {
-    if (!document.getElementById('vendedorNombre').value.trim()) { mostrarToast("Ingresa tu nombre"); return false; }
-    if (!document.getElementById('vendedorCorreo').value.trim()) { mostrarToast("Ingresa tu correo"); return false; }
-  }
   if (paso === 2) {
-    if (!valDep) { mostrarToast("Selecciona el departamento"); return false; }
-    if (!valMun) { mostrarToast("Selecciona el municipio"); return false; }
-    if (!valSuc) { mostrarToast("Selecciona la sucursal"); return false; }
+    if (!valCanal) { mostrarToast("Selecciona el canal"); return false; }
+    if (!valDep)   { mostrarToast("Selecciona el departamento"); return false; }
+    if (!valMun)   { mostrarToast("Selecciona el municipio"); return false; }
+    if (!valSuc)   { mostrarToast("Selecciona la sucursal"); return false; }
   }
   if (paso === 3) {
-    if (productosAgregados.length === 0) { mostrarToast("Agrega al menos un producto"); return false; }
+    if (productosAgr.length === 0) { mostrarToast("Agrega al menos un producto"); return false; }
   }
   return true;
 }
 
-// ════════════════════════════
+// ══════════════════════════════════
 // CANTIDAD
-// ════════════════════════════
+// ══════════════════════════════════
 function ajustarCantidad(delta) {
   var input = document.getElementById('inputCantidad');
   var val   = Math.max(1, (parseInt(input.value) || 1) + delta);
   input.value = val;
   document.getElementById('qtyDisplay').textContent = val;
 }
-document.getElementById('inputCantidad').addEventListener('input', function() {
+document.getElementById('inputCantidad').addEventListener('input', function(){
   document.getElementById('qtyDisplay').textContent = this.value || '1';
 });
 
-// ════════════════════════════
+// ══════════════════════════════════
 // PRODUCTOS
-// ════════════════════════════
+// ══════════════════════════════════
 function agregarProducto() {
-  if (!valProd) { mostrarToast("Selecciona un producto"); return; }
-  for (var i = 0; i < productosAgregados.length; i++) {
-    if (productosAgregados[i].nombre === valProd) { mostrarToast("Ese producto ya está en la lista"); return; }
+  if (!valMarca) { mostrarToast("Selecciona una marca"); return; }
+  if (!valProd)  { mostrarToast("Selecciona un producto"); return; }
+  for (var i = 0; i < productosAgr.length; i++) {
+    if (productosAgr[i].producto === valProd) { mostrarToast("Ese producto ya está en la lista"); return; }
   }
   var cant = parseInt(document.getElementById('inputCantidad').value) || 1;
-  productosAgregados.push({ nombre: valProd, cantidad: cant });
+  productosAgr.push({ marca: valMarca, producto: valProd, cantidad: cant });
   renderItems();
-  document.getElementById('inProd').value = "";
-  valProd = "";
+  // Limpiar selección
+  document.getElementById('inMarca').value = ""; valMarca = "";
+  deshabilitarCombo('inProd','boxProd','— Primero selecciona marca —'); valProd = "";
   document.getElementById('inputCantidad').value = 1;
   document.getElementById('qtyDisplay').textContent = '1';
+  // Re-registrar combo marca
+  hacerCombo({
+    inputId:'inMarca', dropId:'dropMarca', boxId:'boxMarca', arrowId:'arrMarca',
+    opciones: datos.marcas,
+    onSelect: function(marca) {
+      valMarca = marca; valProd = "";
+      var prods = datos.productos[marca] || [];
+      if (prods.length === 0) { deshabilitarCombo('inProd','boxProd','— Sin productos para esta marca —'); return; }
+      habilitarCombo('inProd','boxProd','— Escribe o selecciona producto —', prods);
+      hacerCombo({ inputId:'inProd', dropId:'dropProd', boxId:'boxProd', arrowId:'arrProd', opciones:prods, onSelect:function(p){valProd=p;}, onClear:function(){valProd="";} });
+    },
+    onClear: function(){ valMarca=""; valProd=""; deshabilitarCombo('inProd','boxProd','— Primero selecciona marca —'); }
+  });
 }
 
-function quitarProducto(idx) {
-  productosAgregados.splice(idx, 1);
-  renderItems();
-}
+function quitarProducto(idx) { productosAgr.splice(idx, 1); renderItems(); }
 
 function renderItems() {
   var lista = document.getElementById('itemsList');
-  if (productosAgregados.length === 0) {
-    lista.innerHTML = '<div class="empty-state">Aún no has agregado productos</div>';
-    return;
+  if (productosAgr.length === 0) {
+    lista.innerHTML = '<div class="empty-state">Aún no has agregado productos</div>'; return;
   }
   var html = "";
-  for (var i = 0; i < productosAgregados.length; i++) {
-    var p = productosAgregados[i];
+  for (var i = 0; i < productosAgr.length; i++) {
+    var p = productosAgr[i];
     html += '<div class="item-card">'
-      + '<div><div class="item-name">' + p.nombre + '</div>'
-      + '<div class="item-qty">Cantidad faltante: ' + p.cantidad + ' unidades</div></div>'
-      + '<button class="item-remove" onclick="quitarProducto(' + i + ')">×</button>'
-      + '</div>';
+      + '<div><div class="item-name">' + p.producto + '</div>'
+      + '<div class="item-meta">' + p.marca + ' · ' + p.cantidad + ' unidades faltantes</div></div>'
+      + '<button class="item-remove" onclick="quitarProducto(' + i + ')">×</button></div>';
   }
   lista.innerHTML = html;
 }
 
-// ════════════════════════════
+// ══════════════════════════════════
 // URGENCIA
-// ════════════════════════════
+// ══════════════════════════════════
 function setUrgencia(val) {
-  urgenciaSeleccionada = val;
-  document.getElementById('uBaja').className  = 'u-pill' + (val === 'Baja'  ? ' u-low'  : '');
-  document.getElementById('uMedia').className = 'u-pill' + (val === 'Media' ? ' u-med'  : '');
-  document.getElementById('uAlta').className  = 'u-pill' + (val === 'Alta'  ? ' u-high' : '');
+  urgencia = val;
+  document.getElementById('uBaja').className  = 'u-pill' + (val==='Baja'  ? ' u-low'  : '');
+  document.getElementById('uMedia').className = 'u-pill' + (val==='Media' ? ' u-med'  : '');
+  document.getElementById('uAlta').className  = 'u-pill' + (val==='Alta'  ? ' u-high' : '');
 }
 
-// ════════════════════════════
+// ══════════════════════════════════
 // RESUMEN
-// ════════════════════════════
+// ══════════════════════════════════
 function actualizarResumen() {
-  document.getElementById('sumNombre').textContent = document.getElementById('vendedorNombre').value;
+  document.getElementById('sumNombre').textContent = valEjec;
   document.getElementById('sumCorreo').textContent = document.getElementById('vendedorCorreo').value;
+  document.getElementById('sumCanal').textContent  = valCanal;
   document.getElementById('sumDep').textContent    = valDep;
   document.getElementById('sumMun').textContent    = valMun;
   document.getElementById('sumSuc').textContent    = valSuc;
   var html = "";
-  for (var i = 0; i < productosAgregados.length; i++) {
-    var p = productosAgregados[i];
-    html += '<div class="sum-item"><span>' + p.nombre + '</span>'
-      + '<span class="sum-qty-badge">' + p.cantidad + ' uds.</span></div>';
+  for (var i = 0; i < productosAgr.length; i++) {
+    var p = productosAgr[i];
+    html += '<div class="sum-item">'
+      + '<span>' + p.producto + '<span style="color:var(--text-muted);font-weight:400"> (' + p.marca + ')</span></span>'
+      + '<span class="sum-badge">' + p.cantidad + ' uds.</span></div>';
   }
   document.getElementById('sumItems').innerHTML = html;
 }
 
-// ════════════════════════════
+// ══════════════════════════════════
 // ENVÍO
-// ════════════════════════════
+// ══════════════════════════════════
 function enviarReporte() {
   var btn     = document.getElementById('btnEnviar');
   var spinner = document.getElementById('btnSpinner');
   var icon    = document.getElementById('btnIcon');
   var texto   = document.getElementById('btnTexto');
-  btn.disabled = true;
-  spinner.style.display = 'block';
-  icon.style.display    = 'none';
-  texto.textContent     = 'Enviando...';
+  btn.disabled = true; spinner.style.display = 'block';
+  icon.style.display = 'none'; texto.textContent = 'Enviando...';
 
   var payload = {
-    vendedor:      document.getElementById('vendedorNombre').value.trim(),
+    ejecutivo:     valEjec,
     correo:        document.getElementById('vendedorCorreo').value.trim(),
+    canal:         valCanal,
     departamento:  valDep,
     municipio:     valMun,
     sucursal:      valSuc,
-    productos:     productosAgregados,
-    urgencia:      urgenciaSeleccionada,
+    productos:     productosAgr,
+    urgencia:      urgencia,
     observaciones: document.getElementById('observaciones').value.trim(),
     fecha:         new Date().toLocaleString('es-GT', { timeZone: 'America/Guatemala' })
   };
 
-  fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) })
-    .then(function(r) { return r.json(); })
-    .then(function(d) {
-      if (d.success) { mostrarExito(d.codigo); }
-      else { throw new Error(d.error || 'Error'); }
+  fetch(APPS_SCRIPT_URL, { method:'POST', body: JSON.stringify(payload) })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.success) mostrarExito(d.codigo);
+      else throw new Error(d.error || 'Error');
     })
-    .catch(function() {
-      // Demo: simular éxito aunque no haya backend
-      mostrarExito(null);
-    })
-    .finally(function() {
-      btn.disabled = false;
-      spinner.style.display = 'none';
-      icon.style.display    = 'block';
-      texto.textContent     = 'Enviar reporte';
+    .catch(function(){ mostrarExito(null); })
+    .finally(function(){
+      btn.disabled = false; spinner.style.display = 'none';
+      icon.style.display = 'block'; texto.textContent = 'Enviar reporte';
     });
 }
 
@@ -731,37 +898,37 @@ function mostrarExito(codigo) {
 }
 
 function nuevoReporte() {
-  productosAgregados = [];
-  urgenciaSeleccionada = "Media";
-  valDep = ""; valMun = ""; valSuc = ""; valProd = "";
-  document.getElementById('vendedorNombre').value = '';
+  productosAgr = []; urgencia = "Media";
+  valEjec=""; valCorreo=""; valCanal=""; valDep=""; valMun=""; valSuc=""; valMarca=""; valProd="";
+  document.getElementById('inEjec').value  = '';
   document.getElementById('vendedorCorreo').value = '';
-  document.getElementById('inDep').value  = '';
-  document.getElementById('inProd').value = '';
-  resetCombo('inMun','boxMun','— Primero selecciona departamento —');
-  resetCombo('inSuc','boxSuc','— Primero selecciona municipio —');
+  document.getElementById('inCanal').value = '';
+  document.getElementById('inDep').value   = '';
+  document.getElementById('inMarca').value = '';
+  deshabilitarCombo('inMun',  'boxMun',  '— Primero selecciona departamento —');
+  deshabilitarCombo('inSuc',  'boxSuc',  '— Primero selecciona municipio —');
+  deshabilitarCombo('inProd', 'boxProd', '— Primero selecciona marca —');
   document.getElementById('observaciones').value = '';
-  setUrgencia('Media');
-  renderItems();
+  setUrgencia('Media'); renderItems();
   document.getElementById('successScreen').style.display = 'none';
-  document.getElementById('step1').classList.add('active');
   pasoActual = 1;
+  mostrarPaso(1);
   document.getElementById('progressFill').style.width = '0%';
   window.scrollTo({ top: 0 });
-  arrancarCombos();
+  registrarTodosCombos();
 }
 
-// ════════════════════════════
+// ══════════════════════════════════
 // TOAST
-// ════════════════════════════
+// ══════════════════════════════════
 function mostrarToast(msg) {
   var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(function() { t.classList.remove('show'); }, 2800);
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2800);
 }
 
 // Arrancar
 cargarDatos();
 </script>
 </body>
+</html>
