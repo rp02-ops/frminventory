@@ -622,10 +622,16 @@ function cargarDatos() {
 }
 
 function iniciar() {
+  datosListos = true;
   document.getElementById('screenLoading').style.display = 'none';
   mostrarPaso(1);
   registrarTodosCombos();
   iniciarGoogleOneTap();
+  // Si Google ya autenticó mientras cargaban los datos, procesarlo ahora
+  if (credencialPendiente && !accesoYaProcesado) {
+    procesarAcceso(credencialPendiente.correo, credencialPendiente.nombre, credencialPendiente.avatar);
+    credencialPendiente = null;
+  }
 }
 
 // ══════════════════════════════════
@@ -714,17 +720,27 @@ document.addEventListener('click', function(e){
 // CONTROL DE ACCESO
 // ══════════════════════════════════
 
-// Flag para evitar doble procesamiento (Google auto-select puede disparar dos veces)
+// Flag para evitar doble procesamiento
 var accesoYaProcesado = false;
+// Cola: guarda la credencial de Google si llega antes que los datos
+var credencialPendiente = null;
+// Flag para saber si los datos ya cargaron
+var datosListos = false;
 
 // Llamado por Google One Tap cuando el usuario elige una cuenta
 function onGoogleLogin(credentialResponse) {
-  if (accesoYaProcesado) return; // evitar doble disparo
+  if (accesoYaProcesado) return;
   try {
     var payload = JSON.parse(atob(credentialResponse.credential.split('.')[1]));
     var correo  = (payload.email || "").toLowerCase();
     var nombre  = payload.name  || "";
     var avatar  = payload.picture || "";
+
+    if (!datosListos) {
+      // Los datos aún no cargaron — guardar y esperar
+      credencialPendiente = { correo: correo, nombre: nombre, avatar: avatar };
+      return;
+    }
     procesarAcceso(correo, nombre, avatar);
   } catch(e) {
     mostrarToast("Error al leer credencial de Google");
@@ -736,18 +752,21 @@ function verificarAcceso() {
   var correo = (document.getElementById('vendedorCorreo').value || "").trim().toLowerCase();
   if (!correo) { mostrarToast("Ingresa tu correo corporativo"); return; }
 
+  if (!datosListos) {
+    mostrarToast("Cargando datos, intenta en un momento...");
+    return;
+  }
+
   var btn  = document.getElementById('btnVerificar');
   var spin = document.getElementById('spinVerificar');
   var icon = document.getElementById('iconVerificar');
   var txt  = document.getElementById('txtVerificar');
 
-  // Mostrar estado de carga
   btn.disabled = true;
   spin.style.display = 'block';
   icon.style.display = 'none';
   txt.textContent = 'Verificando...';
 
-  // Ejecutar verificación y restaurar botón siempre al terminar
   try {
     procesarAcceso(correo, "", "");
   } finally {
@@ -760,12 +779,6 @@ function verificarAcceso() {
 
 // Lógica central: verificar correo contra la lista de ejecutivos
 function procesarAcceso(correo, nombreGoogle, avatar) {
-  // Guardia: si los datos aún no cargaron, avisar al usuario
-  if (!datos.ejecutivos || datos.ejecutivos.length === 0) {
-    mostrarToast("Cargando datos, intenta en un momento...");
-    return;
-  }
-
   var encontrado = null;
   for (var i = 0; i < datos.ejecutivos.length; i++) {
     if ((datos.ejecutivos[i].correo || "").toLowerCase() === correo) {
@@ -779,7 +792,7 @@ function procesarAcceso(correo, nombreGoogle, avatar) {
     return;
   }
 
-  // ✅ Autorizado — marcar como procesado para evitar re-disparos de Google
+  // ✅ Autorizado
   accesoYaProcesado = true;
   valEjec   = encontrado.nombre;
   valCorreo = correo;
@@ -984,6 +997,7 @@ function mostrarExito(codigo) {
 function nuevoReporte() {
   productosAgr = []; urgencia = "Media";
   accesoYaProcesado = false;
+  credencialPendiente = null;
   valEjec=""; valCorreo=""; valCanal=""; valDep=""; valMun=""; valSuc=""; valMarca=""; valProd="";
   // Reset paso 1
   document.getElementById('zonaGoogle').style.display      = 'block';
