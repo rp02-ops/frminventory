@@ -714,16 +714,21 @@ document.addEventListener('click', function(e){
 // CONTROL DE ACCESO
 // ══════════════════════════════════
 
+// Flag para evitar doble procesamiento (Google auto-select puede disparar dos veces)
+var accesoYaProcesado = false;
+
 // Llamado por Google One Tap cuando el usuario elige una cuenta
 function onGoogleLogin(credentialResponse) {
-  // Decodificar el JWT de Google (sin librería externa)
-  var payload = JSON.parse(atob(credentialResponse.credential.split('.')[1]));
-  var correo  = (payload.email || "").toLowerCase();
-  var nombre  = payload.name  || "";
-  var avatar  = payload.picture || "";
-
-  // Procesar directamente — NO tocar el campo manual para no interferir con ese flujo
-  procesarAcceso(correo, nombre, avatar);
+  if (accesoYaProcesado) return; // evitar doble disparo
+  try {
+    var payload = JSON.parse(atob(credentialResponse.credential.split('.')[1]));
+    var correo  = (payload.email || "").toLowerCase();
+    var nombre  = payload.name  || "";
+    var avatar  = payload.picture || "";
+    procesarAcceso(correo, nombre, avatar);
+  } catch(e) {
+    mostrarToast("Error al leer credencial de Google");
+  }
 }
 
 // Llamado por el botón manual
@@ -735,24 +740,35 @@ function verificarAcceso() {
   var spin = document.getElementById('spinVerificar');
   var icon = document.getElementById('iconVerificar');
   var txt  = document.getElementById('txtVerificar');
-  btn.disabled = true; spin.style.display = 'block';
-  icon.style.display = 'none'; txt.textContent = 'Verificando...';
 
-  // Pequeño delay visual para que el usuario vea feedback, luego procesar
-  setTimeout(function() {
+  // Mostrar estado de carga
+  btn.disabled = true;
+  spin.style.display = 'block';
+  icon.style.display = 'none';
+  txt.textContent = 'Verificando...';
+
+  // Ejecutar verificación y restaurar botón siempre al terminar
+  try {
     procesarAcceso(correo, "", "");
-    // Solo restaurar el botón si NO se ocultó la zona (es decir, acceso denegado)
-    // En acceso exitoso, zonaGoogle se oculta y el botón ya no importa
-    btn.disabled = false; spin.style.display = 'none';
-    icon.style.display = 'block'; txt.textContent = 'Verificar acceso';
-  }, 300);
+  } finally {
+    btn.disabled = false;
+    spin.style.display = 'none';
+    icon.style.display = 'block';
+    txt.textContent = 'Verificar acceso';
+  }
 }
 
 // Lógica central: verificar correo contra la lista de ejecutivos
 function procesarAcceso(correo, nombreGoogle, avatar) {
+  // Guardia: si los datos aún no cargaron, avisar al usuario
+  if (!datos.ejecutivos || datos.ejecutivos.length === 0) {
+    mostrarToast("Cargando datos, intenta en un momento...");
+    return;
+  }
+
   var encontrado = null;
   for (var i = 0; i < datos.ejecutivos.length; i++) {
-    if (datos.ejecutivos[i].correo.toLowerCase() === correo) {
+    if ((datos.ejecutivos[i].correo || "").toLowerCase() === correo) {
       encontrado = datos.ejecutivos[i]; break;
     }
   }
@@ -763,18 +779,18 @@ function procesarAcceso(correo, nombreGoogle, avatar) {
     return;
   }
 
-  // ✅ Autorizado
+  // ✅ Autorizado — marcar como procesado para evitar re-disparos de Google
+  accesoYaProcesado = true;
   valEjec   = encontrado.nombre;
   valCorreo = correo;
 
-  // Mostrar confirmación con foto si vino de Google
   document.getElementById('nombreConfirmado').textContent = encontrado.nombre;
   document.getElementById('correoConfirmado').textContent = correo;
   if (avatar) {
     var img = document.getElementById('googleAvatar');
     img.src = avatar; img.style.display = 'block';
   }
-  document.getElementById('zonaGoogle').style.display     = 'none';
+  document.getElementById('zonaGoogle').style.display      = 'none';
   document.getElementById('confirmacionEjec').style.display = 'block';
 }
 
@@ -967,6 +983,7 @@ function mostrarExito(codigo) {
 
 function nuevoReporte() {
   productosAgr = []; urgencia = "Media";
+  accesoYaProcesado = false;
   valEjec=""; valCorreo=""; valCanal=""; valDep=""; valMun=""; valSuc=""; valMarca=""; valProd="";
   // Reset paso 1
   document.getElementById('zonaGoogle').style.display      = 'block';
