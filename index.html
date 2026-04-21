@@ -147,12 +147,17 @@
   .toast.show { transform: translateX(-50%) translateY(0); }
   .divider { border: none; border-top: 1px solid var(--border); margin: 0.5rem 0 1rem; }
 </style>
+<!-- Google Identity Services -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
 <script>
   // ⚠️ REEMPLAZA con la URL de tu Apps Script desplegado
   var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyrg_2K6z3fR_5jL7wubIJrkD4mOQnxpTkxKoNf0PFcoWLPUEHt-96nUT4-w6jn5GJy/exec";
+
+  // ⚠️ REEMPLAZA con tu Google Client ID (ver instrucciones abajo)
+  var GOOGLE_CLIENT_ID = "926135554390-f39b02cdi8ong7nnh00j0vkr8n2ek3a7.apps.googleusercontent.com";
 </script>
 
 <div class="header">
@@ -191,33 +196,67 @@
   <!-- PASO 1: Identificación -->
   <div class="step" id="step1">
     <div class="step-label">Paso 1 de 4</div>
-    <div class="step-title">¿Quién reporta?</div>
-    <div class="step-desc">Selecciona tu nombre y confirma tu correo corporativo.</div>
+    <div class="step-title">Verificar identidad</div>
+    <div class="step-desc">Usa tu cuenta de Google corporativa para continuar.</div>
 
-    <div class="field">
-      <label>Ejecutivo <span class="req">*</span></label>
-      <div class="cb-wrap">
-        <div class="cb-box" id="boxEjec">
-          <input class="cb-input" id="inEjec" type="text" placeholder="— Escribe o selecciona tu nombre —" autocomplete="off">
-          <button type="button" class="cb-arrow" id="arrEjec">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
-          </button>
-        </div>
-        <div class="cb-drop" id="dropEjec"></div>
+    <!-- Google One Tap / Sign-In button -->
+    <div id="zonaGoogle">
+      <!-- Botón de Google Sign-In -->
+      <div id="g_id_onload"
+        data-client_id=""
+        data-callback="onGoogleLogin"
+        data-auto_select="true"
+        data-itp_support="true">
+      </div>
+      <div class="g_id_signin"
+        data-type="standard"
+        data-shape="rectangular"
+        data-theme="outline"
+        data-text="continue_with"
+        data-size="large"
+        data-logo_alignment="left"
+        data-width="100%">
+      </div>
+
+      <!-- Separador -->
+      <div style="display:flex;align-items:center;gap:0.75rem;margin:1.1rem 0;">
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+        <span style="font-size:12px;color:var(--text-muted)">o ingresa manualmente</span>
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+      </div>
+
+      <!-- Fallback manual -->
+      <div class="field" style="margin-bottom:0.5rem">
+        <label>Correo corporativo <span class="req">*</span></label>
+        <input type="text" id="vendedorCorreo" placeholder="correo@empresa.com" autocomplete="email"
+          onkeydown="if(event.key==='Enter') verificarAcceso()">
+      </div>
+
+      <div class="nav-btns" style="margin-top:0.75rem">
+        <button class="btn-next" id="btnVerificar" onclick="verificarAcceso()">
+          <span id="txtVerificar">Verificar acceso</span>
+          <div class="spinner" id="spinVerificar"></div>
+          <svg id="iconVerificar" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
       </div>
     </div>
 
-    <div class="field">
-      <label>Correo corporativo <span class="req">*</span></label>
-      <input type="text" id="vendedorCorreo" placeholder="correo@empresa.com" autocomplete="email">
-      <div style="font-size:12px;color:var(--text-muted);margin-top:5px">Este correo se verificará contra la lista de ejecutivos autorizados.</div>
-    </div>
-
-    <div class="nav-btns">
-      <button class="btn-next" onclick="verificarAcceso()">
-        Verificar y continuar
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
-      </button>
+    <!-- Confirmación después de login exitoso -->
+    <div id="confirmacionEjec" style="display:none;">
+      <div style="display:flex;align-items:center;gap:0.9rem;background:var(--accent-light);border:1.5px solid #9cbfa6;border-radius:var(--radius);padding:1rem 1.1rem;margin-bottom:1rem;">
+        <img id="googleAvatar" src="" alt="" width="40" height="40"
+          style="border-radius:50%;display:none;flex-shrink:0;">
+        <div>
+          <div style="font-size:11px;font-weight:500;color:var(--accent);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px">Ejecutivo identificado</div>
+          <div style="font-size:16px;font-weight:600;color:var(--accent)" id="nombreConfirmado"></div>
+          <div style="font-size:12px;color:var(--accent);opacity:0.75" id="correoConfirmado"></div>
+        </div>
+      </div>
+      <div class="nav-btns" style="margin-top:0">
+        <button class="btn-next" onclick="irPaso(2)">Continuar
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -586,30 +625,13 @@ function iniciar() {
   document.getElementById('screenLoading').style.display = 'none';
   mostrarPaso(1);
   registrarTodosCombos();
+  iniciarGoogleOneTap();
 }
 
 // ══════════════════════════════════
 // REGISTRAR TODOS LOS COMBOS
 // ══════════════════════════════════
 function registrarTodosCombos() {
-
-  // ── Ejecutivos ──
-  var nombresEjec = datos.ejecutivos.map(function(e){ return e.nombre; });
-  hacerCombo({
-    inputId: 'inEjec', dropId: 'dropEjec', boxId: 'boxEjec', arrowId: 'arrEjec',
-    opciones: nombresEjec,
-    onSelect: function(nombre) {
-      valEjec = nombre;
-      // Autocompletar correo si el ejecutivo tiene uno registrado
-      for (var i = 0; i < datos.ejecutivos.length; i++) {
-        if (datos.ejecutivos[i].nombre === nombre) {
-          document.getElementById('vendedorCorreo').value = datos.ejecutivos[i].correo;
-          break;
-        }
-      }
-    },
-    onClear: function() { valEjec = ""; }
-  });
 
   // ── Canal ──
   hacerCombo({
@@ -691,41 +713,81 @@ document.addEventListener('click', function(e){
 // ══════════════════════════════════
 // CONTROL DE ACCESO
 // ══════════════════════════════════
+
+// Llamado por Google One Tap cuando el usuario elige una cuenta
+function onGoogleLogin(credentialResponse) {
+  // Decodificar el JWT de Google (sin librería externa)
+  var payload = JSON.parse(atob(credentialResponse.credential.split('.')[1]));
+  var correo  = (payload.email || "").toLowerCase();
+  var nombre  = payload.name  || "";
+  var avatar  = payload.picture || "";
+  procesarAcceso(correo, nombre, avatar);
+}
+
+// Llamado por el botón manual
 function verificarAcceso() {
-  var nombre = document.getElementById('inEjec').value.trim();
-  var correo = document.getElementById('vendedorCorreo').value.trim().toLowerCase();
+  var correo = (document.getElementById('vendedorCorreo').value || "").trim().toLowerCase();
+  if (!correo) { mostrarToast("Ingresa tu correo corporativo"); return; }
 
-  if (!nombre) { mostrarToast("Selecciona tu nombre"); return; }
-  if (!correo)  { mostrarToast("Ingresa tu correo corporativo"); return; }
+  var btn  = document.getElementById('btnVerificar');
+  var spin = document.getElementById('spinVerificar');
+  var icon = document.getElementById('iconVerificar');
+  var txt  = document.getElementById('txtVerificar');
+  btn.disabled = true; spin.style.display = 'block';
+  icon.style.display = 'none'; txt.textContent = 'Verificando...';
 
-  // Buscar si el correo coincide con el ejecutivo seleccionado
-  var autorizado = false;
+  procesarAcceso(correo, "", "");
+
+  btn.disabled = false; spin.style.display = 'none';
+  icon.style.display = 'block'; txt.textContent = 'Verificar acceso';
+}
+
+// Lógica central: verificar correo contra la lista de ejecutivos
+function procesarAcceso(correo, nombreGoogle, avatar) {
+  var encontrado = null;
   for (var i = 0; i < datos.ejecutivos.length; i++) {
-    var ejec = datos.ejecutivos[i];
-    if (ejec.nombre === nombre && ejec.correo.toLowerCase() === correo) {
-      autorizado = true; break;
+    if (datos.ejecutivos[i].correo.toLowerCase() === correo) {
+      encontrado = datos.ejecutivos[i]; break;
     }
   }
 
-  if (!autorizado) {
-    // Verificar también si el correo existe aunque no coincida el nombre
-    var correoExiste = false;
-    for (var j = 0; j < datos.ejecutivos.length; j++) {
-      if (datos.ejecutivos[j].correo.toLowerCase() === correo) { correoExiste = true; break; }
-    }
-    if (!correoExiste) {
-      // Correo no está en la lista → acceso denegado total
-      document.getElementById('step1').classList.remove('active');
-      document.getElementById('screenAcceso').style.display = 'block';
-    } else {
-      mostrarToast("El correo no coincide con el ejecutivo seleccionado");
-    }
+  if (!encontrado) {
+    document.getElementById('step1').classList.remove('active');
+    document.getElementById('screenAcceso').style.display = 'block';
     return;
   }
 
-  valEjec   = nombre;
+  // ✅ Autorizado
+  valEjec   = encontrado.nombre;
   valCorreo = correo;
-  irPaso(2);
+
+  // Mostrar confirmación con foto si vino de Google
+  document.getElementById('nombreConfirmado').textContent = encontrado.nombre;
+  document.getElementById('correoConfirmado').textContent = correo;
+  if (avatar) {
+    var img = document.getElementById('googleAvatar');
+    img.src = avatar; img.style.display = 'block';
+  }
+  document.getElementById('zonaGoogle').style.display     = 'none';
+  document.getElementById('confirmacionEjec').style.display = 'block';
+}
+
+// Inicializar Google One Tap una vez que los datos cargaron
+function iniciarGoogleOneTap() {
+  if (typeof google === 'undefined' || !GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID.indexOf('TU_CLIENT_ID') !== -1) return;
+  // Inyectar el client_id real en el div de Google
+  document.getElementById('g_id_onload').setAttribute('data-client_id', GOOGLE_CLIENT_ID);
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback:  onGoogleLogin,
+    auto_select: true
+  });
+  google.accounts.id.renderButton(
+    document.querySelector('.g_id_signin'),
+    { theme: 'outline', size: 'large', text: 'continue_with', width: 360 }
+  );
+  // Mostrar el One Tap popup si el usuario ya tiene sesión
+  google.accounts.id.prompt();
 }
 
 // ══════════════════════════════════
@@ -900,8 +962,17 @@ function mostrarExito(codigo) {
 function nuevoReporte() {
   productosAgr = []; urgencia = "Media";
   valEjec=""; valCorreo=""; valCanal=""; valDep=""; valMun=""; valSuc=""; valMarca=""; valProd="";
-  document.getElementById('inEjec').value  = '';
-  document.getElementById('vendedorCorreo').value = '';
+  // Reset paso 1
+  document.getElementById('zonaGoogle').style.display      = 'block';
+  document.getElementById('confirmacionEjec').style.display = 'none';
+  document.getElementById('nombreConfirmado').textContent   = '';
+  document.getElementById('correoConfirmado').textContent   = '';
+  document.getElementById('googleAvatar').style.display     = 'none';
+  var correoInput = document.getElementById('vendedorCorreo');
+  correoInput.value = ""; correoInput.disabled = false;
+  document.getElementById('txtVerificar').textContent = 'Verificar acceso';
+  document.getElementById('btnVerificar').onclick = verificarAcceso;
+  // Reset combos
   document.getElementById('inCanal').value = '';
   document.getElementById('inDep').value   = '';
   document.getElementById('inMarca').value = '';
@@ -916,6 +987,7 @@ function nuevoReporte() {
   document.getElementById('progressFill').style.width = '0%';
   window.scrollTo({ top: 0 });
   registrarTodosCombos();
+  iniciarGoogleOneTap();
 }
 
 // ══════════════════════════════════
