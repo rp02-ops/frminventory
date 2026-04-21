@@ -731,19 +731,35 @@ var datosListos = false;
 function onGoogleLogin(credentialResponse) {
   if (accesoYaProcesado) return;
   try {
-    var payload = JSON.parse(atob(credentialResponse.credential.split('.')[1]));
-    var correo  = (payload.email || "").toLowerCase();
-    var nombre  = payload.name  || "";
-    var avatar  = payload.picture || "";
+    var credential = credentialResponse.credential;
+    if (!credential) { mostrarToast("No se recibió credencial de Google"); return; }
+
+    // Decodificar JWT con padding correcto (atob falla sin padding)
+    var partes  = credential.split('.');
+    if (partes.length < 2) { mostrarToast("Credencial de Google inválida"); return; }
+    var base64  = partes[1].replace(/-/g, '+').replace(/_/g, '/');
+    var padding = base64.length % 4;
+    if (padding === 2) base64 += '==';
+    else if (padding === 3) base64 += '=';
+    var payload = JSON.parse(decodeURIComponent(
+      atob(base64).split('').map(function(c){
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join('')
+    ));
+
+    var correo = (payload.email || "").toLowerCase().trim();
+    var nombre = payload.name  || "";
+    var avatar = payload.picture || "";
+
+    if (!correo) { mostrarToast("No se pudo obtener el correo de Google"); return; }
 
     if (!datosListos) {
-      // Los datos aún no cargaron — guardar y esperar
       credencialPendiente = { correo: correo, nombre: nombre, avatar: avatar };
       return;
     }
     procesarAcceso(correo, nombre, avatar);
   } catch(e) {
-    mostrarToast("Error al leer credencial de Google");
+    mostrarToast("JWT error: " + e.message);
   }
 }
 
@@ -779,16 +795,30 @@ function verificarAcceso() {
 
 // Lógica central: verificar correo contra la lista de ejecutivos
 function procesarAcceso(correo, nombreGoogle, avatar) {
+  // DIAGNÓSTICO: mostrar qué correo llega y qué hay en la lista
+  var listaCorreos = datos.ejecutivos.map(function(e){ return (e.correo||"").toLowerCase().trim(); });
+  console.log("Correo buscado:", correo);
+  console.log("Lista ejecutivos:", JSON.stringify(datos.ejecutivos));
+  mostrarToast("Buscando: " + correo + " en " + listaCorreos.length + " registros");
+
   var encontrado = null;
   for (var i = 0; i < datos.ejecutivos.length; i++) {
-    if ((datos.ejecutivos[i].correo || "").toLowerCase() === correo) {
+    var correoHoja = (datos.ejecutivos[i].correo || "").toLowerCase().trim();
+    if (correoHoja === correo) {
       encontrado = datos.ejecutivos[i]; break;
     }
   }
 
   if (!encontrado) {
-    document.getElementById('step1').classList.remove('active');
-    document.getElementById('screenAcceso').style.display = 'block';
+    // Mostrar el primer correo de la hoja para comparar visualmente
+    var primerCorreo = listaCorreos[0] || "(vacío)";
+    setTimeout(function(){
+      mostrarToast("No encontrado. Hoja tiene: " + primerCorreo);
+    }, 3000);
+    setTimeout(function(){
+      document.getElementById('step1').classList.remove('active');
+      document.getElementById('screenAcceso').style.display = 'block';
+    }, 5000);
     return;
   }
 
