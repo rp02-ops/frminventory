@@ -229,7 +229,7 @@
       <div class="field" style="margin-bottom:0.5rem">
         <label>Correo corporativo <span class="req">*</span></label>
         <input type="text" id="vendedorCorreo" placeholder="correo@empresa.com" autocomplete="email"
-          onkeydown="if(event.key==='Enter') verificarAcceso()">
+          onkeydown="if(event.key==='Enter' && !this.disabled) verificarAcceso()">
       </div>
 
       <div class="nav-btns" style="margin-top:0.75rem">
@@ -721,6 +721,8 @@ function onGoogleLogin(credentialResponse) {
   var correo  = (payload.email || "").toLowerCase();
   var nombre  = payload.name  || "";
   var avatar  = payload.picture || "";
+
+  // Procesar directamente — NO tocar el campo manual para no interferir con ese flujo
   procesarAcceso(correo, nombre, avatar);
 }
 
@@ -736,10 +738,14 @@ function verificarAcceso() {
   btn.disabled = true; spin.style.display = 'block';
   icon.style.display = 'none'; txt.textContent = 'Verificando...';
 
-  procesarAcceso(correo, "", "");
-
-  btn.disabled = false; spin.style.display = 'none';
-  icon.style.display = 'block'; txt.textContent = 'Verificar acceso';
+  // Pequeño delay visual para que el usuario vea feedback, luego procesar
+  setTimeout(function() {
+    procesarAcceso(correo, "", "");
+    // Solo restaurar el botón si NO se ocultó la zona (es decir, acceso denegado)
+    // En acceso exitoso, zonaGoogle se oculta y el botón ya no importa
+    btn.disabled = false; spin.style.display = 'none';
+    icon.style.display = 'block'; txt.textContent = 'Verificar acceso';
+  }, 300);
 }
 
 // Lógica central: verificar correo contra la lista de ejecutivos
