@@ -3,299 +3,428 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reporte de Faltantes</title>
+<title>Reporte de Faltantes de Inventario</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
   :root {
-    --bg: #f4f1ec; --surface: #ffffff; --border: #e2ddd6; --border-focus: #2d5a3d;
-    --text: #1a1a18; --text-muted: #7a756e; --accent: #2d5a3d; --accent-light: #e8f0ea;
-    --radius: 10px; --shadow: 0 4px 12px rgba(0,0,0,0.08);
+    --bg: #f4f1ec; --surface: #ffffff; --surface2: #faf8f5; --border: #e2ddd6; --border-focus: #2d5a3d;
+    --text: #1a1a18; --text-muted: #7a756e; --accent: #2d5a3d; --accent-light: #e8f0ea; --accent2: #c4713a;
+    --danger: #c0392b; --success: #2d5a3d; --radius: 10px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); padding-bottom: 40px; }
-  
-  /* Header */
-  .header { background: var(--accent); color: #fff; padding: 1.2rem; position: sticky; top: 0; z-index: 1000; display: flex; align-items: center; gap: 12px; }
-  .progress-bar { height: 4px; background: rgba(255,255,255,0.2); position: sticky; top: 58px; z-index: 1000; }
-  .progress-fill { height: 100%; background: #a8d5b5; width: 0%; transition: 0.4s; }
-
-  .container { max-width: 500px; margin: 2rem auto; padding: 0 1rem; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  .header { background: var(--accent); color: #fff; padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+  .header-icon { width: 36px; height: 36px; background: rgba(255,255,255,0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  .header-title { font-size: 16px; font-weight: 600; }
+  .header-sub { font-size: 12px; opacity: 0.75; margin-top: 1px; }
+  .progress-bar { height: 3px; background: rgba(255,255,255,0.2); position: relative; }
+  .progress-fill { height: 100%; background: #a8d5b5; transition: width 0.4s ease; width: 0%; }
+  .container { max-width: 540px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
   .step { display: none; }
   .step.active { display: block; animation: fadeIn 0.3s ease; }
-  @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-
-  .step-title { font-size: 24px; font-weight: 600; margin-bottom: 1.5rem; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+  .step-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.35rem; }
+  .step-title { font-size: 22px; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; line-height: 1.3; }
+  .step-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.6; }
+  .field { margin-bottom: 1.1rem; position: relative; }
+  .field label { display: block; font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 0.4rem; }
+  .req { color: var(--accent2); margin-left: 2px; }
   
-  /* Estilo Combo / Autocomplete */
-  .field { margin-bottom: 1.2rem; position: relative; }
-  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text); }
-  
-  .combo-container { position: relative; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); transition: 0.2s; }
-  .combo-container:focus-within { border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--accent-light); }
-  .combo-input { width: 100%; border: none; padding: 12px; border-radius: var(--radius); outline: none; font-size: 15px; background: transparent; }
-  .combo-dropdown { 
-    position: absolute; top: 100%; left: 0; right: 0; background: #fff; 
-    border: 1px solid var(--border); border-radius: 0 0 var(--radius) var(--radius); 
-    max-height: 200px; overflow-y: auto; z-index: 999; display: none; box-shadow: var(--shadow);
+  /* ESTILOS COMBO AUTOCOMPLETADO */
+  .combo-wrapper { position: relative; }
+  input[type="text"], input[type="email"], input[type="number"], textarea { 
+    width: 100%; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text); 
+    background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); 
+    padding: 0.7rem 0.9rem; outline: none; transition: 0.15s; 
   }
-  .combo-item { padding: 10px 12px; cursor: pointer; font-size: 14px; border-bottom: 1px solid #f8f8f8; }
+  input:focus { border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--accent-light); }
+  
+  .combo-dropdown {
+    position: absolute; top: 105%; left: 0; right: 0; background: #fff;
+    border: 1px solid var(--border); border-radius: var(--radius);
+    max-height: 220px; overflow-y: auto; z-index: 999; display: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .combo-item { padding: 10px 14px; cursor: pointer; font-size: 14px; border-bottom: 1px solid #f8f8f8; }
   .combo-item:hover { background: var(--accent-light); color: var(--accent); }
-  .combo-container.disabled { background: #f0f0f0; opacity: 0.7; pointer-events: none; }
+  .combo-item.no-results { color: var(--text-muted); pointer-events: none; }
 
-  /* Botones y Cards */
-  .btn-next { width: 100%; background: var(--accent); color: #fff; border: none; padding: 14px; border-radius: var(--radius); font-weight: 600; cursor: pointer; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px; }
-  .btn-next:disabled { background: #ccc; }
-  .item-card { background: #fff; padding: 12px; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 10px 20px; border-radius: 50px; font-size: 14px; display: none; z-index: 10000; }
+  .nav-btns { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
+  .btn-back { flex: 0 0 auto; background: transparent; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.8rem 1.25rem; color: var(--text-muted); cursor: pointer; }
+  .btn-next { flex: 1; background: var(--accent); border: none; border-radius: var(--radius); padding: 0.85rem; font-size: 15px; font-weight: 600; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn-next:disabled { background: #9cbfa6; cursor: not-allowed; }
+  .item-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
+  .item-brand { font-size: 11px; color: var(--accent); text-transform: uppercase; font-weight: 600; }
+  .qty-controls { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.5rem; width: fit-content; }
+  .qty-btn { width: 32px; height: 32px; background: var(--accent-light); border: none; border-radius: 6px; color: var(--accent); cursor: pointer; font-size: 18px; font-weight: bold; }
+  .urgency-pills { display: flex; gap: 0.5rem; }
+  .urgency-pill { flex: 1; padding: 0.6rem; border: 1.5px solid var(--border); border-radius: var(--radius); background: #fff; cursor: pointer; text-align: center; font-size: 13px; }
+  .sel-low { border-color: #2d5a3d; background: #e8f0ea; color: #2d5a3d; }
+  .sel-med { border-color: #b07c2a; background: #fef3e2; color: #b07c2a; }
+  .sel-high { border-color: #c0392b; background: #fdecea; color: #c0392b; }
+  .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(80px); background: #1a1a18; color: #fff; font-size: 14px; padding: 0.7rem 1.25rem; border-radius: 50px; transition: 0.3s; z-index: 1000; white-space: nowrap; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
 
+<script>
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_M02Uo6Dh9wzgdTc0wyyyCkrosooWRmbZva5sjOarsevmupqdmxJjOMgxl5wspizn1g/exec";
+</script>
+
 <div class="header">
-  <div style="font-weight:bold">Reporte de Faltantes</div>
+  <div class="header-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div>
+  <div><div class="header-title">Reporte de Faltantes</div><div class="header-sub">Inventario de Sucursales</div></div>
 </div>
 <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
 
 <div class="container">
   <div class="step active" id="step1">
-    <div class="step-title">Verificar Identidad</div>
-    <div id="g_id_onload" data-client_id="926135554390-f39b02cdi8ong7nnh00j0vkr8n2ek3a7.apps.googleusercontent.com" data-callback="handleCredentialResponse"></div>
-    <div class="g_id_signin" data-type="standard"></div>
-    <div style="margin: 1.5rem 0; text-align: center; color: var(--text-muted); font-size: 12px;">o ingresa manualmente</div>
+    <div class="step-label">Paso 1 de 4</div>
+    <div class="step-title">Verificar identidad</div>
+    <div class="step-desc">Usa tu cuenta corporativa para continuar.</div>
+    <div id="g_id_onload" data-client_id="926135554390-f39b02cdi8ong7nnh00j0vkr8n2ek3a7.apps.googleusercontent.com" data-context="signin" data-ux_mode="popup" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
+    <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="signin_with" data-size="large" style="margin-bottom: 1.5rem; display: flex; justify-content: center;"></div>
+    <div style="text-align: center; margin: 1.5rem 0; color: var(--text-muted); font-size: 13px; position: relative;"><hr style="border: none; border-top: 1px solid var(--border); position: absolute; width: 100%; top: 50%;"><span style="background: var(--bg); padding: 0 10px; position: relative;">o ingresa manualmente</span></div>
     <div class="field">
-      <input type="email" id="manualEmail" class="combo-input" style="border: 1.5px solid var(--border)" placeholder="correo@empresa.com">
+      <label>Correo corporativo <span class="req">*</span></label>
+      <input type="email" id="inputCorreoLogin" placeholder="correo@empresa.com">
     </div>
-    <button class="btn-next" onclick="validarManual()">Continuar</button>
+    <div class="nav-btns"><button class="btn-next" onclick="intentarAccesoManual()" style="width: 100%">Verificar acceso</button></div>
   </div>
 
   <div class="step" id="step2">
+    <div class="step-label">Paso 2 de 4</div>
     <div class="step-title">Ubicación</div>
     
     <div class="field">
-      <label>Canal</label>
-      <div class="combo-container" id="comboCanal">
-        <input type="text" class="combo-input" placeholder="Buscar canal..." oninput="filtrarCombo('Canal')">
-        <div class="combo-dropdown"></div>
+      <label>Canal <span class="req">*</span></label>
+      <div class="combo-wrapper">
+        <input type="text" id="selCanal" placeholder="Selecciona canal..." onfocus="abrirCombo('Canal')" oninput="filtrarCombo('Canal')">
+        <div id="dropCanal" class="combo-dropdown"></div>
       </div>
     </div>
 
     <div class="field">
-      <label>Departamento</label>
-      <div class="combo-container" id="comboDep">
-        <input type="text" class="combo-input" placeholder="Buscar departamento..." oninput="filtrarCombo('Dep')">
-        <div class="combo-dropdown"></div>
+      <label>Departamento <span class="req">*</span></label>
+      <div class="combo-wrapper">
+        <input type="text" id="selDepartamento" placeholder="Selecciona departamento..." onfocus="abrirCombo('Departamento')" oninput="filtrarCombo('Departamento')">
+        <div id="dropDepartamento" class="combo-dropdown"></div>
       </div>
     </div>
 
     <div class="field">
-      <label>Municipio</label>
-      <div class="combo-container disabled" id="comboMun">
-        <input type="text" class="combo-input" placeholder="Primero elige departamento..." oninput="filtrarCombo('Mun')">
-        <div class="combo-dropdown"></div>
+      <label>Municipio <span class="req">*</span></label>
+      <div class="combo-wrapper">
+        <input type="text" id="selMunicipio" placeholder="Selecciona municipio..." disabled onfocus="abrirCombo('Municipio')" oninput="filtrarCombo('Municipio')">
+        <div id="dropMunicipio" class="combo-dropdown"></div>
       </div>
     </div>
 
     <div class="field">
-      <label>Sucursal</label>
-      <div class="combo-container disabled" id="comboSuc">
-        <input type="text" class="combo-input" placeholder="Primero elige municipio..." oninput="filtrarCombo('Suc')">
-        <div class="combo-dropdown"></div>
+      <label>Sucursal <span class="req">*</span></label>
+      <div class="combo-wrapper">
+        <input type="text" id="selSucursal" placeholder="Esperando Canal y Municipio..." disabled onfocus="abrirCombo('Sucursal')" oninput="filtrarCombo('Sucursal')">
+        <div id="dropSucursal" class="combo-dropdown"></div>
       </div>
     </div>
 
-    <button class="btn-next" onclick="irPaso(3)">Continuar</button>
+    <div class="nav-btns"><button class="btn-next" onclick="irPaso(3)">Continuar</button></div>
   </div>
 
   <div class="step" id="step3">
-    <div class="step-title">Productos</div>
+    <div class="step-label">Paso 3 de 4</div>
+    <div class="step-title">Productos faltantes</div>
     <div class="field">
-      <label>Marca</label>
-      <div class="combo-container" id="comboMarca">
-        <input type="text" class="combo-input" placeholder="Buscar marca..." oninput="filtrarCombo('Marca')">
-        <div class="combo-dropdown"></div>
+      <label>Marca <span class="req">*</span></label>
+      <div class="combo-wrapper">
+        <input type="text" id="selMarca" placeholder="Selecciona marca..." onfocus="abrirCombo('Marca')" oninput="filtrarCombo('Marca')">
+        <div id="dropMarca" class="combo-dropdown"></div>
       </div>
     </div>
     <div class="field">
-      <label>Producto</label>
-      <div class="combo-container disabled" id="comboProd">
-        <input type="text" class="combo-input" placeholder="Selecciona marca..." oninput="filtrarCombo('Prod')">
-        <div class="combo-dropdown"></div>
+      <label>Producto <span class="req">*</span></label>
+      <div class="combo-wrapper">
+        <input type="text" id="selProducto" placeholder="Selecciona marca primero..." disabled onfocus="abrirCombo('Producto')" oninput="filtrarCombo('Producto')">
+        <div id="dropProducto" class="combo-dropdown"></div>
       </div>
     </div>
     <div class="field">
-      <label>Cantidad</label>
-      <input type="number" id="cant" class="combo-input" style="border:1.5px solid var(--border)" value="1" min="1">
+        <label>Cantidad</label>
+        <div class="qty-controls">
+            <button class="qty-btn" onclick="ajustarCantidad(-1)">-</button>
+            <input type="number" id="inputCantidad" value="1" min="1" style="border:none; text-align:center; width:50px; font-family:'DM Mono'">
+            <button class="qty-btn" onclick="ajustarCantidad(1)">+</button>
+        </div>
     </div>
-    <button class="btn-next" style="background:var(--accent-light); color:var(--accent)" onclick="agregarProd()">+ Agregar a la lista</button>
-    <div id="itemsList" style="margin-top:1rem"></div>
-    <button class="btn-next" onclick="irPaso(4)">Revisar Reporte</button>
+    <button class="btn-next" onclick="agregarProducto()" style="background:var(--accent-light); color:var(--accent); border:1px dashed var(--accent); margin-bottom:1rem">+ Agregar producto</button>
+    <div id="itemsList"></div>
+    <div class="nav-btns">
+      <button class="btn-back" onclick="irPaso(2)">Atrás</button>
+      <button class="btn-next" onclick="irPaso(4)">Revisar Reporte</button>
+    </div>
   </div>
 
   <div class="step" id="step4">
-    <div class="step-title">Finalizar</div>
-    <div id="resumen" style="font-size:14px; margin-bottom:1rem; padding:10px; background:#fff; border-radius:8px"></div>
+    <div class="step-label">Paso 4 de 4</div>
+    <div class="step-title">Enviar reporte</div>
+    <div id="resumenReporte" style="background:#fff; padding:1.2rem; border-radius:10px; margin-bottom:1.5rem; font-size:14px; border:1.5px solid var(--border)"></div>
     <div class="field">
-      <label>Observaciones</label>
-      <textarea id="obs" class="combo-input" style="border:1.5px solid var(--border); height:80px" placeholder="Opcional..."></textarea>
+      <label>Urgencia</label>
+      <div class="urgency-pills">
+        <button class="urgency-pill" id="u-Baja" onclick="setUrgencia('Baja', this)">🟢 Baja</button>
+        <button class="urgency-pill sel-med" id="u-Media" onclick="setUrgencia('Media', this)">🟡 Media</button>
+        <button class="urgency-pill" id="u-Alta" onclick="setUrgencia('Alta', this)">🔴 Alta</button>
+      </div>
     </div>
-    <button class="btn-next" id="btnEnviar" onclick="enviar()">Enviar Reporte</button>
+    <div class="field"><label>Observaciones</label><textarea id="observaciones" rows="3" placeholder="Opcional..."></textarea></div>
+    <div class="nav-btns">
+      <button class="btn-back" onclick="irPaso(3)">Atrás</button>
+      <button class="btn-next" id="btnEnviar" onclick="enviarReporte()"><span id="btnTexto">Enviar reporte final</span><div class="spinner" id="btnSpinner"></div></button>
+    </div>
   </div>
 
-  <div id="success" style="display:none; text-align:center; padding:2rem">
-    <div style="font-size:50px">✅</div>
-    <h2>¡Enviado con éxito!</h2>
-    <p id="cod" style="font-family:monospace; font-weight:bold; margin:1rem 0"></p>
-    <button class="btn-next" onclick="location.reload()">Nuevo Reporte</button>
+  <div id="successScreen" style="display:none; text-align:center; padding:3rem 1rem;">
+      <div style="font-size:60px; margin-bottom:1rem">✅</div>
+      <h2 style="margin-bottom:0.5rem">¡Reporte Enviado!</h2>
+      <div id="codigoReporte" style="font-family:'DM Mono'; font-size:20px; background:#fff; padding:1rem; border:1.5px solid var(--border); border-radius:10px; margin: 2rem 0; color:var(--accent); font-weight:bold"></div>
+      <button class="btn-next" onclick="location.reload()" style="width:100%">Hacer otro reporte</button>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_M02Uo6Dh9wzgdTc0wyyyCkrosooWRmbZva5sjOarsevmupqdmxJjOMgxl5wspizn1g/exec";
-let datos = {}, usuario = {}, seleccionado = {}, listaAgregados = [];
+let pasoActual = 1;
+let datosListas = {};
+let productosAgregados = [];
+let urgenciaSeleccionada = "Media";
+let usuarioLogueado = { nombre: "", correo: "" };
 
-// INICIO: Cargar datos
-async function init() {
-  const res = await fetch(APPS_SCRIPT_URL + "?action=getListas");
-  datos = await res.json();
-  llenarCombo('Canal', datos.canales);
-  llenarCombo('Dep', datos.departamentos);
-  llenarCombo('Marca', datos.marcas);
-}
+// --- LÓGICA DE COMBOS (AUTOCOMPLETADO) ---
+function abrirCombo(id) {
+  // Cerrar otros
+  document.querySelectorAll('.combo-dropdown').forEach(d => d.style.display = 'none');
+  
+  const drop = document.getElementById('drop' + id);
+  let items = [];
+  
+  if(id === 'Canal') items = datosListas.canales;
+  if(id === 'Departamento') items = datosListas.departamentos;
+  if(id === 'Municipio') {
+    const dep = document.getElementById('selDepartamento').value;
+    items = datosListas.municipios[dep] || [];
+  }
+  if(id === 'Sucursal') {
+    const canal = document.getElementById('selCanal').value;
+    const mun = document.getElementById('selMunicipio').value;
+    items = datosListas.sucursales.filter(s => s.canal === canal && s.mun === mun).map(s => s.suc);
+  }
+  if(id === 'Marca') items = datosListas.marcas;
+  if(id === 'Producto') {
+    const marca = document.getElementById('selMarca').value;
+    items = datosListas.productos[marca] || [];
+  }
 
-// LÓGICA DE COMBOS (AUTOSUGGEST)
-function llenarCombo(id, array) {
-  const container = document.getElementById('combo' + id);
-  const dropdown = container.querySelector('.combo-dropdown');
-  dropdown.innerHTML = '';
-  array.forEach(val => {
-    const item = document.createElement('div');
-    item.className = 'combo-item';
-    item.textContent = val;
-    item.onclick = () => seleccionarItem(id, val);
-    dropdown.appendChild(item);
-  });
+  renderDrop(id, items);
 }
 
 function filtrarCombo(id) {
-  const container = document.getElementById('combo' + id);
-  const input = container.querySelector('input').value.toLowerCase();
-  const dropdown = container.querySelector('.combo-dropdown');
-  const items = dropdown.querySelectorAll('.combo-item');
-  
-  let visible = 0;
+  const input = document.getElementById('sel' + id).value.toLowerCase();
+  const drop = document.getElementById('drop' + id);
+  const items = drop.querySelectorAll('.combo-item:not(.no-results)');
+  let encontrados = 0;
+
   items.forEach(item => {
-    const match = item.textContent.toLowerCase().includes(input);
-    item.style.display = match ? 'block' : 'none';
-    if(match) visible++;
+    const text = item.innerText.toLowerCase();
+    if(text.includes(input)) {
+      item.style.display = 'block';
+      encontrados++;
+    } else {
+      item.style.display = 'none';
+    }
   });
-  dropdown.style.display = visible > 0 ? 'block' : 'none';
+
+  drop.style.display = 'block';
+}
+
+function renderDrop(id, array) {
+  const drop = document.getElementById('drop' + id);
+  drop.innerHTML = '';
+  if(!array || array.length === 0) {
+    drop.innerHTML = '<div class="combo-item no-results">Sin opciones disponibles</div>';
+  } else {
+    array.forEach(val => {
+      const div = document.createElement('div');
+      div.className = 'combo-item';
+      div.innerText = val;
+      div.onclick = () => seleccionarItem(id, val);
+      drop.appendChild(div);
+    });
+  }
+  drop.style.display = 'block';
 }
 
 function seleccionarItem(id, val) {
-  const container = document.getElementById('combo' + id);
-  container.querySelector('input').value = val;
-  container.querySelector('.combo-dropdown').style.display = 'none';
-  seleccionado[id] = val;
+  const input = document.getElementById('sel' + id);
+  input.value = val;
+  document.getElementById('drop' + id).style.display = 'none';
 
-  // Lógica de dependencia
-  if(id === 'Dep') {
-    const muns = datos.municipios[val] || [];
-    document.getElementById('comboMun').classList.remove('disabled');
-    llenarCombo('Mun', muns);
+  // Lógica de cascada
+  if(id === 'Departamento') {
+    document.getElementById('selMunicipio').value = '';
+    document.getElementById('selMunicipio').disabled = false;
+    document.getElementById('selSucursal').value = '';
+    document.getElementById('selSucursal').disabled = true;
   }
-  if(id === 'Mun' || id === 'Canal') {
-    if(seleccionado.Canal && seleccionado.Mun) {
-      const sucs = datos.sucursales.filter(s => s.canal === seleccionado.Canal && s.mun === seleccionado.Mun).map(s => s.suc);
-      document.getElementById('comboSuc').classList.remove('disabled');
-      llenarCombo('Suc', sucs);
+  if(id === 'Municipio' || id === 'Canal') {
+    const c = document.getElementById('selCanal').value;
+    const m = document.getElementById('selMunicipio').value;
+    if(c && m) {
+      document.getElementById('selSucursal').disabled = false;
+      document.getElementById('selSucursal').placeholder = "Selecciona sucursal...";
     }
   }
   if(id === 'Marca') {
-    const prods = datos.productos[val] || [];
-    document.getElementById('comboProd').classList.remove('disabled');
-    llenarCombo('Prod', prods);
+    document.getElementById('selProducto').value = '';
+    document.getElementById('selProducto').disabled = false;
   }
 }
 
-// CERRAR DROPDOWNS AL CLIC AFUERA
+// Cerrar al hacer clic fuera
 document.addEventListener('click', (e) => {
-  if(!e.target.closest('.combo-container')) {
+  if(!e.target.closest('.combo-wrapper')) {
     document.querySelectorAll('.combo-dropdown').forEach(d => d.style.display = 'none');
   }
 });
 
-// LOGIN Y NAVEGACIÓN
-function handleCredentialResponse(response) {
-  const payload = JSON.parse(atob(response.credential.split('.')[1]));
-  validar(payload.email);
+// --- RESTO DE FUNCIONES ORIGINALES ---
+async function cargarDatosIniciales() {
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + "?action=getListas");
+    datosListas = await res.json();
+  } catch(e) { mostrarToast("Error al cargar base de datos"); }
 }
-function validarManual() { validar(document.getElementById('manualEmail').value); }
-function validar(email) {
-  const user = datos.ejecutivos.find(e => e.correo.toLowerCase() === email.toLowerCase().trim());
-  if(user) { usuario = user; irPaso(2); } else { msg("Correo no autorizado"); }
+
+function parseJwt(token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+        return JSON.parse(jsonPayload);
+    } catch (e) { return null; }
+}
+
+function handleCredentialResponse(response) {
+    const data = parseJwt(response.credential);
+    if (data && data.email) validarAcceso(data.email);
+}
+
+function intentarAccesoManual() {
+    const email = document.getElementById('inputCorreoLogin').value.trim();
+    if(!email) return mostrarToast("Ingresa un correo");
+    validarAcceso(email);
+}
+
+function validarAcceso(correo) {
+    if (!datosListas.ejecutivos) return mostrarToast("Cargando base de datos...");
+    const ej = datosListas.ejecutivos.find(e => e.correo.toLowerCase() === correo.toLowerCase().trim());
+    if (ej) {
+        usuarioLogueado = ej;
+        mostrarToast("Bienvenido, " + ej.nombre);
+        irPaso(2);
+    } else { mostrarToast("Acceso denegado: Correo no autorizado"); }
+}
+
+function ajustarCantidad(delta) {
+    const input = document.getElementById('inputCantidad');
+    input.value = Math.max(1, parseInt(input.value) + delta);
+}
+
+function agregarProducto() {
+  const marca = document.getElementById('selMarca').value.trim();
+  const prod = document.getElementById('selProducto').value.trim();
+  const cant = document.getElementById('inputCantidad').value;
+  if(!marca || !prod) return mostrarToast("Falta marca o producto");
+  if(productosAgregados.some(p => p.producto === prod)) return mostrarToast("Producto ya agregado");
+  productosAgregados.push({ marca, producto: prod, cantidad: cant });
+  renderItems();
+  document.getElementById('selProducto').value = '';
+}
+
+function renderItems() {
+  const div = document.getElementById('itemsList');
+  if(productosAgregados.length === 0) {
+      div.innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size:13px">No hay productos en la lista</p>';
+      return;
+  }
+  div.innerHTML = productosAgregados.map((p, i) => `
+    <div class="item-card">
+        <div><div class="item-brand">${p.marca}</div><div style="font-size:14px; font-weight:500">${p.producto}</div><div style="font-size:12px; color:var(--text-muted)">Cantidad: ${p.cantidad}</div></div>
+        <button onclick="productosAgregados.splice(${i},1);renderItems()" style="border:none; background:#fee2e2; color:#b91c1c; padding:8px; border-radius:6px; cursor:pointer">✕</button>
+    </div>`).join('');
 }
 
 function irPaso(p) {
-  if(p === 3 && !seleccionado.Suc) return msg("Elige sucursal");
-  if(p === 4 && listaAgregados.length === 0) return msg("Agrega productos");
-  
-  if(p === 4) {
-    document.getElementById('resumen').innerHTML = `<b>Sucursal:</b> ${seleccionado.Suc}<br><b>Productos:</b> ${listaAgregados.length}`;
+  if (p > pasoActual) {
+      if (pasoActual === 2 && !document.getElementById('selSucursal').value) return mostrarToast("Selecciona sucursal");
+      if (pasoActual === 3 && productosAgregados.length === 0) return mostrarToast("Agrega al menos un producto");
   }
-  
+  if (p === 4) {
+      document.getElementById('resumenReporte').innerHTML = `
+        <div style="margin-bottom:8px"><strong>Ejecutivo:</strong> ${usuarioLogueado.nombre}</div>
+        <div style="margin-bottom:8px"><strong>Sucursal:</strong> ${document.getElementById('selSucursal').value}</div>
+        <div style="margin-bottom:8px"><strong>Municipio:</strong> ${document.getElementById('selMunicipio').value}</div>
+        <hr style="border:none; border-top:1px solid var(--border); margin:8px 0">
+        <div><strong>Productos:</strong> ${productosAgregados.length} items agregados.</div>`;
+  }
   document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
   document.getElementById('step' + p).classList.add('active');
   document.getElementById('progressFill').style.width = ((p-1)/3)*100 + "%";
+  pasoActual = p;
 }
 
-// PRODUCTOS
-function agregarProd() {
-  if(!seleccionado.Prod) return msg("Elige producto");
-  listaAgregados.push({ marca: seleccionado.Marca, producto: seleccionado.Prod, cantidad: document.getElementById('cant').value });
-  render();
-  document.getElementById('comboProd').querySelector('input').value = '';
-  seleccionado.Prod = null;
+function setUrgencia(val, btn) {
+    urgenciaSeleccionada = val;
+    document.querySelectorAll('.urgency-pill').forEach(b => b.className = 'urgency-pill');
+    btn.classList.add(val === 'Baja' ? 'sel-low' : val === 'Media' ? 'sel-med' : 'sel-high');
 }
 
-function render() {
-  document.getElementById('itemsList').innerHTML = listaAgregados.map((p, i) => `
-    <div class="item-card">
-      <div><b>${p.producto}</b><br><small>${p.marca} | Cant: ${p.cantidad}</small></div>
-      <button onclick="listaAgregados.splice(${i},1);render()" style="border:none; color:red; background:none; cursor:pointer">✕</button>
-    </div>
-  `).join('');
-}
-
-// ENVIAR
-async function enviar() {
+async function enviarReporte() {
   const btn = document.getElementById('btnEnviar');
-  btn.disabled = true; btn.textContent = "Enviando...";
-  
+  const txt = document.getElementById('btnTexto');
+  const sp = document.getElementById('btnSpinner');
+  btn.disabled = true; txt.style.display = 'none'; sp.style.display = 'block';
   const payload = {
-    ejecutivo: usuario.nombre, correo: usuario.correo,
-    canal: seleccionado.Canal, departamento: seleccionado.Dep, municipio: seleccionado.Mun, sucursal: seleccionado.Suc,
-    productos: listaAgregados, urgencia: "Media", observaciones: document.getElementById('obs').value
+    ejecutivo: usuarioLogueado.nombre, correo: usuarioLogueado.correo,
+    canal: document.getElementById('selCanal').value, departamento: document.getElementById('selDepartamento').value,
+    municipio: document.getElementById('selMunicipio').value, sucursal: document.getElementById('selSucursal').value,
+    productos: productosAgregados, urgencia: urgenciaSeleccionada, observaciones: document.getElementById('observaciones').value
   };
-
-  const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
-  const r = await res.json();
-  if(r.success) {
-    document.getElementById('step4').style.display = 'none';
-    document.getElementById('success').style.display = 'block';
-    document.getElementById('cod').textContent = r.codigo;
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+    const data = await res.json();
+    if(data.success) {
+        document.getElementById('step4').style.display = 'none';
+        document.getElementById('successScreen').style.display = 'block';
+        document.getElementById('codigoReporte').innerText = data.codigo;
+    }
+  } catch(e) { 
+    mostrarToast("Error al enviar el reporte"); 
+    btn.disabled = false; txt.style.display = 'block'; sp.style.display = 'none'; 
   }
 }
 
-function msg(m) {
+function mostrarToast(m) {
   const t = document.getElementById('toast');
-  t.textContent = m; t.style.display = 'block';
-  setTimeout(() => t.style.display = 'none', 3000);
+  t.innerText = m; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-init();
+cargarDatosIniciales();
 </script>
 </body>
 </html>
