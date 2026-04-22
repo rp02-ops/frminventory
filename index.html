@@ -29,246 +29,160 @@
   .step-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.6; }
   .field { margin-bottom: 1.1rem; }
   .field label { display: block; font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 0.4rem; }
-  .field label span.req { color: var(--accent2); margin-left: 2px; }
   input[type="text"], input[type="email"], input[type="number"], textarea { width: 100%; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text); background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.7rem 0.9rem; outline: none; transition: 0.15s; }
   input:focus, textarea:focus { border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--accent-light); }
   input:disabled { background-color: var(--surface2); color: var(--text-muted); cursor: not-allowed; }
-  textarea { resize: vertical; min-height: 80px; }
-  .divider { text-align: center; margin: 1.5rem 0; color: var(--text-muted); font-size: 13px; position: relative; }
-  .divider hr { border: none; border-top: 1px solid var(--border); position: absolute; width: 100%; top: 50%; z-index: 1; }
-  .divider span { background: var(--bg); padding: 0 10px; position: relative; z-index: 2; }
-  .qty-row { display: grid; grid-template-columns: 1fr auto; gap: 0.75rem; align-items: end; }
-  .qty-controls { display: flex; align-items: center; gap: 6px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.4rem 0.6rem; height: 46px; }
-  .qty-btn { width: 28px; height: 28px; background: var(--accent-light); border: none; border-radius: 6px; font-size: 18px; color: var(--accent); cursor: pointer; display: flex; align-items: center; justify-content: center; }
-  .qty-display { font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 500; min-width: 36px; text-align: center; color: var(--text); }
-  .items-list { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem; }
-  .item-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; }
-  .item-info { flex: 1; }
-  .item-name { font-size: 14px; font-weight: 500; color: var(--text); }
-  .item-brand { font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px;}
-  .item-qty { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-  .item-remove { width: 28px; height: 28px; background: #fdecea; border: none; border-radius: 6px; color: var(--danger); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-  .add-btn { width: 100%; background: var(--accent-light); border: 1.5px dashed #9cbfa6; border-radius: var(--radius); color: var(--accent); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; padding: 0.7rem; cursor: pointer; transition: 0.15s; display: flex; align-items: center; justify-content: center; gap: 6px; }
-  .urgency-pills { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-  .urgency-pill { flex: 1; min-width: 80px; padding: 0.6rem 0.5rem; border: 1.5px solid var(--border); border-radius: var(--radius); background: var(--surface); font-size: 13px; color: var(--text-muted); cursor: pointer; text-align: center; }
-  .urgency-pill.sel-low { border-color: #2d5a3d; background: #e8f0ea; color: #2d5a3d; }
-  .urgency-pill.sel-med { border-color: #b07c2a; background: #fef3e2; color: #b07c2a; }
-  .urgency-pill.sel-high { border-color: #c0392b; background: #fdecea; color: #c0392b; }
   .nav-btns { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
   .btn-back { flex: 0 0 auto; background: transparent; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.8rem 1.25rem; color: var(--text-muted); cursor: pointer; }
   .btn-next { flex: 1; background: var(--accent); border: none; border-radius: var(--radius); padding: 0.85rem; font-size: 15px; font-weight: 600; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
   .btn-next:disabled { background: #9cbfa6; cursor: not-allowed; }
-  .summary-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 1rem; }
-  .summary-section { padding: 1rem 1.1rem; border-bottom: 1px solid var(--border); }
-  .summary-label { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem; }
-  .summary-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 0.3rem; }
-  .summary-row span:first-child { color: var(--text-muted); }
-  .summary-row span:last-child { font-weight: 500; color: var(--text); }
-  .success-screen { text-align: center; padding: 2rem 1rem; display: none; }
-  .success-icon { width: 72px; height: 72px; background: var(--accent-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; }
-  .success-code { font-family: 'DM Mono', monospace; font-size: 18px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.75rem 1.5rem; display: inline-block; margin-bottom: 1.5rem; color: var(--accent); }
-  .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(80px); background: #1a1a18; color: #fff; font-size: 14px; padding: 0.7rem 1.25rem; border-radius: 50px; transition: 0.3s; z-index: 200; white-space: nowrap; }
+  .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(80px); background: #1a1a18; color: #fff; font-size: 14px; padding: 0.7rem 1.25rem; border-radius: 50px; transition: 0.3s; z-index: 200; }
   .toast.show { transform: translateX(-50%) translateY(0); }
   .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .empty-state { text-align: center; padding: 1.5rem; color: var(--text-muted); font-size: 14px; background: var(--surface2); border-radius: var(--radius); border: 1.5px dashed var(--border); }
+  /* Estilos adicionales para item cards y success heredados del original... */
+  .item-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
+  .item-brand { font-size: 11px; color: var(--accent); text-transform: uppercase; }
+  .qty-controls { display: flex; align-items: center; gap: 6px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.4rem 0.6rem; }
+  .qty-btn { width: 28px; height: 28px; background: var(--accent-light); border: none; border-radius: 6px; color: var(--accent); cursor: pointer; }
+  .urgency-pills { display: flex; gap: 0.5rem; }
+  .urgency-pill { flex: 1; padding: 0.6rem; border: 1.5px solid var(--border); border-radius: var(--radius); background: #fff; cursor: pointer; }
+  .sel-low { border-color: #2d5a3d; background: #e8f0ea; color: #2d5a3d; }
+  .sel-med { border-color: #b07c2a; background: #fef3e2; color: #b07c2a; }
+  .sel-high { border-color: #c0392b; background: #fdecea; color: #c0392b; }
 </style>
 </head>
 <body>
 
 <script>
-  // ⚠️ REEMPLAZA ESTA URL con la nueva tras publicar en Apps Script
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyrg_2K6z3fR_5jL7wubIJrkD4mOQnxpTkxKoNf0PFcoWLPUEHt-96nUT4-w6jn5GJy/exec";
+  // REEMPLAZA CON TU NUEVA URL TRAS IMPLEMENTAR
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwAAtG5yhLikkC5WfQ2PD1fpqxAjK537157v8RxLTZPmKOb7w5T2U5CP73BjtX39l5t2Q/exec";
 </script>
 
 <div class="header">
-  <div class="header-icon">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
-  </div>
-  <div>
-    <div class="header-title">Reporte de Faltantes</div>
-    <div class="header-sub">Inventario de Sucursales</div>
-  </div>
+  <div class="header-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div>
+  <div><div class="header-title">Reporte de Faltantes</div><div class="header-sub">Inventario de Sucursales</div></div>
 </div>
 <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
 
-<input type="hidden" id="vendedorNombre">
-<input type="hidden" id="vendedorCorreo">
-
 <div class="container">
-
   <div class="step active" id="step1">
     <div class="step-label">Paso 1 de 4</div>
     <div class="step-title">Verificar identidad</div>
-    <div class="step-desc">Usa tu cuenta corporativa para continuar.</div>
-
-<div id="g_id_onload" data-client_id="926135554390-f39b02cdi8ong7nnh00j0vkr8n2ek3a7.apps.googleusercontent.com" data-context="signin" data-ux_mode="popup" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>    <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="signin_with" data-size="large" data-logo_alignment="left" style="margin-bottom: 1.5rem; display: flex; justify-content: center;"></div>
-
-    <div class="divider"><hr><span>o ingresa manualmente</span></div>
-
     <div class="field">
-      <label>Correo corporativo <span class="req">*</span></label>
+      <label>Correo corporativo</label>
       <input type="email" id="inputCorreoLogin" placeholder="correo@empresa.com">
     </div>
-
-    <div class="nav-btns">
-      <button class="btn-next" onclick="intentarAccesoManual()" style="width: 100%">Verificar acceso <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg></button>
-    </div>
+    <button class="btn-next" onclick="intentarAccesoManual()" style="width: 100%">Verificar acceso</button>
   </div>
 
   <div class="step" id="step2">
     <div class="step-label">Paso 2 de 4</div>
-    <div class="step-title">Ubicación de la sucursal</div>
-    <div class="step-desc">Selecciona el canal y la ubicación exacta.</div>
-
+    <div class="step-title">Ubicación</div>
     <div class="field">
-      <label>Canal <span class="req">*</span></label>
-      <input type="text" id="selCanal" list="listCanal" placeholder="Escribe o selecciona..." onchange="cargarSucursales()" autocomplete="off">
+      <label>Canal</label>
+      <input type="text" id="selCanal" list="listCanal" placeholder="Selecciona..." onchange="cargarSucursales()">
       <datalist id="listCanal"></datalist>
     </div>
     <div class="field">
-      <label>Departamento <span class="req">*</span></label>
-      <input type="text" id="selDepartamento" list="listDepartamento" placeholder="Escribe o selecciona..." onchange="cargarMunicipios()" autocomplete="off">
+      <label>Departamento</label>
+      <input type="text" id="selDepartamento" list="listDepartamento" placeholder="Selecciona..." onchange="cargarMunicipios()">
       <datalist id="listDepartamento"></datalist>
     </div>
     <div class="field">
-      <label>Municipio <span class="req">*</span></label>
-      <input type="text" id="selMunicipio" list="listMunicipio" placeholder="Escribe o selecciona..." onchange="cargarSucursales()" disabled autocomplete="off">
+      <label>Municipio</label>
+      <input type="text" id="selMunicipio" list="listMunicipio" placeholder="Selecciona..." onchange="cargarSucursales()" disabled>
       <datalist id="listMunicipio"></datalist>
     </div>
     <div class="field">
-      <label>Sucursal <span class="req">*</span></label>
-      <input type="text" id="selSucursal" list="listSucursal" placeholder="Esperando Canal y Municipio..." disabled autocomplete="off">
+      <label>Sucursal</label>
+      <input type="text" id="selSucursal" list="listSucursal" placeholder="Esperando datos..." disabled>
       <datalist id="listSucursal"></datalist>
     </div>
-
     <div class="nav-btns">
-      <button class="btn-next" onclick="irPaso(3)" style="width: 100%">Continuar <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg></button>
+      <button class="btn-next" onclick="irPaso(3)">Continuar</button>
     </div>
   </div>
 
   <div class="step" id="step3">
     <div class="step-label">Paso 3 de 4</div>
-    <div class="step-title">Productos faltantes</div>
-    <div class="step-desc">Busca y selecciona los productos con faltante.</div>
-
+    <div class="step-title">Productos</div>
     <div class="field">
-      <label>Marca <span class="req">*</span></label>
-      <input type="text" id="selMarca" list="listMarca" placeholder="Escribe o selecciona..." onchange="cargarProductos()" autocomplete="off">
+      <label>Marca</label>
+      <input type="text" id="selMarca" list="listMarca" placeholder="Selecciona..." onchange="cargarProductos()">
       <datalist id="listMarca"></datalist>
     </div>
-
     <div class="field">
-      <label>Producto <span class="req">*</span></label>
-      <input type="text" id="selProducto" list="listProducto" placeholder="Selecciona una marca primero..." disabled autocomplete="off">
+      <label>Producto</label>
+      <input type="text" id="selProducto" list="listProducto" placeholder="Selecciona marca primero..." disabled>
       <datalist id="listProducto"></datalist>
     </div>
-
-    <div class="qty-row" style="margin-bottom:1rem">
-      <div class="field" style="margin-bottom:0">
-        <label>Cantidad faltante</label>
-        <input type="number" id="inputCantidad" min="1" value="1">
-      </div>
-      <div style="margin-top:20px">
+    <div class="field">
+        <label>Cantidad</label>
         <div class="qty-controls">
-          <button class="qty-btn" onclick="ajustarCantidad(-1)">−</button>
-          <span class="qty-display" id="qtyDisplay">1</span>
-          <button class="qty-btn" onclick="ajustarCantidad(1)">+</button>
+            <button class="qty-btn" onclick="ajustarCantidad(-1)">-</button>
+            <input type="number" id="inputCantidad" value="1" min="1" style="border:none; text-align:center; width:60px">
+            <button class="qty-btn" onclick="ajustarCantidad(1)">+</button>
         </div>
-      </div>
     </div>
-
-    <button class="add-btn" onclick="agregarProducto()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-      Agregar producto a la lista
-    </button>
-
-    <div style="margin-top:1.25rem;">
-      <div class="summary-label">Productos agregados</div>
-      <div class="items-list" id="itemsList">
-        <div class="empty-state">Aún no has agregado productos</div>
-      </div>
-    </div>
-
+    <button class="btn-next" onclick="agregarProducto()" style="background:#e8f0ea; color:#2d5a3d; border:1px dashed #2d5a3d; margin-bottom:1rem">+ Agregar a la lista</button>
+    <div id="itemsList"></div>
     <div class="nav-btns">
-      <button class="btn-back" onclick="irPaso(2)">← Atrás</button>
-      <button class="btn-next" onclick="irPaso(4)">Revisar reporte <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg></button>
+      <button class="btn-back" onclick="irPaso(2)">Atrás</button>
+      <button class="btn-next" onclick="irPaso(4)">Revisar</button>
     </div>
   </div>
 
   <div class="step" id="step4">
     <div class="step-label">Paso 4 de 4</div>
-    <div class="step-title">Revisar y enviar</div>
-    <div class="step-desc">Verifica que todo esté correcto antes de enviar.</div>
-
-    <div class="summary-card">
-      <div class="summary-section">
-        <div class="summary-label">Vendedor</div>
-        <div class="summary-row"><span>Nombre</span><span id="sumNombre">—</span></div>
-      </div>
-      <div class="summary-section">
-        <div class="summary-label">Sucursal</div>
-        <div class="summary-row"><span>Canal</span><span id="sumCanal">—</span></div>
-        <div class="summary-row"><span>Sucursal</span><span id="sumSuc">—</span></div>
-      </div>
-      <div class="summary-section">
-        <div class="summary-label">Productos faltantes</div>
-        <div id="sumItems"></div>
-      </div>
-    </div>
-
+    <div class="step-title">Revisar y Enviar</div>
+    <div id="resumenReporte" style="background:#fff; padding:1rem; border-radius:10px; margin-bottom:1rem; font-size:14px"></div>
     <div class="field">
       <label>Urgencia</label>
       <div class="urgency-pills">
-        <button class="urgency-pill" onclick="setUrgencia('Baja', this)">🟢 Baja</button>
-        <button class="urgency-pill sel-med" onclick="setUrgencia('Media', this)">🟡 Media</button>
-        <button class="urgency-pill" onclick="setUrgencia('Alta', this)">🔴 Alta</button>
+        <button class="urgency-pill" id="u-Baja" onclick="setUrgencia('Baja', this)">🟢 Baja</button>
+        <button class="urgency-pill sel-med" id="u-Media" onclick="setUrgencia('Media', this)">🟡 Media</button>
+        <button class="urgency-pill" id="u-Alta" onclick="setUrgencia('Alta', this)">🔴 Alta</button>
       </div>
     </div>
-
     <div class="field">
       <label>Observaciones</label>
-      <textarea id="observaciones"></textarea>
+      <textarea id="observaciones" rows="3"></textarea>
     </div>
-
     <div class="nav-btns">
-      <button class="btn-back" onclick="irPaso(3)">← Atrás</button>
+      <button class="btn-back" onclick="irPaso(3)">Atrás</button>
       <button class="btn-next" id="btnEnviar" onclick="enviarReporte()">
-        <span id="btnTexto">Enviar reporte</span>
+        <span id="btnTexto">Enviar Reporte</span>
         <div class="spinner" id="btnSpinner"></div>
-        <svg id="btnIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
       </button>
     </div>
   </div>
 
-  <div class="success-screen" id="successScreen">
-    <div class="success-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#2d5a3d" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></div>
-    <div class="success-title">¡Reporte enviado!</div>
-    <div class="success-code" id="codigoReporte"></div>
-    <button class="btn-new" onclick="nuevoReporte()">Hacer otro reporte</button>
+  <div id="successScreen" style="display:none; text-align:center; padding:2rem;">
+      <div style="font-size:50px">✅</div>
+      <h2>¡Enviado!</h2>
+      <p id="codigoReporte" style="font-family:monospace; margin:1rem 0; font-weight:bold; color:#2d5a3d"></p>
+      <button class="btn-next" onclick="location.reload()">Nuevo Reporte</button>
   </div>
-
 </div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 let pasoActual = 1;
-let urgenciaSeleccionada = "Media";
-let productosAgregados = [];
 let datosListas = {};
+let productosAgregados = [];
+let urgenciaSeleccionada = "Media";
+let usuarioLogueado = { nombre: "", correo: "" };
 
 async function cargarDatosIniciales() {
   try {
     const res = await fetch(APPS_SCRIPT_URL + "?action=getListas");
     datosListas = await res.json();
-    
-    // Cargar listas base
     cargarOpcionesList(datosListas.canales, 'listCanal');
     cargarOpcionesList(datosListas.departamentos, 'listDepartamento');
     cargarOpcionesList(datosListas.marcas, 'listMarca');
-  } catch(e) {
-    mostrarToast("Error conectando con la base de datos.");
-  }
+  } catch(e) { mostrarToast("Error de conexión"); }
 }
 
 function cargarOpcionesList(array, listId) {
@@ -277,183 +191,127 @@ function cargarOpcionesList(array, listId) {
   if(array) array.forEach(item => dl.innerHTML += `<option value="${item}">`);
 }
 
-// Lógica Login Google
-function parseJwt(token) {
-    try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-        return JSON.parse(jsonPayload);
-    } catch (e) { return null; }
-}
-
-function handleCredentialResponse(response) {
-    const data = parseJwt(response.credential);
-    if (!data || !data.email) return mostrarToast("Error al leer cuenta.");
-    validarAcceso(data.email);
-}
-
 function intentarAccesoManual() {
-    const email = document.getElementById('inputCorreoLogin').value;
-    if(!email) return mostrarToast("Ingresa un correo.");
-    validarAcceso(email);
+  const email = document.getElementById('inputCorreoLogin').value.trim().toLowerCase();
+  const ej = datosListas.ejecutivos.find(e => e.correo.toLowerCase() === email);
+  if (ej) {
+    usuarioLogueado = ej;
+    irPaso(2);
+  } else {
+    mostrarToast("Correo no autorizado");
+  }
 }
 
-function validarAcceso(correo) {
-    if (!datosListas.ejecutivos) return mostrarToast("Cargando base de datos...");
-    const ej = datosListas.ejecutivos.find(e => e.correo.toLowerCase() === correo.toLowerCase().trim());
-    if (ej) {
-        document.getElementById('vendedorNombre').value = ej.nombre;
-        document.getElementById('vendedorCorreo').value = ej.correo;
-        irPaso(2);
-    } else {
-        mostrarToast("Acceso denegado: Correo no autorizado.");
-    }
-}
-
-// Cascadas Paso 2
 function cargarMunicipios() {
-  const dep = document.getElementById('selDepartamento').value;
+  const dep = document.getElementById('selDepartamento').value.trim();
   const inMun = document.getElementById('selMunicipio');
-  const inSuc = document.getElementById('selSucursal');
+  inMun.value = ''; inMun.disabled = true;
   
-  inMun.value = ''; inSuc.value = '';
-  inMun.disabled = true; inSuc.disabled = true;
-  document.getElementById('listMunicipio').innerHTML = '';
-
-  if (dep && datosListas.municipios[dep]) {
-    cargarOpcionesList(datosListas.municipios[dep], 'listMunicipio');
+  // Buscar departamento ignorando mayúsculas/minúsculas
+  const key = Object.keys(datosListas.municipios).find(k => k.toLowerCase() === dep.toLowerCase());
+  
+  if (key) {
+    cargarOpcionesList(datosListas.municipios[key], 'listMunicipio');
     inMun.disabled = false;
+    inMun.placeholder = "Selecciona municipio...";
   }
 }
 
 function cargarSucursales() {
-  const canal = document.getElementById('selCanal').value;
-  const mun = document.getElementById('selMunicipio').value;
+  const canal = document.getElementById('selCanal').value.trim().toLowerCase();
+  const mun = document.getElementById('selMunicipio').value.trim().toLowerCase();
   const inSuc = document.getElementById('selSucursal');
+  const dl = document.getElementById('listSucursal');
   
-  inSuc.value = '';
-  document.getElementById('listSucursal').innerHTML = '';
+  inSuc.value = ''; inSuc.disabled = true;
+  dl.innerHTML = '';
 
-  if (!canal || !mun) {
-    inSuc.placeholder = "Esperando Canal y Municipio...";
-    inSuc.disabled = true;
-    return;
-  }
-
-  // Aquí filtramos gracias al nuevo formato del backend
-  const sucs = datosListas.sucursales.filter(s => s.canal === canal && s.mun === mun);
-  
-  if (sucs.length > 0) {
-    inSuc.placeholder = "Escribe o selecciona...";
-    cargarOpcionesList(sucs.map(s => s.suc), 'listSucursal');
-    inSuc.disabled = false;
-  } else {
-    inSuc.placeholder = "Sin sucursales registradas aquí";
-    inSuc.disabled = true;
+  if (canal && mun) {
+    const filtradas = datosListas.sucursales.filter(s => 
+      s.canal.toLowerCase() === canal && s.mun.toLowerCase() === mun
+    );
+    
+    if (filtradas.length > 0) {
+      filtradas.forEach(s => dl.innerHTML += `<option value="${s.suc}">`);
+      inSuc.disabled = false;
+      inSuc.placeholder = "Selecciona sucursal...";
+    } else {
+      inSuc.placeholder = "No hay sucursales aquí";
+    }
   }
 }
 
-// Cascadas Paso 3
 function cargarProductos() {
-  const marca = document.getElementById('selMarca').value;
+  const marca = document.getElementById('selMarca').value.trim();
   const inProd = document.getElementById('selProducto');
-  
-  inProd.value = '';
-  document.getElementById('listProducto').innerHTML = '';
+  inProd.value = ''; inProd.disabled = true;
 
-  if (marca && datosListas.productos[marca]) {
-    inProd.placeholder = "Escribe para buscar producto...";
-    cargarOpcionesList(datosListas.productos[marca], 'listProducto');
+  const key = Object.keys(datosListas.productos).find(k => k.toLowerCase() === marca.toLowerCase());
+  if (key) {
+    cargarOpcionesList(datosListas.productos[key], 'listProducto');
     inProd.disabled = false;
-  } else {
-    inProd.placeholder = "Selecciona una marca primero...";
-    inProd.disabled = true;
   }
 }
 
 function ajustarCantidad(delta) {
-  const input = document.getElementById('inputCantidad');
-  let val = Math.max(1, (parseInt(input.value) || 1) + delta);
-  input.value = val;
-  document.getElementById('qtyDisplay').textContent = val;
+    const input = document.getElementById('inputCantidad');
+    input.value = Math.max(1, parseInt(input.value) + delta);
 }
 
 function agregarProducto() {
-  const marca = document.getElementById('selMarca').value;
-  const prod = document.getElementById('selProducto').value;
-  const cant = parseInt(document.getElementById('inputCantidad').value) || 1;
+  const marca = document.getElementById('selMarca').value.trim();
+  const prod = document.getElementById('selProducto').value.trim();
+  const cant = document.getElementById('inputCantidad').value;
 
-  if (!marca || !prod) return mostrarToast("Completa marca y producto");
-  if (productosAgregados.find(p => p.producto === prod)) return mostrarToast("El producto ya está en la lista");
-
-  productosAgregados.push({ marca: marca, producto: prod, cantidad: cant });
-  renderItems();
+  if(!marca || !prod) return mostrarToast("Falta marca o producto");
   
-  document.getElementById('selProducto').value = "";
-  document.getElementById('inputCantidad').value = 1;
-  document.getElementById('qtyDisplay').textContent = '1';
+  productosAgregados.push({ marca, producto: prod, cantidad: cant });
+  renderItems();
+  document.getElementById('selProducto').value = '';
 }
 
-function quitarProducto(idx) { productosAgregados.splice(idx, 1); renderItems(); }
-
 function renderItems() {
-  const lista = document.getElementById('itemsList');
-  if (productosAgregados.length === 0) return lista.innerHTML = '<div class="empty-state">Aún no has agregado productos</div>';
-  
-  lista.innerHTML = productosAgregados.map((p, i) => `
+  const div = document.getElementById('itemsList');
+  div.innerHTML = productosAgregados.map((p, i) => `
     <div class="item-card">
-      <div class="item-info">
-        <div class="item-brand">${p.marca}</div>
-        <div class="item-name">${p.producto}</div>
-        <div class="item-qty">Cantidad: ${p.cantidad} uds.</div>
-      </div>
-      <button class="item-remove" onclick="quitarProducto(${i})">×</button>
+        <div><b>${p.producto}</b><br><small>${p.marca} | Cant: ${p.cantidad}</small></div>
+        <button onclick="productosAgregados.splice(${i},1);renderItems()" style="border:none; background:none; color:red; cursor:pointer">✕</button>
     </div>
   `).join('');
 }
 
-// Control de pasos
-function irPaso(paso) {
-  if (paso > pasoActual) {
-    if (pasoActual === 2) {
-      if(!document.getElementById('selCanal').value || !document.getElementById('selSucursal').value) 
-        return mostrarToast("Completa la información de la sucursal");
-    }
-    if (pasoActual === 3 && productosAgregados.length === 0) return mostrarToast("Agrega al menos 1 producto");
+function irPaso(p) {
+  if (p === 3 && !document.getElementById('selSucursal').value) return mostrarToast("Selecciona sucursal");
+  if (p === 4) {
+      if(productosAgregados.length === 0) return mostrarToast("Agrega productos");
+      document.getElementById('resumenReporte').innerHTML = `
+        <b>Ejecutivo:</b> ${usuarioLogueado.nombre}<br>
+        <b>Sucursal:</b> ${document.getElementById('selSucursal').value}<br>
+        <b>Productos:</b> ${productosAgregados.length} seleccionados
+      `;
   }
-
-  document.getElementById('step' + pasoActual).classList.remove('active');
-  pasoActual = paso;
-  document.getElementById('step' + paso).classList.add('active');
-  document.getElementById('progressFill').style.width = ((paso - 1) / 4) * 100 + '%';
-
-  if (paso === 4) {
-    document.getElementById('sumNombre').textContent = document.getElementById('vendedorNombre').value;
-    document.getElementById('sumCanal').textContent = document.getElementById('selCanal').value;
-    document.getElementById('sumSuc').textContent = document.getElementById('selSucursal').value;
-    document.getElementById('sumItems').innerHTML = productosAgregados.map(p => `
-      <div style="display:flex; justify-content:space-between; font-size:14px; padding:3px 0">
-        <span>${p.producto}</span><b>${p.cantidad}</b>
-      </div>`).join('');
-  }
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step' + p).classList.add('active');
+  document.getElementById('progressFill').style.width = (p/4)*100 + "%";
+  pasoActual = p;
 }
 
-function setUrgencia(val, el) {
-  urgenciaSeleccionada = val;
-  document.querySelectorAll('.urgency-pill').forEach(p => p.className = 'urgency-pill');
-  el.classList.add(val === 'Baja' ? 'sel-low' : val === 'Media' ? 'sel-med' : 'sel-high');
+function setUrgencia(val, btn) {
+    urgenciaSeleccionada = val;
+    document.querySelectorAll('.urgency-pill').forEach(b => b.className = 'urgency-pill');
+    btn.classList.add(val === 'Baja' ? 'sel-low' : val === 'Media' ? 'sel-med' : 'sel-high');
 }
 
 async function enviarReporte() {
   const btn = document.getElementById('btnEnviar');
-  btn.disabled = true; document.getElementById('btnSpinner').style.display = 'block';
+  const txt = document.getElementById('btnTexto');
+  const sp = document.getElementById('btnSpinner');
+
+  btn.disabled = true; txt.style.display = 'none'; sp.style.display = 'block';
 
   const payload = {
-    ejecutivo: document.getElementById('vendedorNombre').value,
-    correo: document.getElementById('vendedorCorreo').value,
+    ejecutivo: usuarioLogueado.nombre,
+    correo: usuarioLogueado.correo,
     canal: document.getElementById('selCanal').value,
     departamento: document.getElementById('selDepartamento').value,
     municipio: document.getElementById('selMunicipio').value,
@@ -466,23 +324,21 @@ async function enviarReporte() {
   try {
     const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
     const data = await res.json();
-    if (data.success) {
-      document.getElementById('step4').style.display = 'none';
-      document.getElementById('successScreen').style.display = 'block';
-      document.getElementById('codigoReporte').textContent = data.codigo;
-      document.getElementById('progressFill').style.width = '100%';
-    } else throw new Error();
-  } catch(e) {
-    mostrarToast("Error enviando el reporte.");
-  } finally {
-    btn.disabled = false; document.getElementById('btnSpinner').style.display = 'none';
-  }
+    if(data.success) {
+        document.getElementById('step4').style.display = 'none';
+        document.getElementById('successScreen').style.display = 'block';
+        document.getElementById('codigoReporte').innerText = data.codigo;
+    }
+  } catch(e) { mostrarToast("Error al enviar"); btn.disabled = false; txt.style.display = 'block'; sp.style.display = 'none'; }
 }
 
-function nuevoReporte() { location.reload(); }
-function mostrarToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
+function mostrarToast(m) {
+  const t = document.getElementById('toast');
+  t.innerText = m; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
 
-cargarDatosIniciales();
+cargarDatosInitiales();
 </script>
 </body>
 </html>
