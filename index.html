@@ -30,37 +30,54 @@
   .field { margin-bottom: 1.1rem; }
   .field label { display: block; font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 0.4rem; }
   .field label span.req { color: var(--accent2); margin-left: 2px; }
-  
-  /* Estilos mejorados para Inputs con Datalist */
-  input[type="text"], input[type="email"], input[type="number"], textarea { 
-    width: 100%; font-family: 'DM Sans', sans-serif; font-size: 16px; /* 16px evita zoom automático en iOS */
-    color: var(--text); background: var(--surface); border: 1.5px solid var(--border); 
-    border-radius: var(--radius); padding: 0.8rem 0.9rem; outline: none; transition: 0.15s; 
-    -webkit-appearance: none;
-  }
+  input[type="text"], input[type="email"], input[type="number"], textarea { width: 100%; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text); background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.7rem 0.9rem; outline: none; transition: 0.15s; }
   input:focus, textarea:focus { border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--accent-light); }
-  input:disabled { background-color: #eee; color: #999; cursor: not-allowed; }
-
-  .nav-btns { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
-  .btn-back { flex: 0 0 auto; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.8rem 1.25rem; color: var(--text-muted); cursor: pointer; font-weight: 500; }
-  .btn-next { flex: 1; background: var(--accent); border: none; border-radius: var(--radius); padding: 0.85rem; font-size: 15px; font-weight: 600; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
-  
-  /* Otros estilos de soporte */
+  input:disabled { background-color: var(--surface2); color: var(--text-muted); cursor: not-allowed; }
+  textarea { resize: vertical; min-height: 80px; }
+  .divider { text-align: center; margin: 1.5rem 0; color: var(--text-muted); font-size: 13px; position: relative; }
+  .divider hr { border: none; border-top: 1px solid var(--border); position: absolute; width: 100%; top: 50%; z-index: 1; }
+  .divider span { background: var(--bg); padding: 0 10px; position: relative; z-index: 2; }
+  .qty-row { display: grid; grid-template-columns: 1fr auto; gap: 0.75rem; align-items: end; }
+  .qty-controls { display: flex; align-items: center; gap: 6px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.4rem 0.6rem; height: 46px; }
+  .qty-btn { width: 28px; height: 28px; background: var(--accent-light); border: none; border-radius: 6px; font-size: 18px; color: var(--accent); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .qty-display { font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 500; min-width: 36px; text-align: center; color: var(--text); }
   .items-list { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem; }
   .item-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; }
-  .item-remove { color: var(--danger); border: none; background: none; font-size: 20px; cursor: pointer; }
-  .add-btn { width: 100%; background: var(--accent-light); border: 1.5px dashed #9cbfa6; border-radius: var(--radius); color: var(--accent); padding: 0.7rem; cursor: pointer; font-weight: 600; margin-bottom: 1rem; }
-  .urgency-pills { display: flex; gap: 0.5rem; }
-  .urgency-pill { flex: 1; padding: 0.6rem; border: 1.5px solid var(--border); border-radius: var(--radius); background: white; cursor: pointer; }
-  .sel-med { border-color: #b07c2a; background: #fef3e2; }
-  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 10px 20px; border-radius: 20px; display: none; z-index: 1000; }
-  .spinner { width: 18px; height: 18px; border: 2px solid white; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
+  .item-info { flex: 1; }
+  .item-name { font-size: 14px; font-weight: 500; color: var(--text); }
+  .item-brand { font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px;}
+  .item-qty { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .item-remove { width: 28px; height: 28px; background: #fdecea; border: none; border-radius: 6px; color: var(--danger); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .add-btn { width: 100%; background: var(--accent-light); border: 1.5px dashed #9cbfa6; border-radius: var(--radius); color: var(--accent); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; padding: 0.7rem; cursor: pointer; transition: 0.15s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .urgency-pills { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .urgency-pill { flex: 1; min-width: 80px; padding: 0.6rem 0.5rem; border: 1.5px solid var(--border); border-radius: var(--radius); background: var(--surface); font-size: 13px; color: var(--text-muted); cursor: pointer; text-align: center; }
+  .urgency-pill.sel-low { border-color: #2d5a3d; background: #e8f0ea; color: #2d5a3d; }
+  .urgency-pill.sel-med { border-color: #b07c2a; background: #fef3e2; color: #b07c2a; }
+  .urgency-pill.sel-high { border-color: #c0392b; background: #fdecea; color: #c0392b; }
+  .nav-btns { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
+  .btn-back { flex: 0 0 auto; background: transparent; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.8rem 1.25rem; color: var(--text-muted); cursor: pointer; }
+  .btn-next { flex: 1; background: var(--accent); border: none; border-radius: var(--radius); padding: 0.85rem; font-size: 15px; font-weight: 600; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn-next:disabled { background: #9cbfa6; cursor: not-allowed; }
+  .summary-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 1rem; }
+  .summary-section { padding: 1rem 1.1rem; border-bottom: 1px solid var(--border); }
+  .summary-label { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem; }
+  .summary-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 0.3rem; }
+  .summary-row span:first-child { color: var(--text-muted); }
+  .summary-row span:last-child { font-weight: 500; color: var(--text); }
+  .success-screen { text-align: center; padding: 2rem 1rem; display: none; }
+  .success-icon { width: 72px; height: 72px; background: var(--accent-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; }
+  .success-code { font-family: 'DM Mono', monospace; font-size: 18px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.75rem 1.5rem; display: inline-block; margin-bottom: 1.5rem; color: var(--accent); }
+  .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(80px); background: #1a1a18; color: #fff; font-size: 14px; padding: 0.7rem 1.25rem; border-radius: 50px; transition: 0.3s; z-index: 200; white-space: nowrap; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
   @keyframes spin { to { transform: rotate(360deg); } }
+  .empty-state { text-align: center; padding: 1.5rem; color: var(--text-muted); font-size: 14px; background: var(--surface2); border-radius: var(--radius); border: 1.5px dashed var(--border); }
 </style>
 </head>
 <body>
 
 <script>
+  // URL DE TU APPS SCRIPT
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyrg_2K6z3fR_5jL7wubIJrkD4mOQnxpTkxKoNf0PFcoWLPUEHt-96nUT4-w6jn5GJy/exec";
 </script>
 
@@ -70,279 +87,380 @@
   </div>
   <div>
     <div class="header-title">Reporte de Faltantes</div>
-    <div class="header-sub">Sistema de Inventario</div>
+    <div class="header-sub">Inventario de Sucursales</div>
   </div>
 </div>
 <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
 
+<input type="hidden" id="vendedorNombre">
+<input type="hidden" id="vendedorCorreo">
+
 <div class="container">
-  <input type="hidden" id="vendedorNombre">
-  <input type="hidden" id="vendedorCorreo">
 
   <div class="step active" id="step1">
     <div class="step-label">Paso 1 de 4</div>
-    <div class="step-title">Acceso al Sistema</div>
-    <div class="step-desc">Identifícate con tu cuenta para reportar.</div>
-    
+    <div class="step-title">Verificar identidad</div>
+    <div class="step-desc">Usa tu cuenta corporativa para continuar.</div>
+
     <div id="g_id_onload" 
          data-client_id="926135554390-f39b02cdi8ong7nnh00j0vkr8n2ek3a7.apps.googleusercontent.com" 
-         data-context="signin" data-ux_mode="popup" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
-    <div class="g_id_signin" data-type="standard" data-size="large" style="display: flex; justify-content: center; margin-bottom: 20px;"></div>
+         data-context="signin" 
+         data-ux_mode="popup" 
+         data-callback="handleCredentialResponse" 
+         data-auto_prompt="false"></div>
+    <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="signin_with" data-size="large" data-logo_alignment="left" style="margin-bottom: 1.5rem; display: flex; justify-content: center;"></div>
+
+    <div class="divider"><hr><span>o ingresa manualmente</span></div>
 
     <div class="field">
-      <label>O ingresa tu correo manualmente</label>
-      <input type="email" id="inputCorreoLogin" placeholder="usuario@empresa.com">
+      <label>Correo corporativo <span class="req">*</span></label>
+      <input type="email" id="inputCorreoLogin" placeholder="correo@empresa.com">
     </div>
-    <button class="btn-next" onclick="intentarAccesoManual()">Verificar Acceso</button>
+
+    <div class="nav-btns">
+      <button class="btn-next" onclick="intentarAccesoManual()" style="width: 100%">Verificar acceso <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg></button>
+    </div>
   </div>
 
   <div class="step" id="step2">
     <div class="step-label">Paso 2 de 4</div>
-    <div class="step-title">Ubicación</div>
-    <div class="step-desc">¿En qué sucursal te encuentras?</div>
+    <div class="step-title">Ubicación de la sucursal</div>
+    <div class="step-desc">Selecciona el canal y la ubicación exacta.</div>
 
     <div class="field">
       <label>Canal <span class="req">*</span></label>
-      <input type="text" id="selCanal" list="listCanal" placeholder="Escribe para buscar canal..." oninput="cargarSucursales()">
+      <input type="text" id="selCanal" list="listCanal" placeholder="Escribe o selecciona..." onchange="cargarSucursales()" autocomplete="off">
       <datalist id="listCanal"></datalist>
     </div>
-
     <div class="field">
       <label>Departamento <span class="req">*</span></label>
-      <input type="text" id="selDepartamento" list="listDepartamento" placeholder="Escribe para buscar departamento..." oninput="cargarMunicipios()">
+      <input type="text" id="selDepartamento" list="listDepartamento" placeholder="Escribe o selecciona..." onchange="cargarMunicipios()" autocomplete="off">
       <datalist id="listDepartamento"></datalist>
     </div>
-
     <div class="field">
       <label>Municipio <span class="req">*</span></label>
-      <input type="text" id="selMunicipio" list="listMunicipio" placeholder="Escribe para buscar municipio..." oninput="cargarSucursales()" disabled>
+      <input type="text" id="selMunicipio" list="listMunicipio" placeholder="Esperando Departamento..." onchange="cargarSucursales()" disabled autocomplete="off">
       <datalist id="listMunicipio"></datalist>
     </div>
-
     <div class="field">
       <label>Sucursal <span class="req">*</span></label>
-      <input type="text" id="selSucursal" list="listSucursal" placeholder="Escribe para buscar sucursal..." disabled>
+      <input type="text" id="selSucursal" list="listSucursal" placeholder="Esperando Canal y Municipio..." disabled autocomplete="off">
       <datalist id="listSucursal"></datalist>
     </div>
 
     <div class="nav-btns">
-      <button class="btn-back" onclick="irPaso(1)">Atrás</button>
-      <button class="btn-next" onclick="irPaso(3)">Continuar</button>
+      <button class="btn-next" onclick="irPaso(3)" style="width: 100%">Continuar <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg></button>
     </div>
   </div>
 
   <div class="step" id="step3">
     <div class="step-label">Paso 3 de 4</div>
-    <div class="step-title">Productos Faltantes</div>
-    <div class="step-desc">Agrega los productos que no encontraste.</div>
+    <div class="step-title">Productos faltantes</div>
+    <div class="step-desc">Busca y selecciona los productos con faltante.</div>
 
     <div class="field">
       <label>Marca <span class="req">*</span></label>
-      <input type="text" id="selMarca" list="listMarca" placeholder="Escribe para buscar marca..." oninput="cargarProductos()">
+      <input type="text" id="selMarca" list="listMarca" placeholder="Escribe o selecciona..." onchange="cargarProductos()" autocomplete="off">
       <datalist id="listMarca"></datalist>
     </div>
 
     <div class="field">
       <label>Producto <span class="req">*</span></label>
-      <input type="text" id="selProducto" list="listProducto" placeholder="Escribe para buscar producto..." disabled>
+      <input type="text" id="selProducto" list="listProducto" placeholder="Selecciona una marca primero..." disabled autocomplete="off">
       <datalist id="listProducto"></datalist>
     </div>
 
-    <div class="field">
-      <label>Cantidad</label>
-      <input type="number" id="inputCantidad" value="1" min="1">
+    <div class="qty-row" style="margin-bottom:1rem">
+      <div class="field" style="margin-bottom:0">
+        <label>Cantidad faltante</label>
+        <input type="number" id="inputCantidad" min="1" value="1">
+      </div>
+      <div style="margin-top:20px">
+        <div class="qty-controls">
+          <button class="qty-btn" onclick="ajustarCantidad(-1)">−</button>
+          <span class="qty-display" id="qtyDisplay">1</span>
+          <button class="qty-btn" onclick="ajustarCantidad(1)">+</button>
+        </div>
+      </div>
     </div>
 
-    <button class="add-btn" onclick="agregarProducto()">+ Agregar a la lista</button>
+    <button class="add-btn" onclick="agregarProducto()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+      Agregar producto a la lista
+    </button>
 
-    <div class="items-list" id="itemsList"></div>
+    <div style="margin-top:1.25rem;">
+      <div class="summary-label">Productos agregados</div>
+      <div class="items-list" id="itemsList">
+        <div class="empty-state">Aún no has agregado productos</div>
+      </div>
+    </div>
 
     <div class="nav-btns">
-      <button class="btn-back" onclick="irPaso(2)">Atrás</button>
-      <button class="btn-next" onclick="irPaso(4)">Finalizar</button>
+      <button class="btn-back" onclick="irPaso(2)">← Atrás</button>
+      <button class="btn-next" onclick="irPaso(4)">Revisar reporte <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg></button>
     </div>
   </div>
 
   <div class="step" id="step4">
     <div class="step-label">Paso 4 de 4</div>
-    <div class="step-title">Revisión</div>
-    <div class="step-desc">Confirma los datos antes de enviar.</div>
+    <div class="step-title">Revisar y enviar</div>
+    <div class="step-desc">Verifica que todo esté correcto antes de enviar.</div>
 
-    <div id="resumenFinal" style="background: white; padding: 15px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 15px; font-size: 14px;">
+    <div class="summary-card">
+      <div class="summary-section">
+        <div class="summary-label">Vendedor</div>
+        <div class="summary-row"><span>Nombre</span><span id="sumNombre">—</span></div>
       </div>
+      <div class="summary-section">
+        <div class="summary-label">Sucursal</div>
+        <div class="summary-row"><span>Canal</span><span id="sumCanal">—</span></div>
+        <div class="summary-row"><span>Sucursal</span><span id="sumSuc">—</span></div>
+      </div>
+      <div class="summary-section">
+        <div class="summary-label">Productos faltantes</div>
+        <div id="sumItems"></div>
+      </div>
+    </div>
 
     <div class="field">
       <label>Urgencia</label>
       <div class="urgency-pills">
-        <button class="urgency-pill" id="urg-Baja" onclick="setUrgencia('Baja')">Baja</button>
-        <button class="urgency-pill sel-med" id="urg-Media" onclick="setUrgencia('Media')">Media</button>
-        <button class="urgency-pill" id="urg-Alta" onclick="setUrgencia('Alta')">Alta</button>
+        <button class="urgency-pill" onclick="setUrgencia('Baja', this)">🟢 Baja</button>
+        <button class="urgency-pill sel-med" onclick="setUrgencia('Media', this)">🟡 Media</button>
+        <button class="urgency-pill" onclick="setUrgencia('Alta', this)">🔴 Alta</button>
       </div>
     </div>
 
     <div class="field">
-      <label>Observaciones adicionales</label>
-      <textarea id="observaciones" placeholder="Opcional..."></textarea>
+      <label>Observaciones</label>
+      <textarea id="observaciones"></textarea>
     </div>
 
     <div class="nav-btns">
-      <button class="btn-back" onclick="irPaso(3)">Atrás</button>
+      <button class="btn-back" onclick="irPaso(3)">← Atrás</button>
       <button class="btn-next" id="btnEnviar" onclick="enviarReporte()">
-        <span id="btnTexto">Enviar Reporte</span>
+        <span id="btnTexto">Enviar reporte</span>
         <div class="spinner" id="btnSpinner"></div>
+        <svg id="btnIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
       </button>
     </div>
   </div>
 
-  <div class="step" id="stepSuccess" style="text-align: center; padding-top: 40px;">
-    <div style="font-size: 60px;">✅</div>
-    <h2 style="margin: 20px 0 10px;">¡Reporte Enviado!</h2>
-    <p style="color: var(--text-muted); margin-bottom: 30px;">Tu código de seguimiento es: <strong id="codigoExito">---</strong></p>
-    <button class="btn-next" onclick="location.reload()">Nuevo Reporte</button>
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#2d5a3d" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></div>
+    <div class="success-title">¡Reporte enviado!</div>
+    <div class="success-code" id="codigoReporte"></div>
+    <button class="btn-new" onclick="nuevoReporte()">Hacer otro reporte</button>
   </div>
 
 </div>
-
 <div class="toast" id="toast"></div>
 
 <script>
 let pasoActual = 1;
+let urgenciaSeleccionada = "Media";
 let productosAgregados = [];
 let datosListas = {};
-let urgencia = "Media";
 
-// 1. CARGAR DATOS AL INICIAR
-async function cargarDatos() {
+async function cargarDatosIniciales() {
   try {
-    const r = await fetch(APPS_SCRIPT_URL + "?action=getListas");
-    datosListas = await r.json();
-    poblarDatalist('listCanal', datosListas.canales);
-    poblarDatalist('listDepartamento', datosListas.departamentos);
-    poblarDatalist('listMarca', datosListas.marcas);
-  } catch(e) { mostrarToast("Error al cargar datos del servidor."); }
+    const res = await fetch(APPS_SCRIPT_URL + "?action=getListas");
+    datosListas = await res.json();
+    
+    // Cargar listas base
+    cargarOpcionesList(datosListas.canales, 'listCanal');
+    cargarOpcionesList(datosListas.departamentos, 'listDepartamento');
+    cargarOpcionesList(datosListas.marcas, 'listMarca');
+  } catch(e) {
+    mostrarToast("Error conectando con la base de datos.");
+  }
 }
 
-function poblarDatalist(id, data) {
-  const dl = document.getElementById(id);
-  dl.innerHTML = "";
-  if (data) data.forEach(item => dl.innerHTML += `<option value="${item}">`);
+function cargarOpcionesList(array, listId) {
+  const dl = document.getElementById(listId);
+  dl.innerHTML = '';
+  if(array) array.forEach(item => dl.innerHTML += `<option value="${item}">`);
 }
 
-// 2. LÓGICA DE AUTOCOMPLETE PROGRESIVO
+// ════ LÓGICA DE LOGIN GOOGLE ════
+function parseJwt(token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    } catch (e) { return null; }
+}
+
+function handleCredentialResponse(response) {
+    const data = parseJwt(response.credential);
+    if (!data || !data.email) return mostrarToast("Error al leer cuenta.");
+    validarAcceso(data.email);
+}
+
+function intentarAccesoManual() {
+    const email = document.getElementById('inputCorreoLogin').value;
+    if(!email) return mostrarToast("Ingresa un correo.");
+    validarAcceso(email);
+}
+
+function validarAcceso(correo) {
+    if (!datosListas.ejecutivos) return mostrarToast("Cargando base de datos...");
+    const ej = datosListas.ejecutivos.find(e => e.correo.toLowerCase() === correo.toLowerCase().trim());
+    if (ej) {
+        document.getElementById('vendedorNombre').value = ej.nombre;
+        document.getElementById('vendedorCorreo').value = ej.correo;
+        irPaso(2);
+    } else {
+        mostrarToast("Acceso denegado: Correo no autorizado.");
+    }
+}
+
+// ════ CASCADAS PASO 2 ════
 function cargarMunicipios() {
   const dep = document.getElementById('selDepartamento').value;
-  const inputMun = document.getElementById('selMunicipio');
-  if (datosListas.municipios && datosListas.municipios[dep]) {
-    poblarDatalist('listMunicipio', datosListas.municipios[dep]);
-    inputMun.disabled = false;
+  const inMun = document.getElementById('selMunicipio');
+  const inSuc = document.getElementById('selSucursal');
+  
+  inMun.value = ''; inSuc.value = '';
+  inMun.disabled = true; inSuc.disabled = true;
+  document.getElementById('listMunicipio').innerHTML = '';
+  document.getElementById('listSucursal').innerHTML = '';
+
+  if (dep && datosListas.municipios[dep]) {
+    inMun.placeholder = "Escribe o selecciona...";
+    cargarOpcionesList(datosListas.municipios[dep], 'listMunicipio');
+    inMun.disabled = false;
   } else {
-    inputMun.disabled = true;
-    inputMun.value = "";
+    inMun.placeholder = "Esperando Departamento...";
   }
 }
 
 function cargarSucursales() {
   const canal = document.getElementById('selCanal').value;
   const mun = document.getElementById('selMunicipio').value;
-  const inputSuc = document.getElementById('selSucursal');
+  const inSuc = document.getElementById('selSucursal');
   
-  if (canal && mun && datosListas.sucursales) {
-    const filtradas = datosListas.sucursales
-      .filter(s => s.canal === canal && s.mun === mun)
-      .map(s => s.suc);
-    poblarDatalist('listSucursal', filtradas);
-    inputSuc.disabled = false;
+  inSuc.value = '';
+  document.getElementById('listSucursal').innerHTML = '';
+
+  if (!canal || !mun) {
+    inSuc.placeholder = "Esperando Canal y Municipio...";
+    inSuc.disabled = true;
+    return;
+  }
+
+  // Filtramos sucursales según el canal y el municipio seleccionados
+  const sucs = datosListas.sucursales.filter(s => s.canal === canal && s.mun === mun);
+  
+  if (sucs.length > 0) {
+    inSuc.placeholder = "Escribe o selecciona...";
+    cargarOpcionesList(sucs.map(s => s.suc), 'listSucursal');
+    inSuc.disabled = false;
   } else {
-    inputSuc.disabled = true;
-    inputSuc.value = "";
+    inSuc.placeholder = "Sin sucursales registradas aquí";
+    inSuc.disabled = true;
   }
 }
 
+// ════ CASCADAS PASO 3 ════
 function cargarProductos() {
   const marca = document.getElementById('selMarca').value;
-  const inputProd = document.getElementById('selProducto');
-  if (datosListas.productos && datosListas.productos[marca]) {
-    poblarDatalist('listProducto', datosListas.productos[marca]);
-    inputProd.disabled = false;
+  const inProd = document.getElementById('selProducto');
+  
+  inProd.value = '';
+  document.getElementById('listProducto').innerHTML = '';
+
+  if (marca && datosListas.productos[marca]) {
+    inProd.placeholder = "Escribe o selecciona un producto...";
+    cargarOpcionesList(datosListas.productos[marca], 'listProducto');
+    inProd.disabled = false;
   } else {
-    inputProd.disabled = true;
-    inputProd.value = "";
+    inProd.placeholder = "Selecciona una marca primero...";
+    inProd.disabled = true;
   }
 }
 
-// 3. GESTIÓN DE PRODUCTOS
-function agregarProducto() {
-  const m = document.getElementById('selMarca').value;
-  const p = document.getElementById('selProducto').value;
-  const c = document.getElementById('inputCantidad').value;
-  
-  if (!m || !p) return mostrarToast("Selecciona marca y producto.");
-  
-  productosAgregados.push({ marca: m, producto: p, cantidad: c });
-  renderProductos();
-  
-  // Limpiar campos
-  document.getElementById('selProducto').value = "";
-  document.getElementById('inputCantidad').value = 1;
+function ajustarCantidad(delta) {
+  const input = document.getElementById('inputCantidad');
+  let val = Math.max(1, (parseInt(input.value) || 1) + delta);
+  input.value = val;
+  document.getElementById('qtyDisplay').textContent = val;
 }
 
-function renderProductos() {
-  const div = document.getElementById('itemsList');
-  div.innerHTML = productosAgregados.map((p, i) => `
+function agregarProducto() {
+  const marca = document.getElementById('selMarca').value;
+  const prod = document.getElementById('selProducto').value;
+  const cant = parseInt(document.getElementById('inputCantidad').value) || 1;
+
+  if (!marca || !prod) return mostrarToast("Completa marca y producto");
+  if (productosAgregados.find(p => p.producto === prod)) return mostrarToast("El producto ya está en la lista");
+
+  productosAgregados.push({ marca: marca, producto: prod, cantidad: cant });
+  renderItems();
+  
+  document.getElementById('selProducto').value = "";
+  document.getElementById('inputCantidad').value = 1;
+  document.getElementById('qtyDisplay').textContent = '1';
+}
+
+function quitarProducto(idx) { productosAgregados.splice(idx, 1); renderItems(); }
+
+function renderItems() {
+  const lista = document.getElementById('itemsList');
+  if (productosAgregados.length === 0) return lista.innerHTML = '<div class="empty-state">Aún no has agregado productos</div>';
+  
+  lista.innerHTML = productosAgregados.map((p, i) => `
     <div class="item-card">
-      <div><strong>${p.producto}</strong><br><small>${p.marca} - Cant: ${p.cantidad}</small></div>
-      <button class="item-remove" onclick="quitarProducto(${i})">&times;</button>
+      <div class="item-info">
+        <div class="item-brand">${p.marca}</div>
+        <div class="item-name">${p.producto}</div>
+        <div class="item-qty">Cantidad: ${p.cantidad} uds.</div>
+      </div>
+      <button class="item-remove" onclick="quitarProducto(${i})">×</button>
     </div>
   `).join('');
 }
 
-function quitarProducto(i) {
-  productosAgregados.splice(i, 1);
-  renderProductos();
-}
-
-// 4. NAVEGACIÓN Y ENVÍO
-function irPaso(n) {
-  if (n > pasoActual) {
-    if (pasoActual === 2 && (!document.getElementById('selSucursal').value)) {
-      return mostrarToast("Por favor selecciona una sucursal.");
+// ════ CONTROL DE PASOS ════
+function irPaso(paso) {
+  if (paso > pasoActual) {
+    if (pasoActual === 2) {
+      if(!document.getElementById('selCanal').value || !document.getElementById('selSucursal').value) 
+        return mostrarToast("Completa la información de la sucursal");
     }
-    if (pasoActual === 3 && productosAgregados.length === 0) {
-      return mostrarToast("Agrega al menos un producto.");
-    }
+    if (pasoActual === 3 && productosAgregados.length === 0) return mostrarToast("Agrega al menos 1 producto");
   }
 
-  document.getElementById(`step${pasoActual}`).classList.remove('active');
-  pasoActual = n;
-  document.getElementById(`step${n}`).classList.add('active');
-  document.getElementById('progressFill').style.width = ((n - 1) / 3) * 100 + "%";
+  document.getElementById('step' + pasoActual).classList.remove('active');
+  pasoActual = paso;
+  document.getElementById('step' + paso).classList.add('active');
+  document.getElementById('progressFill').style.width = ((paso - 1) / 4) * 100 + '%';
 
-  if (n === 4) generarResumen();
+  if (paso === 4) {
+    document.getElementById('sumNombre').textContent = document.getElementById('vendedorNombre').value;
+    document.getElementById('sumCanal').textContent = document.getElementById('selCanal').value;
+    document.getElementById('sumSuc').textContent = document.getElementById('selSucursal').value;
+    document.getElementById('sumItems').innerHTML = productosAgregados.map(p => `
+      <div style="display:flex; justify-content:space-between; font-size:14px; padding:3px 0">
+        <span>${p.producto}</span><b>${p.cantidad}</b>
+      </div>`).join('');
+  }
 }
 
-function generarResumen() {
-  const res = document.getElementById('resumenFinal');
-  res.innerHTML = `
-    <p><strong>Sucursal:</strong> ${document.getElementById('selSucursal').value}</p>
-    <p><strong>Vendedor:</strong> ${document.getElementById('vendedorNombre').value}</p>
-    <hr style="margin:10px 0; border:0; border-top:1px solid #eee">
-    <p><strong>Productos:</strong></p>
-    ${productosAgregados.map(p => `- ${p.producto} (${p.cantidad})`).join('<br>')}
-  `;
+function setUrgencia(val, el) {
+  urgenciaSeleccionada = val;
+  document.querySelectorAll('.urgency-pill').forEach(p => p.className = 'urgency-pill');
+  el.classList.add(val === 'Baja' ? 'sel-low' : val === 'Media' ? 'sel-med' : 'sel-high');
 }
 
-function setUrgencia(val) {
-  urgencia = val;
-  document.querySelectorAll('.urgency-pill').forEach(btn => btn.classList.remove('sel-med'));
-  document.getElementById(`urg-${val}`).classList.add('sel-med');
-}
-
+// ════ ENVÍO DE DATOS ════
 async function enviarReporte() {
   const btn = document.getElementById('btnEnviar');
-  const spin = document.getElementById('btnSpinner');
-  const txt = document.getElementById('btnTexto');
-
-  btn.disabled = true; spin.style.display = 'block'; txt.style.display = 'none';
+  btn.disabled = true; document.getElementById('btnSpinner').style.display = 'block';
 
   const payload = {
     ejecutivo: document.getElementById('vendedorNombre').value,
@@ -352,54 +470,31 @@ async function enviarReporte() {
     municipio: document.getElementById('selMunicipio').value,
     sucursal: document.getElementById('selSucursal').value,
     productos: productosAgregados,
-    urgencia: urgencia,
+    urgencia: urgenciaSeleccionada,
     observaciones: document.getElementById('observaciones').value
   };
 
   try {
-    const r = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
-    const res = await r.json();
-    if (res.success) {
-      document.getElementById('step4').classList.remove('active');
-      document.getElementById('stepSuccess').classList.add('active');
-      document.getElementById('codigoExito').textContent = res.codigo;
-    }
+    const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('step4').style.display = 'none';
+      document.getElementById('successScreen').style.display = 'block';
+      document.getElementById('codigoReporte').textContent = data.codigo;
+      document.getElementById('progressFill').style.width = '100%';
+    } else throw new Error();
   } catch(e) {
-    mostrarToast("Error al enviar reporte.");
-    btn.disabled = false; spin.style.display = 'none'; txt.style.display = 'inline';
+    mostrarToast("Error enviando el reporte.");
+  } finally {
+    btn.disabled = false; document.getElementById('btnSpinner').style.display = 'none';
   }
 }
 
-// LOGIN HELPERS
-function handleCredentialResponse(response) {
-  const data = JSON.parse(atob(response.credential.split('.')[1]));
-  validarAcceso(data.email, data.name);
-}
+function nuevoReporte() { location.reload(); }
+function mostrarToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
 
-function intentarAccesoManual() {
-  const email = document.getElementById('inputCorreoLogin').value;
-  if (!email) return mostrarToast("Ingresa un correo.");
-  validarAcceso(email, "Usuario Manual");
-}
-
-function validarAcceso(correo, nombre) {
-  const ej = datosListas.ejecutivos.find(e => e.correo.toLowerCase() === correo.toLowerCase());
-  if (ej) {
-    document.getElementById('vendedorNombre').value = ej.nombre;
-    document.getElementById('vendedorCorreo').value = ej.correo;
-    irPaso(2);
-  } else {
-    mostrarToast("Correo no autorizado.");
-  }
-}
-
-function mostrarToast(m) {
-  const t = document.getElementById('toast');
-  t.textContent = m; t.style.display = 'block';
-  setTimeout(() => t.style.display = 'none', 3000);
-}
-
-window.onload = cargarDatos;
+// Inicia la carga de datos al abrir la página
+cargarDatosIniciales();
 </script>
 </body>
 </html>
