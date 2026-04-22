@@ -29,6 +29,7 @@
   .step-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.6; }
   .field { margin-bottom: 1.1rem; }
   .field label { display: block; font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 0.4rem; }
+  .req { color: var(--accent2); margin-left: 2px; }
   input[type="text"], input[type="email"], input[type="number"], textarea { width: 100%; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text); background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.7rem 0.9rem; outline: none; transition: 0.15s; }
   input:focus, textarea:focus { border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--accent-light); }
   input:disabled { background-color: var(--surface2); color: var(--text-muted); cursor: not-allowed; }
@@ -36,27 +37,26 @@
   .btn-back { flex: 0 0 auto; background: transparent; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.8rem 1.25rem; color: var(--text-muted); cursor: pointer; }
   .btn-next { flex: 1; background: var(--accent); border: none; border-radius: var(--radius); padding: 0.85rem; font-size: 15px; font-weight: 600; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
   .btn-next:disabled { background: #9cbfa6; cursor: not-allowed; }
-  .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(80px); background: #1a1a18; color: #fff; font-size: 14px; padding: 0.7rem 1.25rem; border-radius: 50px; transition: 0.3s; z-index: 200; }
-  .toast.show { transform: translateX(-50%) translateY(0); }
-  .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  /* Estilos adicionales para item cards y success heredados del original... */
   .item-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
-  .item-brand { font-size: 11px; color: var(--accent); text-transform: uppercase; }
-  .qty-controls { display: flex; align-items: center; gap: 6px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.4rem 0.6rem; }
-  .qty-btn { width: 28px; height: 28px; background: var(--accent-light); border: none; border-radius: 6px; color: var(--accent); cursor: pointer; }
+  .item-brand { font-size: 11px; color: var(--accent); text-transform: uppercase; font-weight: 600; }
+  .qty-controls { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.5rem; width: fit-content; }
+  .qty-btn { width: 32px; height: 32px; background: var(--accent-light); border: none; border-radius: 6px; color: var(--accent); cursor: pointer; font-size: 18px; font-weight: bold; }
   .urgency-pills { display: flex; gap: 0.5rem; }
-  .urgency-pill { flex: 1; padding: 0.6rem; border: 1.5px solid var(--border); border-radius: var(--radius); background: #fff; cursor: pointer; }
+  .urgency-pill { flex: 1; padding: 0.6rem; border: 1.5px solid var(--border); border-radius: var(--radius); background: #fff; cursor: pointer; text-align: center; font-size: 13px; }
   .sel-low { border-color: #2d5a3d; background: #e8f0ea; color: #2d5a3d; }
   .sel-med { border-color: #b07c2a; background: #fef3e2; color: #b07c2a; }
   .sel-high { border-color: #c0392b; background: #fdecea; color: #c0392b; }
+  .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(80px); background: #1a1a18; color: #fff; font-size: 14px; padding: 0.7rem 1.25rem; border-radius: 50px; transition: 0.3s; z-index: 200; white-space: nowrap; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
 
 <script>
-  // REEMPLAZA CON TU NUEVA URL TRAS IMPLEMENTAR
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwAAtG5yhLikkC5WfQ2PD1fpqxAjK537157v8RxLTZPmKOb7w5T2U5CP73BjtX39l5t2Q/exec";
+  // IMPORTANTE: Cambia esta URL cada vez que hagas una nueva implementación en Apps Script
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyrg_2K6z3fR_5jL7wubIJrkD4mOQnxpTkxKoNf0PFcoWLPUEHt-96nUT4-w6jn5GJy/exec";
 </script>
 
 <div class="header">
@@ -69,34 +69,53 @@
   <div class="step active" id="step1">
     <div class="step-label">Paso 1 de 4</div>
     <div class="step-title">Verificar identidad</div>
+    <div class="step-desc">Usa tu cuenta corporativa para continuar.</div>
+
+    <div id="g_id_onload" 
+         data-client_id="926135554390-f39b02cdi8ong7nnh00j0vkr8n2ek3a7.apps.googleusercontent.com" 
+         data-context="signin" 
+         data-ux_mode="popup" 
+         data-callback="handleCredentialResponse" 
+         data-auto_prompt="false">
+    </div>
+    <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="signin_with" data-size="large" data-logo_alignment="left" style="margin-bottom: 1.5rem; display: flex; justify-content: center;"></div>
+
+    <div style="text-align: center; margin: 1.5rem 0; color: var(--text-muted); font-size: 13px; position: relative;">
+        <hr style="border: none; border-top: 1px solid var(--border); position: absolute; width: 100%; top: 50%;">
+        <span style="background: var(--bg); padding: 0 10px; position: relative;">o ingresa manualmente</span>
+    </div>
+
     <div class="field">
-      <label>Correo corporativo</label>
+      <label>Correo corporativo <span class="req">*</span></label>
       <input type="email" id="inputCorreoLogin" placeholder="correo@empresa.com">
     </div>
-    <button class="btn-next" onclick="intentarAccesoManual()" style="width: 100%">Verificar acceso</button>
+
+    <div class="nav-btns">
+      <button class="btn-next" onclick="intentarAccesoManual()" style="width: 100%">Verificar acceso</button>
+    </div>
   </div>
 
   <div class="step" id="step2">
     <div class="step-label">Paso 2 de 4</div>
     <div class="step-title">Ubicación</div>
     <div class="field">
-      <label>Canal</label>
-      <input type="text" id="selCanal" list="listCanal" placeholder="Selecciona..." onchange="cargarSucursales()">
+      <label>Canal <span class="req">*</span></label>
+      <input type="text" id="selCanal" list="listCanal" placeholder="Selecciona canal..." onchange="cargarSucursales()">
       <datalist id="listCanal"></datalist>
     </div>
     <div class="field">
-      <label>Departamento</label>
-      <input type="text" id="selDepartamento" list="listDepartamento" placeholder="Selecciona..." onchange="cargarMunicipios()">
+      <label>Departamento <span class="req">*</span></label>
+      <input type="text" id="selDepartamento" list="listDepartamento" placeholder="Selecciona departamento..." onchange="cargarMunicipios()">
       <datalist id="listDepartamento"></datalist>
     </div>
     <div class="field">
-      <label>Municipio</label>
-      <input type="text" id="selMunicipio" list="listMunicipio" placeholder="Selecciona..." onchange="cargarSucursales()" disabled>
+      <label>Municipio <span class="req">*</span></label>
+      <input type="text" id="selMunicipio" list="listMunicipio" placeholder="Selecciona municipio..." onchange="cargarSucursales()" disabled>
       <datalist id="listMunicipio"></datalist>
     </div>
     <div class="field">
-      <label>Sucursal</label>
-      <input type="text" id="selSucursal" list="listSucursal" placeholder="Esperando datos..." disabled>
+      <label>Sucursal <span class="req">*</span></label>
+      <input type="text" id="selSucursal" list="listSucursal" placeholder="Esperando Canal y Municipio..." disabled>
       <datalist id="listSucursal"></datalist>
     </div>
     <div class="nav-btns">
@@ -106,14 +125,14 @@
 
   <div class="step" id="step3">
     <div class="step-label">Paso 3 de 4</div>
-    <div class="step-title">Productos</div>
+    <div class="step-title">Productos faltantes</div>
     <div class="field">
-      <label>Marca</label>
-      <input type="text" id="selMarca" list="listMarca" placeholder="Selecciona..." onchange="cargarProductos()">
+      <label>Marca <span class="req">*</span></label>
+      <input type="text" id="selMarca" list="listMarca" placeholder="Selecciona marca..." onchange="cargarProductos()">
       <datalist id="listMarca"></datalist>
     </div>
     <div class="field">
-      <label>Producto</label>
+      <label>Producto <span class="req">*</span></label>
       <input type="text" id="selProducto" list="listProducto" placeholder="Selecciona marca primero..." disabled>
       <datalist id="listProducto"></datalist>
     </div>
@@ -121,22 +140,25 @@
         <label>Cantidad</label>
         <div class="qty-controls">
             <button class="qty-btn" onclick="ajustarCantidad(-1)">-</button>
-            <input type="number" id="inputCantidad" value="1" min="1" style="border:none; text-align:center; width:60px">
+            <input type="number" id="inputCantidad" value="1" min="1" style="border:none; text-align:center; width:50px; font-family:'DM Mono'">
             <button class="qty-btn" onclick="ajustarCantidad(1)">+</button>
         </div>
     </div>
-    <button class="btn-next" onclick="agregarProducto()" style="background:#e8f0ea; color:#2d5a3d; border:1px dashed #2d5a3d; margin-bottom:1rem">+ Agregar a la lista</button>
+    <button class="btn-next" onclick="agregarProducto()" style="background:var(--accent-light); color:var(--accent); border:1px dashed var(--accent); margin-bottom:1rem">+ Agregar producto</button>
+    
     <div id="itemsList"></div>
+
     <div class="nav-btns">
       <button class="btn-back" onclick="irPaso(2)">Atrás</button>
-      <button class="btn-next" onclick="irPaso(4)">Revisar</button>
+      <button class="btn-next" onclick="irPaso(4)">Revisar Reporte</button>
     </div>
   </div>
 
   <div class="step" id="step4">
     <div class="step-label">Paso 4 de 4</div>
-    <div class="step-title">Revisar y Enviar</div>
-    <div id="resumenReporte" style="background:#fff; padding:1rem; border-radius:10px; margin-bottom:1rem; font-size:14px"></div>
+    <div class="step-title">Enviar reporte</div>
+    <div id="resumenReporte" style="background:#fff; padding:1.2rem; border-radius:10px; margin-bottom:1.5rem; font-size:14px; border:1.5px solid var(--border)"></div>
+    
     <div class="field">
       <label>Urgencia</label>
       <div class="urgency-pills">
@@ -145,24 +167,27 @@
         <button class="urgency-pill" id="u-Alta" onclick="setUrgencia('Alta', this)">🔴 Alta</button>
       </div>
     </div>
+
     <div class="field">
       <label>Observaciones</label>
-      <textarea id="observaciones" rows="3"></textarea>
+      <textarea id="observaciones" rows="3" placeholder="Opcional..."></textarea>
     </div>
+
     <div class="nav-btns">
       <button class="btn-back" onclick="irPaso(3)">Atrás</button>
       <button class="btn-next" id="btnEnviar" onclick="enviarReporte()">
-        <span id="btnTexto">Enviar Reporte</span>
+        <span id="btnTexto">Enviar reporte final</span>
         <div class="spinner" id="btnSpinner"></div>
       </button>
     </div>
   </div>
 
-  <div id="successScreen" style="display:none; text-align:center; padding:2rem;">
-      <div style="font-size:50px">✅</div>
-      <h2>¡Enviado!</h2>
-      <p id="codigoReporte" style="font-family:monospace; margin:1rem 0; font-weight:bold; color:#2d5a3d"></p>
-      <button class="btn-next" onclick="location.reload()">Nuevo Reporte</button>
+  <div id="successScreen" style="display:none; text-align:center; padding:3rem 1rem;">
+      <div style="font-size:60px; margin-bottom:1rem">✅</div>
+      <h2 style="margin-bottom:0.5rem">¡Reporte Enviado!</h2>
+      <p style="color:var(--text-muted); margin-bottom:1.5rem">Tu reporte ha sido registrado con el código:</p>
+      <div id="codigoReporte" style="font-family:'DM Mono'; font-size:20px; background:#fff; padding:1rem; border:1.5px solid var(--border); border-radius:10px; margin-bottom:2rem; color:var(--accent); font-weight:bold"></div>
+      <button class="btn-next" onclick="location.reload()" style="width:100%">Hacer otro reporte</button>
   </div>
 </div>
 
@@ -175,6 +200,7 @@ let productosAgregados = [];
 let urgenciaSeleccionada = "Media";
 let usuarioLogueado = { nombre: "", correo: "" };
 
+// CARGA INICIAL
 async function cargarDatosIniciales() {
   try {
     const res = await fetch(APPS_SCRIPT_URL + "?action=getListas");
@@ -182,7 +208,7 @@ async function cargarDatosIniciales() {
     cargarOpcionesList(datosListas.canales, 'listCanal');
     cargarOpcionesList(datosListas.departamentos, 'listDepartamento');
     cargarOpcionesList(datosListas.marcas, 'listMarca');
-  } catch(e) { mostrarToast("Error de conexión"); }
+  } catch(e) { mostrarToast("Error al cargar base de datos"); }
 }
 
 function cargarOpcionesList(array, listId) {
@@ -191,29 +217,49 @@ function cargarOpcionesList(array, listId) {
   if(array) array.forEach(item => dl.innerHTML += `<option value="${item}">`);
 }
 
-function intentarAccesoManual() {
-  const email = document.getElementById('inputCorreoLogin').value.trim().toLowerCase();
-  const ej = datosListas.ejecutivos.find(e => e.correo.toLowerCase() === email);
-  if (ej) {
-    usuarioLogueado = ej;
-    irPaso(2);
-  } else {
-    mostrarToast("Correo no autorizado");
-  }
+// LÓGICA LOGIN
+function parseJwt(token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+        return JSON.parse(jsonPayload);
+    } catch (e) { return null; }
 }
 
+function handleCredentialResponse(response) {
+    const data = parseJwt(response.credential);
+    if (data && data.email) validarAcceso(data.email);
+}
+
+function intentarAccesoManual() {
+    const email = document.getElementById('inputCorreoLogin').value.trim();
+    if(!email) return mostrarToast("Ingresa un correo");
+    validarAcceso(email);
+}
+
+function validarAcceso(correo) {
+    if (!datosListas.ejecutivos) return mostrarToast("Cargando base de datos...");
+    const ej = datosListas.ejecutivos.find(e => e.correo.toLowerCase() === correo.toLowerCase().trim());
+    if (ej) {
+        usuarioLogueado = ej;
+        mostrarToast("Bienvenido, " + ej.nombre);
+        irPaso(2);
+    } else {
+        mostrarToast("Acceso denegado: Correo no autorizado");
+    }
+}
+
+// CASCADAS PASO 2
 function cargarMunicipios() {
   const dep = document.getElementById('selDepartamento').value.trim();
   const inMun = document.getElementById('selMunicipio');
   inMun.value = ''; inMun.disabled = true;
   
-  // Buscar departamento ignorando mayúsculas/minúsculas
   const key = Object.keys(datosListas.municipios).find(k => k.toLowerCase() === dep.toLowerCase());
-  
   if (key) {
     cargarOpcionesList(datosListas.municipios[key], 'listMunicipio');
     inMun.disabled = false;
-    inMun.placeholder = "Selecciona municipio...";
   }
 }
 
@@ -236,11 +282,12 @@ function cargarSucursales() {
       inSuc.disabled = false;
       inSuc.placeholder = "Selecciona sucursal...";
     } else {
-      inSuc.placeholder = "No hay sucursales aquí";
+      inSuc.placeholder = "Sin sucursales en esta zona";
     }
   }
 }
 
+// CASCADAS PASO 3
 function cargarProductos() {
   const marca = document.getElementById('selMarca').value.trim();
   const inProd = document.getElementById('selProducto');
@@ -264,6 +311,7 @@ function agregarProducto() {
   const cant = document.getElementById('inputCantidad').value;
 
   if(!marca || !prod) return mostrarToast("Falta marca o producto");
+  if(productosAgregados.some(p => p.producto === prod)) return mostrarToast("Producto ya agregado");
   
   productosAgregados.push({ marca, producto: prod, cantidad: cant });
   renderItems();
@@ -272,27 +320,42 @@ function agregarProducto() {
 
 function renderItems() {
   const div = document.getElementById('itemsList');
+  if(productosAgregados.length === 0) {
+      div.innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size:13px">No hay productos en la lista</p>';
+      return;
+  }
   div.innerHTML = productosAgregados.map((p, i) => `
     <div class="item-card">
-        <div><b>${p.producto}</b><br><small>${p.marca} | Cant: ${p.cantidad}</small></div>
-        <button onclick="productosAgregados.splice(${i},1);renderItems()" style="border:none; background:none; color:red; cursor:pointer">✕</button>
+        <div>
+            <div class="item-brand">${p.marca}</div>
+            <div style="font-size:14px; font-weight:500">${p.producto}</div>
+            <div style="font-size:12px; color:var(--text-muted)">Cantidad: ${p.cantidad}</div>
+        </div>
+        <button onclick="productosAgregados.splice(${i},1);renderItems()" style="border:none; background:#fee2e2; color:#b91c1c; padding:8px; border-radius:6px; cursor:pointer">✕</button>
     </div>
   `).join('');
 }
 
+// NAVEGACIÓN
 function irPaso(p) {
-  if (p === 3 && !document.getElementById('selSucursal').value) return mostrarToast("Selecciona sucursal");
+  if (p > pasoActual) {
+      if (pasoActual === 2 && !document.getElementById('selSucursal').value) return mostrarToast("Selecciona sucursal");
+      if (pasoActual === 3 && productosAgregados.length === 0) return mostrarToast("Agrega al menos un producto");
+  }
+
   if (p === 4) {
-      if(productosAgregados.length === 0) return mostrarToast("Agrega productos");
       document.getElementById('resumenReporte').innerHTML = `
-        <b>Ejecutivo:</b> ${usuarioLogueado.nombre}<br>
-        <b>Sucursal:</b> ${document.getElementById('selSucursal').value}<br>
-        <b>Productos:</b> ${productosAgregados.length} seleccionados
+        <div style="margin-bottom:8px"><strong>Ejecutivo:</strong> ${usuarioLogueado.nombre}</div>
+        <div style="margin-bottom:8px"><strong>Sucursal:</strong> ${document.getElementById('selSucursal').value}</div>
+        <div style="margin-bottom:8px"><strong>Municipio:</strong> ${document.getElementById('selMunicipio').value}</div>
+        <hr style="border:none; border-top:1px solid var(--border); margin:8px 0">
+        <div><strong>Productos:</strong> ${productosAgregados.length} items agregados.</div>
       `;
   }
+
   document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
   document.getElementById('step' + p).classList.add('active');
-  document.getElementById('progressFill').style.width = (p/4)*100 + "%";
+  document.getElementById('progressFill').style.width = ((p-1)/3)*100 + "%";
   pasoActual = p;
 }
 
@@ -302,6 +365,7 @@ function setUrgencia(val, btn) {
     btn.classList.add(val === 'Baja' ? 'sel-low' : val === 'Media' ? 'sel-med' : 'sel-high');
 }
 
+// ENVÍO FINAL
 async function enviarReporte() {
   const btn = document.getElementById('btnEnviar');
   const txt = document.getElementById('btnTexto');
@@ -328,8 +392,12 @@ async function enviarReporte() {
         document.getElementById('step4').style.display = 'none';
         document.getElementById('successScreen').style.display = 'block';
         document.getElementById('codigoReporte').innerText = data.codigo;
+        document.getElementById('progressFill').style.width = "100%";
     }
-  } catch(e) { mostrarToast("Error al enviar"); btn.disabled = false; txt.style.display = 'block'; sp.style.display = 'none'; }
+  } catch(e) { 
+    mostrarToast("Error al enviar el reporte"); 
+    btn.disabled = false; txt.style.display = 'block'; sp.style.display = 'none'; 
+  }
 }
 
 function mostrarToast(m) {
@@ -338,7 +406,8 @@ function mostrarToast(m) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-cargarDatosInitiales();
+// INICIO
+cargarDatosIniciales();
 </script>
 </body>
 </html>
