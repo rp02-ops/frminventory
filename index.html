@@ -162,7 +162,7 @@
     z-index: 2;
   }
 
-  /* ESTILOS DEL MOTOR COMBOBOX AUTOCOMPLETADO (EJEMPLO FUNCIONAL) */
+  /* ESTILOS DEL MOTOR COMBOBOX AUTOCOMPLETADO (Tomado de tu ejemplo) */
   .combo-wrap { position: relative; }
   .combo-input-row {
     display: flex;
@@ -304,7 +304,7 @@
 <body>
 
 <script>
-  // ⚠️ URL DE TU APPS SCRIPT
+  // ⚠️ REEMPLAZA ESTA URL
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyrg_2K6z3fR_5jL7wubIJrkD4mOQnxpTkxKoNf0PFcoWLPUEHt-96nUT4-w6jn5GJy/exec";
 </script>
 
@@ -567,45 +567,45 @@ const comboVal = { canal: "", dep: "", mun: "", suc: "", marca: "", prod: "" };
 // LÓGICA DE INICIO DE SESIÓN
 // ══════════════════════════════════════
 function parseJwt(token) {
-  try {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-    return JSON.parse(jsonPayload);
-  } catch (e) { return null; }
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    } catch (e) { return null; }
 }
 
 function handleCredentialResponse(response) {
-  const data = parseJwt(response.credential);
-  if (!data || !data.email) return mostrarToast("Error al leer la cuenta de Google.");
-  validarAcceso(data.email);
+    const data = parseJwt(response.credential);
+    if (!data || !data.email) return mostrarToast("Error al leer la cuenta de Google.");
+    validarAcceso(data.email);
 }
 
 function intentarAccesoManual() {
-  const inputCorreo = document.getElementById('inputCorreoLogin').value;
-  if(!inputCorreo) return mostrarToast("Por favor, ingresa un correo.");
-  validarAcceso(inputCorreo);
+    const inputCorreo = document.getElementById('inputCorreoLogin').value;
+    if(!inputCorreo) return mostrarToast("Por favor, ingresa un correo.");
+    validarAcceso(inputCorreo);
 }
 
 function validarAcceso(correoUsuario) {
-  const correoNormalizado = correoUsuario.toLowerCase().trim();
+    const correoNormalizado = correoUsuario.toLowerCase().trim();
 
-  if (!datosListas.ejecutivos || datosListas.ejecutivos.length === 0) {
-    return mostrarToast("Cargando bases de datos... Espera un segundo.");
-  }
+    if (!datosListas.ejecutivos || datosListas.ejecutivos.length === 0) {
+        return mostrarToast("Cargando bases de datos... Espera un segundo.");
+    }
 
-  const ejecutivo = datosListas.ejecutivos.find(e => e.correo.toLowerCase() === correoNormalizado);
+    const ejecutivo = datosListas.ejecutivos.find(e => e.correo.toLowerCase() === correoNormalizado);
 
-  if (ejecutivo) {
-    document.getElementById('vendedorNombre').value = ejecutivo.nombre;
-    document.getElementById('vendedorCorreo').value = ejecutivo.correo;
-    irPaso(2);
-    mostrarToast("¡Bienvenido, " + ejecutivo.nombre + "!");
-  } else {
-    mostrarToast("Acceso denegado: El correo no está autorizado.");
-  }
+    if (ejecutivo) {
+        document.getElementById('vendedorNombre').value = ejecutivo.nombre;
+        document.getElementById('vendedorCorreo').value = ejecutivo.correo;
+        irPaso(2);
+        mostrarToast("¡Bienvenido, " + ejecutivo.nombre + "!");
+    } else {
+        mostrarToast("Acceso denegado: El correo no está autorizado.");
+    }
 }
 
 // ══════════════════════════════════════
@@ -755,10 +755,13 @@ function inicializarCombos() {
     comboVal.marca = marca;
     deshabilitarCombo('comboProd', '— Primero selecciona marca —', true);
 
+    // Compatibilidad por si los productos vienen en objeto por marca, o en array simple
     let prods = [];
     if (Array.isArray(datosListas.productos)) {
+        // Asumiendo formato plano
         prods = datosListas.productos; 
     } else {
+        // Formato agrupado por marca
         prods = datosListas.productos[marca] || [];
     }
 
@@ -771,7 +774,7 @@ function inicializarCombos() {
   });
 }
 
-// 4. LÓGICA DE SUCURSALES
+// 4. LÓGICA DE SUCURSALES (ROBUSTA CONTRA AMBOS FORMATOS DE BACKEND)
 function actualizarSucursales() {
   deshabilitarCombo('comboSuc', '— Selecciona canal y municipio —', true);
   
@@ -781,20 +784,12 @@ function actualizarSucursales() {
   
   // Revisamos en qué formato está respondiendo el backend
   if (Array.isArray(datosListas.sucursales)) {
-      // Formato donde el backend devuelve objetos completos
-      if (datosListas.sucursales.length > 0 && typeof datosListas.sucursales[0] === 'object' && datosListas.sucursales[0] !== null) {
-          sucs = datosListas.sucursales
-                    .filter(s => s.canal === comboVal.canal && s.mun === comboVal.mun)
-                    .map(s => s.suc);
-      } else {
-          // Formato array simple
-          sucs = datosListas.sucursales;
-      }
-  } else if (datosListas.sucursales && datosListas.sucursales[comboVal.dep] && datosListas.sucursales[comboVal.dep][comboVal.mun]) {
-      // Formato anidado por departamento y municipio
-      sucs = datosListas.sucursales[comboVal.dep][comboVal.mun];
-  } else if (datosListas.sucursales && datosListas.sucursales[comboVal.mun]) {
-      // Formato agrupado solo por municipio
+      // Formato nuevo: un array plano de objetos {canal, dep, mun, suc}
+      sucs = datosListas.sucursales
+                .filter(s => s.canal === comboVal.canal && s.mun === comboVal.mun)
+                .map(s => s.suc);
+  } else {
+      // Formato viejo: agrupado solo por municipio { "Guatemala": ["Sucursal 1", "Sucursal 2"] }
       sucs = datosListas.sucursales[comboVal.mun] || [];
   }
 
@@ -823,7 +818,7 @@ document.addEventListener('click', (e) => {
 });
 
 // ══════════════════════════════════════
-// CONTROL DE PASOS Y VALIDACIONES
+// CONTROL DE PASOS
 // ══════════════════════════════════════
 function irPaso(paso) {
   if (paso > pasoActual && !validarPaso(pasoActual)) return;
