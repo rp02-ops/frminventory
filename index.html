@@ -77,7 +77,7 @@
 <body>
 
 <script>
-  // ⚠️ REEMPLAZA ESTA URL con la nueva tras publicar en Apps Script
+  // URL DE TU APPS SCRIPT
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwjfEEhrfNPTeZ2K2mFHVQHJaMDqU4EjqM5OzQ0c6N5bE6gbctxI5OH-dIp65C3Bd5vhw/exec";
 </script>
 
@@ -102,7 +102,13 @@
     <div class="step-title">Verificar identidad</div>
     <div class="step-desc">Usa tu cuenta corporativa para continuar.</div>
 
-<div id="g_id_onload" data-client_id="926135554390-f39b02cdi8ong7nnh00j0vkr8n2ek3a7.apps.googleusercontent.com" data-context="signin" data-ux_mode="popup" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>    <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="signin_with" data-size="large" data-logo_alignment="left" style="margin-bottom: 1.5rem; display: flex; justify-content: center;"></div>
+    <div id="g_id_onload" 
+         data-client_id="926135554390-f39b02cdi8ong7nnh00j0vkr8n2ek3a7.apps.googleusercontent.com" 
+         data-context="signin" 
+         data-ux_mode="popup" 
+         data-callback="handleCredentialResponse" 
+         data-auto_prompt="false"></div>
+    <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="signin_with" data-size="large" data-logo_alignment="left" style="margin-bottom: 1.5rem; display: flex; justify-content: center;"></div>
 
     <div class="divider"><hr><span>o ingresa manualmente</span></div>
 
@@ -133,7 +139,7 @@
     </div>
     <div class="field">
       <label>Municipio <span class="req">*</span></label>
-      <input type="text" id="selMunicipio" list="listMunicipio" placeholder="Escribe o selecciona..." onchange="cargarSucursales()" disabled autocomplete="off">
+      <input type="text" id="selMunicipio" list="listMunicipio" placeholder="Esperando Departamento..." onchange="cargarSucursales()" disabled autocomplete="off">
       <datalist id="listMunicipio"></datalist>
     </div>
     <div class="field">
@@ -277,7 +283,7 @@ function cargarOpcionesList(array, listId) {
   if(array) array.forEach(item => dl.innerHTML += `<option value="${item}">`);
 }
 
-// Lógica Login Google
+// ════ LÓGICA DE LOGIN GOOGLE ════
 function parseJwt(token) {
     try {
         const base64Url = token.split('.')[1];
@@ -313,7 +319,7 @@ function validarAcceso(correo) {
     }
 }
 
-// Cascadas Paso 2
+// ════ CASCADAS PASO 2 ════
 function cargarMunicipios() {
   const dep = document.getElementById('selDepartamento').value;
   const inMun = document.getElementById('selMunicipio');
@@ -322,10 +328,14 @@ function cargarMunicipios() {
   inMun.value = ''; inSuc.value = '';
   inMun.disabled = true; inSuc.disabled = true;
   document.getElementById('listMunicipio').innerHTML = '';
+  document.getElementById('listSucursal').innerHTML = '';
 
   if (dep && datosListas.municipios[dep]) {
+    inMun.placeholder = "Escribe o selecciona...";
     cargarOpcionesList(datosListas.municipios[dep], 'listMunicipio');
     inMun.disabled = false;
+  } else {
+    inMun.placeholder = "Esperando Departamento...";
   }
 }
 
@@ -343,7 +353,7 @@ function cargarSucursales() {
     return;
   }
 
-  // Aquí filtramos gracias al nuevo formato del backend
+  // Filtramos sucursales según el canal y el municipio seleccionados
   const sucs = datosListas.sucursales.filter(s => s.canal === canal && s.mun === mun);
   
   if (sucs.length > 0) {
@@ -356,7 +366,7 @@ function cargarSucursales() {
   }
 }
 
-// Cascadas Paso 3
+// ════ CASCADAS PASO 3 ════
 function cargarProductos() {
   const marca = document.getElementById('selMarca').value;
   const inProd = document.getElementById('selProducto');
@@ -365,7 +375,7 @@ function cargarProductos() {
   document.getElementById('listProducto').innerHTML = '';
 
   if (marca && datosListas.productos[marca]) {
-    inProd.placeholder = "Escribe para buscar producto...";
+    inProd.placeholder = "Escribe o selecciona un producto...";
     cargarOpcionesList(datosListas.productos[marca], 'listProducto');
     inProd.disabled = false;
   } else {
@@ -415,7 +425,7 @@ function renderItems() {
   `).join('');
 }
 
-// Control de pasos
+// ════ CONTROL DE PASOS ════
 function irPaso(paso) {
   if (paso > pasoActual) {
     if (pasoActual === 2) {
@@ -447,6 +457,7 @@ function setUrgencia(val, el) {
   el.classList.add(val === 'Baja' ? 'sel-low' : val === 'Media' ? 'sel-med' : 'sel-high');
 }
 
+// ════ ENVÍO DE DATOS ════
 async function enviarReporte() {
   const btn = document.getElementById('btnEnviar');
   btn.disabled = true; document.getElementById('btnSpinner').style.display = 'block';
@@ -482,6 +493,7 @@ async function enviarReporte() {
 function nuevoReporte() { location.reload(); }
 function mostrarToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
 
+// Inicia la carga de datos al abrir la página
 cargarDatosIniciales();
 </script>
 </body>
