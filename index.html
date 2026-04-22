@@ -8,543 +8,197 @@
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
   :root {
-    --bg: #f4f1ec;
-    --surface: #ffffff;
-    --surface2: #faf8f5;
-    --border: #e2ddd6;
-    --border-focus: #2d5a3d;
-    --text: #1a1a18;
-    --text-muted: #7a756e;
-    --accent: #2d5a3d;
-    --accent-light: #e8f0ea;
-    --accent2: #c4713a;
-    --danger: #c0392b;
-    --success: #2d5a3d;
-    --radius: 10px;
-    --shadow: 0 2px 12px rgba(0,0,0,0.07);
+    --bg: #f4f1ec; --surface: #ffffff; --surface2: #faf8f5; --border: #e2ddd6; --border-focus: #2d5a3d;
+    --text: #1a1a18; --text-muted: #7a756e; --accent: #2d5a3d; --accent-light: #e8f0ea; --accent2: #c4713a;
+    --danger: #c0392b; --success: #2d5a3d; --radius: 10px;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 0;
-  }
-
-  /* Header */
-  .header {
-    background: var(--accent);
-    color: #fff;
-    padding: 1.25rem 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  }
-  .header-icon {
-    width: 36px; height: 36px;
-    background: rgba(255,255,255,0.15);
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  .header { background: var(--accent); color: #fff; padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+  .header-icon { width: 36px; height: 36px; background: rgba(255,255,255,0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
   .header-title { font-size: 16px; font-weight: 600; }
   .header-sub { font-size: 12px; opacity: 0.75; margin-top: 1px; }
-
-  /* Progress bar */
-  .progress-bar {
-    height: 3px;
-    background: rgba(255,255,255,0.2);
-    position: relative;
-  }
-  .progress-fill {
-    height: 100%;
-    background: #a8d5b5;
-    transition: width 0.4s ease;
-    width: 0%;
-  }
-
-  /* Main container */
-  .container {
-    max-width: 540px;
-    margin: 0 auto;
-    padding: 1.5rem 1rem 3rem;
-  }
-
-  /* Steps */
+  .progress-bar { height: 3px; background: rgba(255,255,255,0.2); position: relative; }
+  .progress-fill { height: 100%; background: #a8d5b5; transition: width 0.4s ease; width: 0%; }
+  .container { max-width: 540px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
   .step { display: none; }
   .step.active { display: block; animation: fadeIn 0.3s ease; }
   @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
-
-  .step-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    color: var(--accent);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 0.35rem;
-  }
-  .step-title {
-    font-size: 22px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 0.4rem;
-    line-height: 1.3;
-  }
-  .step-desc {
-    font-size: 14px;
-    color: var(--text-muted);
-    margin-bottom: 1.5rem;
-    line-height: 1.6;
-  }
-
-  /* Field groups */
+  .step-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.35rem; }
+  .step-title { font-size: 22px; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; line-height: 1.3; }
+  .step-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.6; }
   .field { margin-bottom: 1.1rem; }
-  .field label {
-    display: block;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text);
-    margin-bottom: 0.4rem;
-  }
+  .field label { display: block; font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 0.4rem; }
   .field label span.req { color: var(--accent2); margin-left: 2px; }
-
-  input[type="text"], input[type="email"], input[type="number"], textarea {
-    width: 100%;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    color: var(--text);
-    background: var(--surface);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius);
-    padding: 0.7rem 0.9rem;
-    outline: none;
-    transition: border-color 0.15s, box-shadow 0.15s;
-    appearance: none;
+  
+  /* Estilos mejorados para Inputs con Datalist */
+  input[type="text"], input[type="email"], input[type="number"], textarea { 
+    width: 100%; font-family: 'DM Sans', sans-serif; font-size: 16px; /* 16px evita zoom automático en iOS */
+    color: var(--text); background: var(--surface); border: 1.5px solid var(--border); 
+    border-radius: var(--radius); padding: 0.8rem 0.9rem; outline: none; transition: 0.15s; 
     -webkit-appearance: none;
   }
-  input:focus, textarea:focus {
-    border-color: var(--border-focus);
-    box-shadow: 0 0 0 3px var(--accent-light);
-  }
-  input:disabled {
-    background-color: var(--surface2);
-    color: var(--text-muted);
-    cursor: not-allowed;
-  }
-  textarea { resize: vertical; min-height: 80px; }
+  input:focus, textarea:focus { border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--accent-light); }
+  input:disabled { background-color: #eee; color: #999; cursor: not-allowed; }
 
-  /* Login Divider */
-  .divider {
-    text-align: center;
-    margin: 1.5rem 0;
-    color: var(--text-muted);
-    font-size: 13px;
-    position: relative;
-  }
-  .divider hr {
-    border: none;
-    border-top: 1px solid var(--border);
-    position: absolute;
-    width: 100%;
-    top: 50%;
-    z-index: 1;
-  }
-  .divider span {
-    background: var(--bg);
-    padding: 0 10px;
-    position: relative;
-    z-index: 2;
-  }
-
-  /* ESTILOS DEL MOTOR COMBOBOX AUTOCOMPLETADO (Tomado de tu ejemplo) */
-  .combo-wrap { position: relative; }
-  .combo-input-row {
-    display: flex;
-    align-items: center;
-    background: var(--surface);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius);
-    transition: border-color 0.15s, box-shadow 0.15s;
-    overflow: hidden;
-  }
-  .combo-input-row:focus-within {
-    border-color: var(--border-focus);
-    box-shadow: 0 0 0 3px var(--accent-light);
-  }
-  .combo-input-row.disabled {
-    background: var(--surface2);
-    cursor: not-allowed;
-  }
-  .combo-input {
-    flex: 1;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    color: var(--text);
-    background: transparent;
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
-    padding: 0.7rem 0.9rem;
-    min-width: 0;
-  }
-  .combo-input:disabled { color: var(--text-muted); cursor: not-allowed; }
-  .combo-input::placeholder { color: var(--text-muted); }
-  .combo-chevron {
-    padding: 0 12px;
-    color: var(--text-muted);
-    cursor: pointer;
-    flex-shrink: 0;
-    transition: transform 0.2s;
-    background: transparent;
-    border: none;
-    display: flex; align-items: center;
-  }
-  .combo-chevron.open { transform: rotate(180deg); }
-  .combo-dropdown {
-    display: none;
-    position: absolute;
-    top: calc(100% + 4px);
-    left: 0; right: 0;
-    background: var(--surface);
-    border: 1.5px solid var(--border-focus);
-    border-radius: var(--radius);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-    z-index: 50;
-    max-height: 220px;
-    overflow-y: auto;
-  }
-  .combo-dropdown.open { display: block; }
-  .combo-option {
-    padding: 0.65rem 0.9rem;
-    font-size: 14px;
-    color: var(--text);
-    cursor: pointer;
-    transition: background 0.1s;
-    border-bottom: 1px solid #f4f1ec;
-  }
-  .combo-option:last-child { border-bottom: none; }
-  .combo-option:hover, .combo-option.focused { background: var(--accent-light); color: var(--accent); }
-  .combo-option.selected { font-weight: 500; color: var(--accent); background: var(--accent-light); }
-  .combo-no-results {
-    padding: 0.75rem 0.9rem;
-    font-size: 13px;
-    color: var(--text-muted);
-    text-align: center;
-  }
-
-  /* Quantity input with +/- */
-  .qty-row { display: grid; grid-template-columns: 1fr auto; gap: 0.75rem; align-items: end; }
-  .qty-controls { display: flex; align-items: center; gap: 6px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.4rem 0.6rem; height: 46px; }
-  .qty-btn { width: 28px; height: 28px; background: var(--accent-light); border: none; border-radius: 6px; font-size: 18px; color: var(--accent); cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 500; transition: background 0.1s; }
-  .qty-btn:active { background: #c8dec8; }
-  .qty-display { font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 500; min-width: 36px; text-align: center; color: var(--text); }
-
-  /* Product items list */
-  .items-list { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem; }
-  .item-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; animation: fadeIn 0.2s ease; }
-  .item-info { flex: 1; }
-  .item-name { font-size: 14px; font-weight: 500; color: var(--text); }
-  .item-brand { font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px;}
-  .item-qty { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-  .item-remove { width: 28px; height: 28px; background: #fdecea; border: none; border-radius: 6px; color: var(--danger); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-
-  .add-btn { width: 100%; background: var(--accent-light); border: 1.5px dashed #9cbfa6; border-radius: var(--radius); color: var(--accent); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; padding: 0.7rem; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; justify-content: center; gap: 6px; }
-  .add-btn:hover { background: #d4e8da; }
-
-  /* Urgency selector */
-  .urgency-pills { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-  .urgency-pill { flex: 1; min-width: 80px; padding: 0.6rem 0.5rem; border: 1.5px solid var(--border); border-radius: var(--radius); background: var(--surface); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--text-muted); cursor: pointer; text-align: center; transition: all 0.15s; }
-  .urgency-pill.sel-low { border-color: #2d5a3d; background: #e8f0ea; color: #2d5a3d; }
-  .urgency-pill.sel-med { border-color: #b07c2a; background: #fef3e2; color: #b07c2a; }
-  .urgency-pill.sel-high { border-color: #c0392b; background: #fdecea; color: #c0392b; }
-
-  /* Navigation buttons */
   .nav-btns { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
-  .btn-back { flex: 0 0 auto; background: transparent; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.8rem 1.25rem; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; color: var(--text-muted); cursor: pointer; transition: border-color 0.15s; }
-  .btn-back:hover { border-color: var(--border-focus); color: var(--text); }
-  .btn-next { flex: 1; background: var(--accent); border: none; border-radius: var(--radius); padding: 0.85rem; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; color: #fff; cursor: pointer; transition: background 0.15s, transform 0.1s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-  .btn-next:hover { background: #234a31; }
-  .btn-next:active { transform: scale(0.98); }
-  .btn-next:disabled { background: #9cbfa6; cursor: not-allowed; }
-
-  /* Summary */
-  .summary-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 1rem; }
-  .summary-section { padding: 1rem 1.1rem; border-bottom: 1px solid var(--border); }
-  .summary-section:last-child { border-bottom: none; }
-  .summary-label { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem; }
-  .summary-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 0.3rem; }
-  .summary-row span:first-child { color: var(--text-muted); }
-  .summary-row span:last-child { font-weight: 500; color: var(--text); }
-  .summary-item { display: flex; justify-content: space-between; align-items: center; font-size: 14px; padding: 0.3rem 0; }
-  .summary-item-name { color: var(--text); }
-  .summary-item-qty { font-family: 'DM Mono', monospace; font-size: 13px; background: var(--accent-light); color: var(--accent); padding: 2px 8px; border-radius: 20px; }
-
-  /* Success state */
-  .success-screen { text-align: center; padding: 2rem 1rem; display: none; }
-  .success-icon { width: 72px; height: 72px; background: var(--accent-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; }
-  .success-title { font-size: 24px; font-weight: 600; margin-bottom: 0.5rem; }
-  .success-desc { font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.5rem; }
-  .success-code { font-family: 'DM Mono', monospace; font-size: 18px; font-weight: 500; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.75rem 1.5rem; display: inline-block; margin-bottom: 1.5rem; letter-spacing: 0.1em; color: var(--accent); }
-  .btn-new { background: var(--accent); border: none; border-radius: var(--radius); padding: 0.85rem 2rem; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; color: #fff; cursor: pointer; }
-
-  /* Toast & Spinner */
-  .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(80px); background: #1a1a18; color: #fff; font-size: 14px; padding: 0.7rem 1.25rem; border-radius: 50px; transition: transform 0.3s ease; z-index: 200; white-space: nowrap; }
-  .toast.show { transform: translateX(-50%) translateY(0); }
-  .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
+  .btn-back { flex: 0 0 auto; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.8rem 1.25rem; color: var(--text-muted); cursor: pointer; font-weight: 500; }
+  .btn-next { flex: 1; background: var(--accent); border: none; border-radius: var(--radius); padding: 0.85rem; font-size: 15px; font-weight: 600; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  
+  /* Otros estilos de soporte */
+  .items-list { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem; }
+  .item-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; }
+  .item-remove { color: var(--danger); border: none; background: none; font-size: 20px; cursor: pointer; }
+  .add-btn { width: 100%; background: var(--accent-light); border: 1.5px dashed #9cbfa6; border-radius: var(--radius); color: var(--accent); padding: 0.7rem; cursor: pointer; font-weight: 600; margin-bottom: 1rem; }
+  .urgency-pills { display: flex; gap: 0.5rem; }
+  .urgency-pill { flex: 1; padding: 0.6rem; border: 1.5px solid var(--border); border-radius: var(--radius); background: white; cursor: pointer; }
+  .sel-med { border-color: #b07c2a; background: #fef3e2; }
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 10px 20px; border-radius: 20px; display: none; z-index: 1000; }
+  .spinner { width: 18px; height: 18px; border: 2px solid white; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .empty-state { text-align: center; padding: 1.5rem; color: var(--text-muted); font-size: 14px; background: var(--surface2); border-radius: var(--radius); border: 1.5px dashed var(--border); }
 </style>
 </head>
 <body>
 
 <script>
-  // ⚠️ REEMPLAZA ESTA URL
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyrg_2K6z3fR_5jL7wubIJrkD4mOQnxpTkxKoNf0PFcoWLPUEHt-96nUT4-w6jn5GJy/exec";
 </script>
 
 <div class="header">
   <div class="header-icon">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-      <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
-      <rect x="9" y="3" width="6" height="4" rx="1"/>
-      <path d="M9 12h6M9 16h4"/>
-    </svg>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
   </div>
   <div>
     <div class="header-title">Reporte de Faltantes</div>
-    <div class="header-sub">Inventario de Sucursales</div>
+    <div class="header-sub">Sistema de Inventario</div>
   </div>
 </div>
 <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
 
-<input type="hidden" id="vendedorNombre">
-<input type="hidden" id="vendedorCorreo">
-
 <div class="container">
+  <input type="hidden" id="vendedorNombre">
+  <input type="hidden" id="vendedorCorreo">
 
   <div class="step active" id="step1">
     <div class="step-label">Paso 1 de 4</div>
-    <div class="step-title">Verificar identidad</div>
-    <div class="step-desc">Usa tu cuenta corporativa para continuar.</div>
-
+    <div class="step-title">Acceso al Sistema</div>
+    <div class="step-desc">Identifícate con tu cuenta para reportar.</div>
+    
     <div id="g_id_onload" 
          data-client_id="926135554390-f39b02cdi8ong7nnh00j0vkr8n2ek3a7.apps.googleusercontent.com" 
-         data-context="signin" 
-         data-ux_mode="popup" 
-         data-callback="handleCredentialResponse" 
-         data-auto_prompt="false"></div>
-    <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="signin_with" data-size="large" data-logo_alignment="left" style="margin-bottom: 1.5rem; display: flex; justify-content: center;"></div>
-
-    <div class="divider"><hr><span>o ingresa manualmente</span></div>
+         data-context="signin" data-ux_mode="popup" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
+    <div class="g_id_signin" data-type="standard" data-size="large" style="display: flex; justify-content: center; margin-bottom: 20px;"></div>
 
     <div class="field">
-      <label>Correo corporativo <span class="req">*</span></label>
-      <input type="email" id="inputCorreoLogin" placeholder="correo@empresa.com">
+      <label>O ingresa tu correo manualmente</label>
+      <input type="email" id="inputCorreoLogin" placeholder="usuario@empresa.com">
     </div>
-
-    <div class="nav-btns">
-      <button class="btn-next" onclick="intentarAccesoManual()" style="width: 100%">
-        Verificar acceso
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
-      </button>
-    </div>
+    <button class="btn-next" onclick="intentarAccesoManual()">Verificar Acceso</button>
   </div>
 
   <div class="step" id="step2">
     <div class="step-label">Paso 2 de 4</div>
-    <div class="step-title">Ubicación de la sucursal</div>
-    <div class="step-desc">Selecciona el canal, departamento, municipio y sucursal.</div>
+    <div class="step-title">Ubicación</div>
+    <div class="step-desc">¿En qué sucursal te encuentras?</div>
 
     <div class="field">
       <label>Canal <span class="req">*</span></label>
-      <div class="combo-wrap" id="comboCanal">
-        <div class="combo-input-row">
-          <input class="combo-input" id="inputCanal" type="text" placeholder="— Cargando canales —" autocomplete="off" disabled>
-          <button type="button" class="combo-chevron" onclick="toggleCombo('comboCanal')">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
-          </button>
-        </div>
-        <div class="combo-dropdown" id="dropCanal"></div>
-      </div>
+      <input type="text" id="selCanal" list="listCanal" placeholder="Escribe para buscar canal..." oninput="cargarSucursales()">
+      <datalist id="listCanal"></datalist>
     </div>
 
     <div class="field">
       <label>Departamento <span class="req">*</span></label>
-      <div class="combo-wrap" id="comboDep">
-        <div class="combo-input-row">
-          <input class="combo-input" id="inputDep" type="text" placeholder="— Cargando departamentos —" autocomplete="off" disabled>
-          <button type="button" class="combo-chevron" onclick="toggleCombo('comboDep')">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
-          </button>
-        </div>
-        <div class="combo-dropdown" id="dropDep"></div>
-      </div>
+      <input type="text" id="selDepartamento" list="listDepartamento" placeholder="Escribe para buscar departamento..." oninput="cargarMunicipios()">
+      <datalist id="listDepartamento"></datalist>
     </div>
-    
+
     <div class="field">
       <label>Municipio <span class="req">*</span></label>
-      <div class="combo-wrap" id="comboMun">
-        <div class="combo-input-row disabled">
-          <input class="combo-input" id="inputMun" type="text" placeholder="— Primero selecciona departamento —" autocomplete="off" disabled>
-          <button type="button" class="combo-chevron" onclick="toggleCombo('comboMun')">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
-          </button>
-        </div>
-        <div class="combo-dropdown" id="dropMun"></div>
-      </div>
+      <input type="text" id="selMunicipio" list="listMunicipio" placeholder="Escribe para buscar municipio..." oninput="cargarSucursales()" disabled>
+      <datalist id="listMunicipio"></datalist>
     </div>
 
     <div class="field">
       <label>Sucursal <span class="req">*</span></label>
-      <div class="combo-wrap" id="comboSuc">
-        <div class="combo-input-row disabled">
-          <input class="combo-input" id="inputSuc" type="text" placeholder="— Selecciona canal y municipio —" autocomplete="off" disabled>
-          <button type="button" class="combo-chevron" onclick="toggleCombo('comboSuc')">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
-          </button>
-        </div>
-        <div class="combo-dropdown" id="dropSuc"></div>
-      </div>
+      <input type="text" id="selSucursal" list="listSucursal" placeholder="Escribe para buscar sucursal..." disabled>
+      <datalist id="listSucursal"></datalist>
     </div>
 
     <div class="nav-btns">
-      <button class="btn-back" onclick="irPaso(1)">← Atrás</button>
-      <button class="btn-next" onclick="irPaso(3)">
-        Continuar
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
-      </button>
+      <button class="btn-back" onclick="irPaso(1)">Atrás</button>
+      <button class="btn-next" onclick="irPaso(3)">Continuar</button>
     </div>
   </div>
 
   <div class="step" id="step3">
     <div class="step-label">Paso 3 de 4</div>
-    <div class="step-title">Productos faltantes</div>
-    <div class="step-desc">Busca y selecciona los productos.</div>
+    <div class="step-title">Productos Faltantes</div>
+    <div class="step-desc">Agrega los productos que no encontraste.</div>
 
     <div class="field">
       <label>Marca <span class="req">*</span></label>
-      <div class="combo-wrap" id="comboMarca">
-        <div class="combo-input-row">
-          <input class="combo-input" id="inputMarca" type="text" placeholder="— Cargando marcas —" autocomplete="off" disabled>
-          <button type="button" class="combo-chevron" onclick="toggleCombo('comboMarca')">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
-          </button>
-        </div>
-        <div class="combo-dropdown" id="dropMarca"></div>
-      </div>
+      <input type="text" id="selMarca" list="listMarca" placeholder="Escribe para buscar marca..." oninput="cargarProductos()">
+      <datalist id="listMarca"></datalist>
     </div>
 
     <div class="field">
       <label>Producto <span class="req">*</span></label>
-      <div class="combo-wrap" id="comboProd">
-        <div class="combo-input-row disabled">
-          <input class="combo-input" id="inputProd" type="text" placeholder="— Primero selecciona marca —" autocomplete="off" disabled>
-          <button type="button" class="combo-chevron" onclick="toggleCombo('comboProd')">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
-          </button>
-        </div>
-        <div class="combo-dropdown" id="dropProd"></div>
-      </div>
+      <input type="text" id="selProducto" list="listProducto" placeholder="Escribe para buscar producto..." disabled>
+      <datalist id="listProducto"></datalist>
     </div>
 
-    <div class="qty-row" style="margin-bottom:1rem">
-      <div class="field" style="margin-bottom:0">
-        <label>Cantidad faltante</label>
-        <input type="number" id="inputCantidad" min="1" value="1" placeholder="0">
-      </div>
-      <div style="margin-top:20px">
-        <div class="qty-controls">
-          <button class="qty-btn" onclick="ajustarCantidad(-1)">−</button>
-          <span class="qty-display" id="qtyDisplay">1</span>
-          <button class="qty-btn" onclick="ajustarCantidad(1)">+</button>
-        </div>
-      </div>
+    <div class="field">
+      <label>Cantidad</label>
+      <input type="number" id="inputCantidad" value="1" min="1">
     </div>
 
-    <button class="add-btn" onclick="agregarProducto()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-      Agregar producto a la lista
-    </button>
+    <button class="add-btn" onclick="agregarProducto()">+ Agregar a la lista</button>
 
-    <div style="margin-top:1.25rem;">
-      <div class="summary-label">Productos agregados</div>
-      <div class="items-list" id="itemsList">
-        <div class="empty-state">Aún no has agregado productos</div>
-      </div>
-    </div>
+    <div class="items-list" id="itemsList"></div>
 
     <div class="nav-btns">
-      <button class="btn-back" onclick="irPaso(2)">← Atrás</button>
-      <button class="btn-next" onclick="irPaso(4)">
-        Revisar reporte
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
-      </button>
+      <button class="btn-back" onclick="irPaso(2)">Atrás</button>
+      <button class="btn-next" onclick="irPaso(4)">Finalizar</button>
     </div>
   </div>
 
   <div class="step" id="step4">
     <div class="step-label">Paso 4 de 4</div>
-    <div class="step-title">Revisar y enviar</div>
-    <div class="step-desc">Verifica que todo esté correcto antes de enviar.</div>
+    <div class="step-title">Revisión</div>
+    <div class="step-desc">Confirma los datos antes de enviar.</div>
 
-    <div class="summary-card">
-      <div class="summary-section">
-        <div class="summary-label">Vendedor</div>
-        <div class="summary-row"><span>Nombre</span><span id="sumNombre">—</span></div>
-        <div class="summary-row"><span>Correo</span><span id="sumCorreo">—</span></div>
+    <div id="resumenFinal" style="background: white; padding: 15px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 15px; font-size: 14px;">
       </div>
-      <div class="summary-section">
-        <div class="summary-label">Sucursal</div>
-        <div class="summary-row"><span>Canal</span><span id="sumCanal">—</span></div>
-        <div class="summary-row"><span>Departamento</span><span id="sumDep">—</span></div>
-        <div class="summary-row"><span>Municipio</span><span id="sumMun">—</span></div>
-        <div class="summary-row"><span>Sucursal</span><span id="sumSuc">—</span></div>
-      </div>
-      <div class="summary-section">
-        <div class="summary-label">Productos faltantes</div>
-        <div id="sumItems"></div>
-      </div>
-    </div>
 
     <div class="field">
-      <label>Urgencia del reporte</label>
+      <label>Urgencia</label>
       <div class="urgency-pills">
-        <button class="urgency-pill" onclick="setUrgencia('Baja', this)">🟢 Baja</button>
-        <button class="urgency-pill sel-med" onclick="setUrgencia('Media', this)">🟡 Media</button>
-        <button class="urgency-pill" onclick="setUrgencia('Alta', this)">🔴 Alta</button>
+        <button class="urgency-pill" id="urg-Baja" onclick="setUrgencia('Baja')">Baja</button>
+        <button class="urgency-pill sel-med" id="urg-Media" onclick="setUrgencia('Media')">Media</button>
+        <button class="urgency-pill" id="urg-Alta" onclick="setUrgencia('Alta')">Alta</button>
       </div>
     </div>
 
     <div class="field">
       <label>Observaciones adicionales</label>
-      <textarea id="observaciones" placeholder="Ej. El producto lleva 3 días sin stock, clientes han preguntado..."></textarea>
+      <textarea id="observaciones" placeholder="Opcional..."></textarea>
     </div>
 
     <div class="nav-btns">
-      <button class="btn-back" onclick="irPaso(3)">← Atrás</button>
+      <button class="btn-back" onclick="irPaso(3)">Atrás</button>
       <button class="btn-next" id="btnEnviar" onclick="enviarReporte()">
-        <span id="btnTexto">Enviar reporte</span>
+        <span id="btnTexto">Enviar Reporte</span>
         <div class="spinner" id="btnSpinner"></div>
-        <svg id="btnIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
       </button>
     </div>
   </div>
 
-  <div class="success-screen" id="successScreen">
-    <div class="success-icon">
-      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#2d5a3d" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
-    </div>
-    <div class="success-title">¡Reporte enviado!</div>
-    <div class="success-desc">Tu reporte de faltantes fue registrado correctamente. El equipo de abastecimiento lo recibirá a la brevedad.</div>
-    <div class="success-code" id="codigoReporte"></div>
-    <div style="font-size:13px; color:var(--text-muted); margin-bottom:1.5rem">Guarda este código como referencia</div>
-    <button class="btn-new" onclick="nuevoReporte()">Hacer otro reporte</button>
+  <div class="step" id="stepSuccess" style="text-align: center; padding-top: 40px;">
+    <div style="font-size: 60px;">✅</div>
+    <h2 style="margin: 20px 0 10px;">¡Reporte Enviado!</h2>
+    <p style="color: var(--text-muted); margin-bottom: 30px;">Tu código de seguimiento es: <strong id="codigoExito">---</strong></p>
+    <button class="btn-next" onclick="location.reload()">Nuevo Reporte</button>
   </div>
 
 </div>
@@ -552,453 +206,200 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ══════════════════════════════════════
-// ESTADO GLOBAL Y DATOS
-// ══════════════════════════════════════
 let pasoActual = 1;
-let urgenciaSeleccionada = "Media";
 let productosAgregados = [];
 let datosListas = {};
+let urgencia = "Media";
 
-// Valores seleccionados en cada combobox
-const comboVal = { canal: "", dep: "", mun: "", suc: "", marca: "", prod: "" };
-
-// ══════════════════════════════════════
-// LÓGICA DE INICIO DE SESIÓN
-// ══════════════════════════════════════
-function parseJwt(token) {
-    try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-        return JSON.parse(jsonPayload);
-    } catch (e) { return null; }
-}
-
-function handleCredentialResponse(response) {
-    const data = parseJwt(response.credential);
-    if (!data || !data.email) return mostrarToast("Error al leer la cuenta de Google.");
-    validarAcceso(data.email);
-}
-
-function intentarAccesoManual() {
-    const inputCorreo = document.getElementById('inputCorreoLogin').value;
-    if(!inputCorreo) return mostrarToast("Por favor, ingresa un correo.");
-    validarAcceso(inputCorreo);
-}
-
-function validarAcceso(correoUsuario) {
-    const correoNormalizado = correoUsuario.toLowerCase().trim();
-
-    if (!datosListas.ejecutivos || datosListas.ejecutivos.length === 0) {
-        return mostrarToast("Cargando bases de datos... Espera un segundo.");
-    }
-
-    const ejecutivo = datosListas.ejecutivos.find(e => e.correo.toLowerCase() === correoNormalizado);
-
-    if (ejecutivo) {
-        document.getElementById('vendedorNombre').value = ejecutivo.nombre;
-        document.getElementById('vendedorCorreo').value = ejecutivo.correo;
-        irPaso(2);
-        mostrarToast("¡Bienvenido, " + ejecutivo.nombre + "!");
-    } else {
-        mostrarToast("Acceso denegado: El correo no está autorizado.");
-    }
-}
-
-// ══════════════════════════════════════
-// MOTOR DE COMBOBOX (DEL EJEMPLO FUNCIONAL)
-// ══════════════════════════════════════
-function initCombo(wrapId, inputId, dropId, opciones, onSelect) {
-  const input = document.getElementById(inputId);
-  const drop  = document.getElementById(dropId);
-  const wrap  = document.getElementById(wrapId);
-
-  if (!input || !opciones) return;
-
-  function renderOpciones(filtro) {
-    const q = (filtro || "").toLowerCase().trim();
-    const filtradas = q ? opciones.filter(o => o.toLowerCase().includes(q)) : opciones;
-    if (filtradas.length === 0) {
-      drop.innerHTML = '<div class="combo-no-results">Sin resultados</div>';
-    } else {
-      drop.innerHTML = filtradas.map(o =>
-        `<div class="combo-option${comboVal[wrapId.replace('combo','').toLowerCase()] === o ? ' selected' : ''}"
-          onmousedown="seleccionarCombo('${wrapId}','${inputId}','${dropId}',${JSON.stringify(o).replace(/"/g, '&quot;')})">${o}</div>`
-      ).join('');
-    }
-    drop.classList.add('open');
-    const chev = wrap.querySelector('.combo-chevron');
-    if (chev) chev.classList.add('open');
-  }
-
-  input.addEventListener('focus', () => renderOpciones(input.value));
-  input.addEventListener('input', () => renderOpciones(input.value));
-  input.addEventListener('blur', () => {
-    setTimeout(() => {
-      drop.classList.remove('open');
-      const chev = wrap.querySelector('.combo-chevron');
-      if (chev) chev.classList.remove('open');
-      
-      const key = wrapId.replace('combo','').toLowerCase();
-      if (input.value !== comboVal[key]) {
-        input.value = comboVal[key] || "";
-      }
-    }, 200);
-  });
-
-  wrap._onSelect = onSelect;
-}
-
-function seleccionarCombo(wrapId, inputId, dropId, valor) {
-  const input = document.getElementById(inputId);
-  const drop  = document.getElementById(dropId);
-  const wrap  = document.getElementById(wrapId);
-  const key   = wrapId.replace('combo','').toLowerCase();
-
-  input.value = valor;
-  comboVal[key] = valor;
-  drop.classList.remove('open');
-  const chev = wrap.querySelector('.combo-chevron');
-  if (chev) chev.classList.remove('open');
-
-  if (wrap._onSelect) wrap._onSelect(valor);
-}
-
-function toggleCombo(wrapId) {
-  const wrap  = document.getElementById(wrapId);
-  const input = wrap.querySelector('.combo-input');
-  const drop  = wrap.querySelector('.combo-dropdown');
-  if (input.disabled) return;
-  if (drop.classList.contains('open')) {
-    drop.classList.remove('open');
-    wrap.querySelector('.combo-chevron').classList.remove('open');
-  } else {
-    input.focus();
-  }
-}
-
-function habilitarCombo(wrapId, placeholder) {
-  const wrap  = document.getElementById(wrapId);
-  const input = wrap.querySelector('.combo-input');
-  const row   = wrap.querySelector('.combo-input-row');
-  input.disabled = false;
-  input.placeholder = placeholder || "— Escribe o selecciona —";
-  row.classList.remove('disabled');
-}
-
-function deshabilitarCombo(wrapId, placeholder, limpiar) {
-  const wrap  = document.getElementById(wrapId);
-  const input = wrap.querySelector('.combo-input');
-  const drop  = wrap.querySelector('.combo-dropdown');
-  const row   = wrap.querySelector('.combo-input-row');
-  const chev  = wrap.querySelector('.combo-chevron');
-  input.disabled = true;
-  input.placeholder = placeholder || "—";
-  row.classList.add('disabled');
-  drop.classList.remove('open');
-  if (chev) chev.classList.remove('open');
-  if (limpiar) {
-    input.value = "";
-    const key = wrapId.replace('combo','').toLowerCase();
-    comboVal[key] = "";
-    drop.innerHTML = "";
-  }
-}
-
-// ══════════════════════════════════════
-// CARGAR DATOS Y CREAR CASCADAS
-// ══════════════════════════════════════
-async function cargarDatosIniciales() {
+// 1. CARGAR DATOS AL INICIAR
+async function cargarDatos() {
   try {
-    const res = await fetch(APPS_SCRIPT_URL + "?action=getListas");
-    datosListas = await res.json();
-    inicializarCombos();
-  } catch(e) {
-    mostrarToast("Error conectando con la base de datos.");
-  }
+    const r = await fetch(APPS_SCRIPT_URL + "?action=getListas");
+    datosListas = await r.json();
+    poblarDatalist('listCanal', datosListas.canales);
+    poblarDatalist('listDepartamento', datosListas.departamentos);
+    poblarDatalist('listMarca', datosListas.marcas);
+  } catch(e) { mostrarToast("Error al cargar datos del servidor."); }
 }
 
-function inicializarCombos() {
-  
-  // 1. CANAL
-  habilitarCombo('comboCanal', '— Escribe o selecciona canal —');
-  initCombo('comboCanal', 'inputCanal', 'dropCanal', datosListas.canales, (canal) => {
-    comboVal.canal = canal;
-    actualizarSucursales();
-  });
-
-  // 2. DEPARTAMENTO -> MUNICIPIO
-  habilitarCombo('comboDep', '— Escribe o selecciona departamento —');
-  initCombo('comboDep', 'inputDep', 'dropDep', datosListas.departamentos, (dep) => {
-    comboVal.dep = dep;
-    
-    // Limpiamos los hijos
-    deshabilitarCombo('comboMun', '— Primero selecciona departamento —', true);
-    deshabilitarCombo('comboSuc', '— Selecciona canal y municipio —', true);
-
-    const muns = datosListas.municipios[dep] || [];
-    if(muns.length > 0) {
-      habilitarCombo('comboMun', '— Escribe o selecciona municipio —');
-      initCombo('comboMun', 'inputMun', 'dropMun', muns, (mun) => {
-        comboVal.mun = mun;
-        actualizarSucursales();
-      });
-    }
-  });
-
-  // 3. MARCA -> PRODUCTO
-  habilitarCombo('comboMarca', '— Escribe o selecciona marca —');
-  initCombo('comboMarca', 'inputMarca', 'dropMarca', datosListas.marcas, (marca) => {
-    comboVal.marca = marca;
-    deshabilitarCombo('comboProd', '— Primero selecciona marca —', true);
-
-    // Compatibilidad por si los productos vienen en objeto por marca, o en array simple
-    let prods = [];
-    if (Array.isArray(datosListas.productos)) {
-        // Asumiendo formato plano
-        prods = datosListas.productos; 
-    } else {
-        // Formato agrupado por marca
-        prods = datosListas.productos[marca] || [];
-    }
-
-    if(prods.length > 0) {
-      habilitarCombo('comboProd', '— Escribe o selecciona producto —');
-      initCombo('comboProd', 'inputProd', 'dropProd', prods, (prod) => {
-        comboVal.prod = prod;
-      });
-    }
-  });
+function poblarDatalist(id, data) {
+  const dl = document.getElementById(id);
+  dl.innerHTML = "";
+  if (data) data.forEach(item => dl.innerHTML += `<option value="${item}">`);
 }
 
-// 4. LÓGICA DE SUCURSALES (ROBUSTA CONTRA AMBOS FORMATOS DE BACKEND)
-function actualizarSucursales() {
-  deshabilitarCombo('comboSuc', '— Selecciona canal y municipio —', true);
-  
-  if (!comboVal.canal || !comboVal.mun) return;
-
-  let sucs = [];
-  
-  // Revisamos en qué formato está respondiendo el backend
-  if (Array.isArray(datosListas.sucursales)) {
-      // Formato nuevo: un array plano de objetos {canal, dep, mun, suc}
-      sucs = datosListas.sucursales
-                .filter(s => s.canal === comboVal.canal && s.mun === comboVal.mun)
-                .map(s => s.suc);
+// 2. LÓGICA DE AUTOCOMPLETE PROGRESIVO
+function cargarMunicipios() {
+  const dep = document.getElementById('selDepartamento').value;
+  const inputMun = document.getElementById('selMunicipio');
+  if (datosListas.municipios && datosListas.municipios[dep]) {
+    poblarDatalist('listMunicipio', datosListas.municipios[dep]);
+    inputMun.disabled = false;
   } else {
-      // Formato viejo: agrupado solo por municipio { "Guatemala": ["Sucursal 1", "Sucursal 2"] }
-      sucs = datosListas.sucursales[comboVal.mun] || [];
+    inputMun.disabled = true;
+    inputMun.value = "";
   }
+}
 
-  if (sucs.length === 0) {
-    deshabilitarCombo('comboSuc', '— Sin sucursales registradas aquí —', true);
-    return;
-  }
+function cargarSucursales() {
+  const canal = document.getElementById('selCanal').value;
+  const mun = document.getElementById('selMunicipio').value;
+  const inputSuc = document.getElementById('selSucursal');
   
-  habilitarCombo('comboSuc', '— Escribe o selecciona sucursal —');
-  initCombo('comboSuc', 'inputSuc', 'dropSuc', sucs, (suc) => {
-    comboVal.suc = suc;
-  });
-}
-
-// Cerrar dropdowns si se hace click en el fondo de la pantalla
-document.addEventListener('click', (e) => {
-  ['comboCanal', 'comboDep', 'comboMun', 'comboSuc', 'comboMarca', 'comboProd'].forEach(id => {
-    const wrap = document.getElementById(id);
-    if (wrap && !wrap.contains(e.target)) {
-      const drop = wrap.querySelector('.combo-dropdown');
-      const chev = wrap.querySelector('.combo-chevron');
-      if (drop) drop.classList.remove('open');
-      if (chev) chev.classList.remove('open');
-    }
-  });
-});
-
-// ══════════════════════════════════════
-// CONTROL DE PASOS
-// ══════════════════════════════════════
-function irPaso(paso) {
-  if (paso > pasoActual && !validarPaso(pasoActual)) return;
-
-  document.getElementById('step' + pasoActual).classList.remove('active');
-  pasoActual = paso;
-  document.getElementById('step' + paso).classList.add('active');
-
-  const pct = ((paso - 1) / 4) * 100;
-  document.getElementById('progressFill').style.width = pct + '%';
-  window.scrollTo({top: 0, behavior: 'smooth'});
-
-  if (paso === 4) actualizarResumen();
-}
-
-function validarPaso(paso) {
-  if (paso === 1) {
-    if (!document.getElementById('vendedorNombre').value) { mostrarToast("Inicia sesión primero"); return false; }
+  if (canal && mun && datosListas.sucursales) {
+    const filtradas = datosListas.sucursales
+      .filter(s => s.canal === canal && s.mun === mun)
+      .map(s => s.suc);
+    poblarDatalist('listSucursal', filtradas);
+    inputSuc.disabled = false;
+  } else {
+    inputSuc.disabled = true;
+    inputSuc.value = "";
   }
-  if (paso === 2) {
-    if (!comboVal.canal) { mostrarToast("Selecciona el canal"); return false; }
-    if (!comboVal.dep) { mostrarToast("Selecciona el departamento"); return false; }
-    if (!comboVal.mun) { mostrarToast("Selecciona el municipio"); return false; }
-    if (!comboVal.suc) { mostrarToast("Selecciona la sucursal"); return false; }
-  }
-  if (paso === 3) {
-    if (productosAgregados.length === 0) { mostrarToast("Agrega al menos un producto a la lista"); return false; }
-  }
-  return true;
 }
 
-// ══════════════════════════════════════
-// PRODUCTOS Y CANTIDADES
-// ══════════════════════════════════════
-function ajustarCantidad(delta) {
-  const input = document.getElementById('inputCantidad');
-  let val = parseInt(input.value) || 1;
-  val = Math.max(1, val + delta);
-  input.value = val;
-  document.getElementById('qtyDisplay').textContent = val;
+function cargarProductos() {
+  const marca = document.getElementById('selMarca').value;
+  const inputProd = document.getElementById('selProducto');
+  if (datosListas.productos && datosListas.productos[marca]) {
+    poblarDatalist('listProducto', datosListas.productos[marca]);
+    inputProd.disabled = false;
+  } else {
+    inputProd.disabled = true;
+    inputProd.value = "";
+  }
 }
 
-document.getElementById('inputCantidad').addEventListener('input', function() {
-  document.getElementById('qtyDisplay').textContent = this.value || '1';
-});
-
+// 3. GESTIÓN DE PRODUCTOS
 function agregarProducto() {
-  const marca = comboVal.marca;
-  const nombre = comboVal.prod;
-  if (!marca || !nombre) { mostrarToast("Selecciona una marca y un producto"); return; }
-
-  const cantidad = parseInt(document.getElementById('inputCantidad').value) || 1;
-
-  const existe = productosAgregados.find(p => p.producto === nombre);
-  if (existe) { mostrarToast("Ese producto ya está en la lista"); return; }
-
-  productosAgregados.push({ marca: marca, producto: nombre, cantidad: cantidad, nombre: nombre });
-  renderItems();
+  const m = document.getElementById('selMarca').value;
+  const p = document.getElementById('selProducto').value;
+  const c = document.getElementById('inputCantidad').value;
   
-  // Limpiar combo producto pero mantener la marca
-  document.getElementById('inputProd').value = "";
-  comboVal.prod = "";
+  if (!m || !p) return mostrarToast("Selecciona marca y producto.");
+  
+  productosAgregados.push({ marca: m, producto: p, cantidad: c });
+  renderProductos();
+  
+  // Limpiar campos
+  document.getElementById('selProducto').value = "";
   document.getElementById('inputCantidad').value = 1;
-  document.getElementById('qtyDisplay').textContent = '1';
 }
 
-function quitarProducto(idx) {
-  productosAgregados.splice(idx, 1);
-  renderItems();
-}
-
-function renderItems() {
-  const lista = document.getElementById('itemsList');
-  if (productosAgregados.length === 0) {
-    lista.innerHTML = '<div class="empty-state">Aún no has agregado productos</div>';
-    return;
-  }
-  lista.innerHTML = productosAgregados.map((p, i) => `
+function renderProductos() {
+  const div = document.getElementById('itemsList');
+  div.innerHTML = productosAgregados.map((p, i) => `
     <div class="item-card">
-      <div class="item-info">
-        <div class="item-brand">${p.marca}</div>
-        <div class="item-name">${p.producto}</div>
-        <div class="item-qty">Cantidad faltante: ${p.cantidad} unidades</div>
-      </div>
-      <button class="item-remove" onclick="quitarProducto(${i})">×</button>
+      <div><strong>${p.producto}</strong><br><small>${p.marca} - Cant: ${p.cantidad}</small></div>
+      <button class="item-remove" onclick="quitarProducto(${i})">&times;</button>
     </div>
   `).join('');
 }
 
-// ══════════════════════════════════════
-// URGENCIA Y RESUMEN
-// ══════════════════════════════════════
-function setUrgencia(val, el) {
-  urgenciaSeleccionada = val;
-  document.querySelectorAll('.urgency-pill').forEach(p => p.className = 'urgency-pill');
-  if (val === 'Baja') el.classList.add('sel-low');
-  if (val === 'Media') el.classList.add('sel-med');
-  if (val === 'Alta') el.classList.add('sel-high');
+function quitarProducto(i) {
+  productosAgregados.splice(i, 1);
+  renderProductos();
 }
 
-function actualizarResumen() {
-  document.getElementById('sumNombre').textContent = document.getElementById('vendedorNombre').value;
-  document.getElementById('sumCorreo').textContent = document.getElementById('vendedorCorreo').value;
-  document.getElementById('sumCanal').textContent = comboVal.canal;
-  document.getElementById('sumDep').textContent = comboVal.dep;
-  document.getElementById('sumMun').textContent = comboVal.mun;
-  document.getElementById('sumSuc').textContent = comboVal.suc;
+// 4. NAVEGACIÓN Y ENVÍO
+function irPaso(n) {
+  if (n > pasoActual) {
+    if (pasoActual === 2 && (!document.getElementById('selSucursal').value)) {
+      return mostrarToast("Por favor selecciona una sucursal.");
+    }
+    if (pasoActual === 3 && productosAgregados.length === 0) {
+      return mostrarToast("Agrega al menos un producto.");
+    }
+  }
 
-  const sumItems = document.getElementById('sumItems');
-  sumItems.innerHTML = productosAgregados.map(p => `
-    <div class="summary-item">
-      <span class="summary-item-name">${p.producto}</span>
-      <span class="summary-item-qty">${p.cantidad} uds.</span>
-    </div>
-  `).join('');
+  document.getElementById(`step${pasoActual}`).classList.remove('active');
+  pasoActual = n;
+  document.getElementById(`step${n}`).classList.add('active');
+  document.getElementById('progressFill').style.width = ((n - 1) / 3) * 100 + "%";
+
+  if (n === 4) generarResumen();
 }
 
-// ══════════════════════════════════════
-// ENVÍO AL BACKEND
-// ══════════════════════════════════════
+function generarResumen() {
+  const res = document.getElementById('resumenFinal');
+  res.innerHTML = `
+    <p><strong>Sucursal:</strong> ${document.getElementById('selSucursal').value}</p>
+    <p><strong>Vendedor:</strong> ${document.getElementById('vendedorNombre').value}</p>
+    <hr style="margin:10px 0; border:0; border-top:1px solid #eee">
+    <p><strong>Productos:</strong></p>
+    ${productosAgregados.map(p => `- ${p.producto} (${p.cantidad})`).join('<br>')}
+  `;
+}
+
+function setUrgencia(val) {
+  urgencia = val;
+  document.querySelectorAll('.urgency-pill').forEach(btn => btn.classList.remove('sel-med'));
+  document.getElementById(`urg-${val}`).classList.add('sel-med');
+}
+
 async function enviarReporte() {
   const btn = document.getElementById('btnEnviar');
-  const spinner = document.getElementById('btnSpinner');
-  const icon = document.getElementById('btnIcon');
-  const texto = document.getElementById('btnTexto');
+  const spin = document.getElementById('btnSpinner');
+  const txt = document.getElementById('btnTexto');
 
-  btn.disabled = true;
-  spinner.style.display = 'block';
-  icon.style.display = 'none';
-  texto.textContent = 'Enviando...';
+  btn.disabled = true; spin.style.display = 'block'; txt.style.display = 'none';
 
   const payload = {
-    ejecutivo: document.getElementById('vendedorNombre').value.trim(),
-    correo: document.getElementById('vendedorCorreo').value.trim(),
-    canal: comboVal.canal,
-    departamento: comboVal.dep,
-    municipio: comboVal.mun,
-    sucursal: comboVal.suc,
+    ejecutivo: document.getElementById('vendedorNombre').value,
+    correo: document.getElementById('vendedorCorreo').value,
+    canal: document.getElementById('selCanal').value,
+    departamento: document.getElementById('selDepartamento').value,
+    municipio: document.getElementById('selMunicipio').value,
+    sucursal: document.getElementById('selSucursal').value,
     productos: productosAgregados,
-    urgencia: urgenciaSeleccionada,
-    observaciones: document.getElementById('observaciones').value.trim()
+    urgencia: urgencia,
+    observaciones: document.getElementById('observaciones').value
   };
 
   try {
-    const res = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
-    const data = await res.json();
-
-    if (data.success) {
-      document.getElementById('step4').style.display = 'none';
-      const ss = document.getElementById('successScreen');
-      ss.style.display = 'block';
-      document.getElementById('codigoReporte').textContent = data.codigo || "RPT-000";
-      document.getElementById('progressFill').style.width = '100%';
-    } else {
-      throw new Error(data.error || 'Error desconocido');
+    const r = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+    const res = await r.json();
+    if (res.success) {
+      document.getElementById('step4').classList.remove('active');
+      document.getElementById('stepSuccess').classList.add('active');
+      document.getElementById('codigoExito').textContent = res.codigo;
     }
   } catch(e) {
-    mostrarToast("Hubo un error al enviar el reporte.");
-  } finally {
-    btn.disabled = false;
-    spinner.style.display = 'none';
-    icon.style.display = 'block';
-    texto.textContent = 'Enviar reporte';
+    mostrarToast("Error al enviar reporte.");
+    btn.disabled = false; spin.style.display = 'none'; txt.style.display = 'inline';
   }
 }
 
-function nuevoReporte() { location.reload(); }
-
-function mostrarToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2800);
+// LOGIN HELPERS
+function handleCredentialResponse(response) {
+  const data = JSON.parse(atob(response.credential.split('.')[1]));
+  validarAcceso(data.email, data.name);
 }
 
-// Iniciar al cargar la página
-cargarDatosIniciales();
+function intentarAccesoManual() {
+  const email = document.getElementById('inputCorreoLogin').value;
+  if (!email) return mostrarToast("Ingresa un correo.");
+  validarAcceso(email, "Usuario Manual");
+}
+
+function validarAcceso(correo, nombre) {
+  const ej = datosListas.ejecutivos.find(e => e.correo.toLowerCase() === correo.toLowerCase());
+  if (ej) {
+    document.getElementById('vendedorNombre').value = ej.nombre;
+    document.getElementById('vendedorCorreo').value = ej.correo;
+    irPaso(2);
+  } else {
+    mostrarToast("Correo no autorizado.");
+  }
+}
+
+function mostrarToast(m) {
+  const t = document.getElementById('toast');
+  t.textContent = m; t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 3000);
+}
+
+window.onload = cargarDatos;
 </script>
 </body>
 </html>
