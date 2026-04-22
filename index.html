@@ -774,151 +774,151 @@ function inicializarCombos() {
   });
 }
 
-// 4. LÓGICA DE SUCURSALES (ROBUSTA CONTRA AMBOS FORMATOS DE BACKEND)
+// 4. LÓGICA DE SUCURSALES (ROBUSTA)
 function actualizarSucursales() {
+  const dep = comboVal.dep;
+  const mun = comboVal.mun;
+  const canal = comboVal.canal;
+
+  // 1. Reseteamos el combo de sucursales a deshabilitado
   deshabilitarCombo('comboSuc', '— Selecciona canal y municipio —', true);
-  
-  if (!comboVal.canal || !comboVal.mun) return;
+
+  // 2. Verificamos que ya exista un canal y un municipio seleccionados
+  if (!canal || !mun) return;
 
   let sucs = [];
-  
-  // Revisamos en qué formato está respondiendo el backend
-  if (Array.isArray(datosListas.sucursales)) {
-      // Formato nuevo: un array plano de objetos {canal, dep, mun, suc}
-      sucs = datosListas.sucursales
-                .filter(s => s.canal === comboVal.canal && s.mun === comboVal.mun)
-                .map(s => s.suc);
-  } else {
-      // Formato viejo: agrupado solo por municipio { "Guatemala": ["Sucursal 1", "Sucursal 2"] }
-      sucs = datosListas.sucursales[comboVal.mun] || [];
+
+  // 3. Extraemos las sucursales con una lógica robusta para prevenir fallos
+  if (datosListas.sucursales) {
+    if (datosListas.sucursales[dep] && Array.isArray(datosListas.sucursales[dep][mun])) {
+      // Si el Apps Script las mandó agrupadas por Departamento -> Municipio
+      sucs = datosListas.sucursales[dep][mun];
+    } else if (Array.isArray(datosListas.sucursales[mun])) {
+      // Si el Apps Script las mandó agrupadas directo por Municipio
+      sucs = datosListas.sucursales[mun];
+    } else if (Array.isArray(datosListas.sucursales)) {
+      // Si es un arreglo simple pre-filtrado
+      sucs = datosListas.sucursales;
+    }
   }
 
-  if (sucs.length === 0) {
-    deshabilitarCombo('comboSuc', '— Sin sucursales registradas aquí —', true);
-    return;
+  // 4. Poblamos el ComboBox
+  if (sucs.length > 0) {
+    habilitarCombo('comboSuc', '— Escribe o selecciona sucursal —');
+    initCombo('comboSuc', 'inputSuc', 'dropSuc', sucs, (suc) => {
+      comboVal.suc = suc;
+    });
+  } else {
+    deshabilitarCombo('comboSuc', '— Sin sucursales registradas —', true);
   }
-  
-  habilitarCombo('comboSuc', '— Escribe o selecciona sucursal —');
-  initCombo('comboSuc', 'inputSuc', 'dropSuc', sucs, (suc) => {
-    comboVal.suc = suc;
-  });
 }
 
-// Cerrar dropdowns si se hace click en el fondo de la pantalla
-document.addEventListener('click', (e) => {
-  ['comboCanal', 'comboDep', 'comboMun', 'comboSuc', 'comboMarca', 'comboProd'].forEach(id => {
-    const wrap = document.getElementById(id);
-    if (wrap && !wrap.contains(e.target)) {
-      const drop = wrap.querySelector('.combo-dropdown');
-      const chev = wrap.querySelector('.combo-chevron');
-      if (drop) drop.classList.remove('open');
-      if (chev) chev.classList.remove('open');
-    }
-  });
-});
-
 // ══════════════════════════════════════
-// CONTROL DE PASOS
+//  NAVEGACIÓN DE PASOS Y VALIDACIÓN
 // ══════════════════════════════════════
 function irPaso(paso) {
-  if (paso > pasoActual && !validarPaso(pasoActual)) return;
-
-  document.getElementById('step' + pasoActual).classList.remove('active');
-  pasoActual = paso;
-  document.getElementById('step' + paso).classList.add('active');
-
-  const pct = ((paso - 1) / 4) * 100;
-  document.getElementById('progressFill').style.width = pct + '%';
-  window.scrollTo({top: 0, behavior: 'smooth'});
-
-  if (paso === 4) actualizarResumen();
-}
-
-function validarPaso(paso) {
-  if (paso === 1) {
-    if (!document.getElementById('vendedorNombre').value) { mostrarToast("Inicia sesión primero"); return false; }
-  }
-  if (paso === 2) {
-    if (!comboVal.canal) { mostrarToast("Selecciona el canal"); return false; }
-    if (!comboVal.dep) { mostrarToast("Selecciona el departamento"); return false; }
-    if (!comboVal.mun) { mostrarToast("Selecciona el municipio"); return false; }
-    if (!comboVal.suc) { mostrarToast("Selecciona la sucursal"); return false; }
-  }
+  // Validar campos requeridos antes de avanzar
   if (paso === 3) {
-    if (productosAgregados.length === 0) { mostrarToast("Agrega al menos un producto a la lista"); return false; }
+    if (!comboVal.canal) return mostrarToast("Por favor, selecciona el canal.");
+    if (!comboVal.dep) return mostrarToast("Por favor, selecciona el departamento.");
+    if (!comboVal.mun) return mostrarToast("Por favor, selecciona el municipio.");
+    if (!comboVal.suc) return mostrarToast("Por favor, selecciona la sucursal.");
   }
-  return true;
+  if (paso === 4) {
+    if (productosAgregados.length === 0) return mostrarToast("Agrega al menos un producto a la lista.");
+    actualizarResumen();
+  }
+
+  // Cambiar visualmente el paso
+  document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+  document.getElementById('step' + paso).classList.add('active');
+  pasoActual = paso;
+  
+  // Barra de progreso
+  document.getElementById('progressFill').style.width = ((paso - 1) * 33.33) + '%';
+  window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
 // ══════════════════════════════════════
-// PRODUCTOS Y CANTIDADES
+//  LÓGICA DE PRODUCTOS (CANTIDAD Y LISTA)
 // ══════════════════════════════════════
 function ajustarCantidad(delta) {
   const input = document.getElementById('inputCantidad');
   let val = parseInt(input.value) || 1;
-  val = Math.max(1, val + delta);
+  val += delta;
+  if(val < 1) val = 1;
   input.value = val;
   document.getElementById('qtyDisplay').textContent = val;
 }
 
-document.getElementById('inputCantidad').addEventListener('input', function() {
-  document.getElementById('qtyDisplay').textContent = this.value || '1';
-});
-
 function agregarProducto() {
   const marca = comboVal.marca;
-  const nombre = comboVal.prod;
-  if (!marca || !nombre) { mostrarToast("Selecciona una marca y un producto"); return; }
+  const prod = comboVal.prod;
+  const cant = parseInt(document.getElementById('inputCantidad').value) || 1;
 
-  const cantidad = parseInt(document.getElementById('inputCantidad').value) || 1;
+  if (!marca || !prod) {
+    return mostrarToast("Selecciona una marca y un producto primero.");
+  }
 
-  const existe = productosAgregados.find(p => p.producto === nombre);
-  if (existe) { mostrarToast("Ese producto ya está en la lista"); return; }
+  // Actualizar si ya existe, si no, agregar
+  const existe = productosAgregados.findIndex(p => p.producto === prod && p.marca === marca);
+  if (existe >= 0) {
+    productosAgregados[existe].cantidad += cant;
+  } else {
+    productosAgregados.push({ marca: marca, producto: prod, cantidad: cant });
+  }
 
-  productosAgregados.push({ marca: marca, producto: nombre, cantidad: cantidad, nombre: nombre });
-  renderItems();
-  
-  // Limpiar combo producto pero mantener la marca
-  document.getElementById('inputProd').value = "";
+  // Resetear combos para agregar uno nuevo más rápido
+  deshabilitarCombo('comboProd', '— Primero selecciona marca —', true);
+  document.getElementById('inputMarca').value = "";
+  comboVal.marca = "";
   comboVal.prod = "";
   document.getElementById('inputCantidad').value = 1;
-  document.getElementById('qtyDisplay').textContent = '1';
-}
+  document.getElementById('qtyDisplay').textContent = "1";
 
-function quitarProducto(idx) {
-  productosAgregados.splice(idx, 1);
   renderItems();
+  mostrarToast("✅ Producto agregado");
 }
 
 function renderItems() {
-  const lista = document.getElementById('itemsList');
+  const container = document.getElementById('itemsList');
   if (productosAgregados.length === 0) {
-    lista.innerHTML = '<div class="empty-state">Aún no has agregado productos</div>';
+    container.innerHTML = `<div class="empty-state">Aún no has agregado productos</div>`;
     return;
   }
-  lista.innerHTML = productosAgregados.map((p, i) => `
+
+  container.innerHTML = productosAgregados.map((p, index) => `
     <div class="item-card">
       <div class="item-info">
         <div class="item-brand">${p.marca}</div>
         <div class="item-name">${p.producto}</div>
-        <div class="item-qty">Cantidad faltante: ${p.cantidad} unidades</div>
+        <div class="item-qty">Faltantes: <b>${p.cantidad}</b></div>
       </div>
-      <button class="item-remove" onclick="quitarProducto(${i})">×</button>
+      <button class="item-remove" onclick="eliminarProducto(${index})">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
     </div>
   `).join('');
 }
 
-// ══════════════════════════════════════
-// URGENCIA Y RESUMEN
-// ══════════════════════════════════════
-function setUrgencia(val, el) {
-  urgenciaSeleccionada = val;
-  document.querySelectorAll('.urgency-pill').forEach(p => p.className = 'urgency-pill');
-  if (val === 'Baja') el.classList.add('sel-low');
-  if (val === 'Media') el.classList.add('sel-med');
-  if (val === 'Alta') el.classList.add('sel-high');
+function eliminarProducto(index) {
+  productosAgregados.splice(index, 1);
+  renderItems();
 }
 
+function setUrgencia(nivel, btn) {
+  urgenciaSeleccionada = nivel;
+  document.querySelectorAll('.urgency-pill').forEach(el => {
+    el.classList.remove('sel-low', 'sel-med', 'sel-high');
+  });
+  if (nivel === 'Baja') btn.classList.add('sel-low');
+  if (nivel === 'Media') btn.classList.add('sel-med');
+  if (nivel === 'Alta') btn.classList.add('sel-high');
+}
+
+// ══════════════════════════════════════
+//  RESUMEN Y ENVÍO A APPS SCRIPT
+// ══════════════════════════════════════
 function actualizarResumen() {
   document.getElementById('sumNombre').textContent = document.getElementById('vendedorNombre').value;
   document.getElementById('sumCorreo').textContent = document.getElementById('vendedorCorreo').value;
@@ -927,39 +927,32 @@ function actualizarResumen() {
   document.getElementById('sumMun').textContent = comboVal.mun;
   document.getElementById('sumSuc').textContent = comboVal.suc;
 
-  const sumItems = document.getElementById('sumItems');
-  sumItems.innerHTML = productosAgregados.map(p => `
+  const htmlItems = productosAgregados.map(p => `
     <div class="summary-item">
-      <span class="summary-item-name">${p.producto}</span>
-      <span class="summary-item-qty">${p.cantidad} uds.</span>
+      <div class="summary-item-name">${p.producto} <span style="color:var(--accent); font-size:11px; margin-left:4px">[${p.marca}]</span></div>
+      <div class="summary-item-qty">${p.cantidad} und</div>
     </div>
   `).join('');
+  document.getElementById('sumItems').innerHTML = htmlItems;
 }
 
-// ══════════════════════════════════════
-// ENVÍO AL BACKEND
-// ══════════════════════════════════════
 async function enviarReporte() {
   const btn = document.getElementById('btnEnviar');
-  const spinner = document.getElementById('btnSpinner');
-  const icon = document.getElementById('btnIcon');
-  const texto = document.getElementById('btnTexto');
-
   btn.disabled = true;
-  spinner.style.display = 'block';
-  icon.style.display = 'none';
-  texto.textContent = 'Enviando...';
+  document.getElementById('btnTexto').textContent = "Enviando reporte...";
+  document.getElementById('btnIcon').style.display = "none";
+  document.getElementById('btnSpinner').style.display = "block";
 
   const payload = {
-    ejecutivo: document.getElementById('vendedorNombre').value.trim(),
-    correo: document.getElementById('vendedorCorreo').value.trim(),
+    ejecutivo: document.getElementById('vendedorNombre').value,
+    correo: document.getElementById('vendedorCorreo').value,
     canal: comboVal.canal,
     departamento: comboVal.dep,
     municipio: comboVal.mun,
     sucursal: comboVal.suc,
     productos: productosAgregados,
     urgencia: urgenciaSeleccionada,
-    observaciones: document.getElementById('observaciones').value.trim()
+    observaciones: document.getElementById('observaciones').value
   };
 
   try {
@@ -968,27 +961,27 @@ async function enviarReporte() {
       body: JSON.stringify(payload)
     });
     const data = await res.json();
-
+    
     if (data.success) {
       document.getElementById('step4').style.display = 'none';
-      const ss = document.getElementById('successScreen');
-      ss.style.display = 'block';
-      document.getElementById('codigoReporte').textContent = data.codigo || "RPT-000";
+      document.getElementById('successScreen').style.display = 'block';
+      document.getElementById('codigoReporte').textContent = data.codigo;
       document.getElementById('progressFill').style.width = '100%';
     } else {
-      throw new Error(data.error || 'Error desconocido');
+      throw new Error();
     }
   } catch(e) {
-    mostrarToast("Hubo un error al enviar el reporte.");
-  } finally {
+    mostrarToast("Error enviando el reporte. Revisa tu conexión e intenta de nuevo.");
     btn.disabled = false;
-    spinner.style.display = 'none';
-    icon.style.display = 'block';
-    texto.textContent = 'Enviar reporte';
+    document.getElementById('btnTexto').textContent = "Enviar reporte";
+    document.getElementById('btnIcon').style.display = "block";
+    document.getElementById('btnSpinner').style.display = "none";
   }
 }
 
-function nuevoReporte() { location.reload(); }
+function nuevoReporte() {
+  location.reload(); // Recarga la página para dejarla limpia
+}
 
 function mostrarToast(msg) {
   const t = document.getElementById('toast');
@@ -997,8 +990,9 @@ function mostrarToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2800);
 }
 
-// Iniciar al cargar la página
-cargarDatosIniciales();
+// Disparador principal: Carga las listas de Google Sheets al entrar a la página
+window.onload = cargarDatosIniciales;
+
 </script>
 </body>
 </html>
