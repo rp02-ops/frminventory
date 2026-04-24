@@ -400,10 +400,20 @@ async function enviarReporte() {
 
 // Función para reiniciar formulario SIN recargar la página
 function nuevoReporte() {
+  // 1. Limpiar datos internos
   productosAgregados = [];
   urgenciaSeleccionada = "Media";
   
-  // Limpiar campos visuales
+  // 2. Resetear el botón de enviar (IMPORTANTE)
+  const btn = document.getElementById('btnEnviar');
+  const txt = document.getElementById('btnTexto');
+  const sp = document.getElementById('btnSpinner');
+  
+  btn.disabled = false;      // Desbloquear botón
+  txt.style.display = 'block'; // Mostrar texto "Enviar reporte final"
+  sp.style.display = 'none';   // Ocultar el círculo de carga
+
+  // 3. Limpiar campos visuales
   document.getElementById('selCanal').value = '';
   document.getElementById('selDepartamento').value = '';
   document.getElementById('selMunicipio').value = '';
@@ -417,11 +427,11 @@ function nuevoReporte() {
   document.getElementById('observaciones').value = '';
   document.getElementById('itemsList').innerHTML = '';
   
-  // Resetear botones urgencia
+  // 4. Resetear botones de urgencia
   document.querySelectorAll('.urgency-pill').forEach(b => b.className = 'urgency-pill');
   document.getElementById('u-Media').classList.add('sel-med');
 
-  // Volver a la pantalla de ubicación (ya estás logueado)
+  // 5. Volver al paso 2
   document.getElementById('successScreen').style.display = 'none';
   irPaso(2);
 }
