@@ -273,10 +273,14 @@ document.addEventListener('click', (e) => {
 
 // --- LÓGICA ---
 async function cargarDatosIniciales() {
+  if (Object.keys(datosListas).length > 0) return;
   try {
     const res = await fetch(APPS_SCRIPT_URL + "?action=getListas");
-    datosListas = await res.json();
-  } catch(e) { mostrarToast("Error cargando base de datos"); }
+    const data = await res.json();
+    if (data && data.ejecutivos) {
+        datosListas = data;
+    }
+  } catch(e) { mostrarToast("Error de conexión"); }
 }
 
 function handleCredentialResponse(response) {
@@ -300,13 +304,21 @@ function intentarAccesoManual() {
 }
 
 function validarAcceso(correo) {
-    if (!datosListas.ejecutivos) return mostrarToast("Todavía cargando base de datos...");
+    if (datosListas && datosListas.ejecutivos) {
+        ejecutarLogin(correo);
+    } else {
+        mostrarToast("Sincronizando...");
+        cargarDatosIniciales().then(() => ejecutarLogin(correo));
+    }
+}
+
+function ejecutarLogin(correo) {
     const ej = datosListas.ejecutivos.find(e => e.correo.toLowerCase() === correo.toLowerCase().trim());
     if (ej) {
         usuarioLogueado = ej;
         mostrarToast("Bienvenido, " + ej.nombre);
         irPaso(2);
-    } else { mostrarToast("Correo no autorizado"); }
+    } else { mostrarToast("No autorizado"); }
 }
 
 function ajustarCantidad(delta) {
@@ -327,7 +339,7 @@ function agregarProducto() {
 
 function renderItems() {
   const div = document.getElementById('itemsList');
-  div.innerHTML = productosAgregados.length === 0 ? '<p style="text-align:center; color:var(--text-muted); font-size:13px">No hay productos en lista</p>' :
+  div.innerHTML = productosAgregados.length === 0 ? '<p style="text-align:center; color:var(--text-muted); font-size:13px">No hay productos</p>' :
     productosAgregados.map((p, i) => `
     <div class="item-card">
         <div><div class="item-brand">${p.marca}</div><div style="font-size:14px; font-weight:500">${p.producto}</div><div style="font-size:12px; color:var(--text-muted)">Cant: ${p.cantidad}</div></div>
@@ -338,7 +350,7 @@ function renderItems() {
 function irPaso(p) {
   if (p > pasoActual) {
       if (pasoActual === 2 && !document.getElementById('selSucursal').value) return mostrarToast("Falta sucursal");
-      if (pasoActual === 3 && productosAgregados.length === 0) return mostrarToast("Añade al menos 1 producto");
+      if (pasoActual === 3 && productosAgregados.length === 0) return mostrarToast("Añade productos");
   }
   if (p === 4) {
       document.getElementById('resumenReporte').innerHTML = `
@@ -364,10 +376,7 @@ async function enviarReporte() {
   const btn = document.getElementById('btnEnviar');
   const txt = document.getElementById('btnTexto');
   const sp = document.getElementById('btnSpinner');
-  
-  btn.disabled = true; 
-  txt.style.display = 'none'; 
-  sp.style.display = 'block';
+  btn.disabled = true; txt.style.display = 'none'; sp.style.display = 'block';
 
   const payload = {
     ejecutivo: usuarioLogueado.nombre, correo: usuarioLogueado.correo,
@@ -377,43 +386,31 @@ async function enviarReporte() {
   };
   
   try {
-    // Usamos fetch con una técnica para evitar el bloqueo de red de Google
-    const res = await fetch(APPS_SCRIPT_URL, { 
-      method: 'POST', 
-      mode: 'no-cors', // Evita el error de CORS aunque no devuelve JSON
-      body: JSON.stringify(payload) 
-    });
-
-    // Como usamos 'no-cors', no podemos leer el JSON, 
-    // así que después de 2 segundos asumimos éxito si no hubo error de conexión.
+    await fetch(APPS_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
     setTimeout(() => {
         document.getElementById('step4').classList.remove('active');
         document.getElementById('successScreen').style.display = 'block';
         document.getElementById('codigoReporte').innerText = "PROCESADO"; 
     }, 1500);
-
   } catch(e) { 
     mostrarToast("Error de conexión"); 
     btn.disabled = false; txt.style.display = 'block'; sp.style.display = 'none'; 
   }
 }
 
-// Función para reiniciar formulario SIN recargar la página
 function nuevoReporte() {
-  // 1. Limpiar datos internos
   productosAgregados = [];
   urgenciaSeleccionada = "Media";
   
-  // 2. Resetear el botón de enviar (IMPORTANTE)
+  // Resetear botón Enviar
   const btn = document.getElementById('btnEnviar');
   const txt = document.getElementById('btnTexto');
   const sp = document.getElementById('btnSpinner');
-  
-  btn.disabled = false;      // Desbloquear botón
-  txt.style.display = 'block'; // Mostrar texto "Enviar reporte final"
-  sp.style.display = 'none';   // Ocultar el círculo de carga
+  btn.disabled = false;
+  txt.style.display = 'block';
+  sp.style.display = 'none';
 
-  // 3. Limpiar campos visuales
+  // Limpiar campos visuales
   document.getElementById('selCanal').value = '';
   document.getElementById('selDepartamento').value = '';
   document.getElementById('selMunicipio').value = '';
@@ -427,13 +424,11 @@ function nuevoReporte() {
   document.getElementById('observaciones').value = '';
   document.getElementById('itemsList').innerHTML = '';
   
-  // 4. Resetear botones de urgencia
   document.querySelectorAll('.urgency-pill').forEach(b => b.className = 'urgency-pill');
   document.getElementById('u-Media').classList.add('sel-med');
 
-  // 5. Volver al paso 2
   document.getElementById('successScreen').style.display = 'none';
-  irPaso(2);
+  irPaso(2); // Vuelve a ubicación ya logueado
 }
 
 function mostrarToast(m) {
@@ -442,7 +437,6 @@ function mostrarToast(m) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-// Carga inicial
 cargarDatosIniciales();
 </script>
 </body>
