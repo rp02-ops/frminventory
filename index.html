@@ -31,7 +31,6 @@
   .field label { display: block; font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 0.4rem; }
   .req { color: var(--accent2); margin-left: 2px; }
   
-  /* ESTILOS COMBO AUTOCOMPLETADO */
   .combo-wrapper { position: relative; }
   input[type="text"], input[type="email"], input[type="number"], textarea { 
     width: 100%; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text); 
@@ -72,7 +71,8 @@
 <body>
 
 <script>
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzU1aUHUuNNWLAFbhjqoKC6llKtgx3NfVT_1KKOXjzfd1rj8PB8Bdj61c028c-83Ifr9w/exec";
+  // Cambia esta URL por la de tu implementación publicada
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxthEY7831mxgEN_B8kioUlzIiRufU2wj7Wv3cRkqRAKU-fQaujhXqaeVhpuYwGAn3i8Q/exec";
 </script>
 
 <div class="header">
@@ -191,7 +191,7 @@
       <div style="font-size:60px; margin-bottom:1rem">✅</div>
       <h2 style="margin-bottom:0.5rem">¡Reporte Enviado!</h2>
       <div id="codigoReporte" style="font-family:'DM Mono'; font-size:20px; background:#fff; padding:1rem; border:1.5px solid var(--border); border-radius:10px; margin: 2rem 0; color:var(--accent); font-weight:bold"></div>
-      <button class="btn-next" onclick="resetFormulario()" style="width:100%">Hacer otro reporte</button>
+      <button class="btn-next" onclick="nuevoReporte()" style="width:100%">Hacer otro reporte</button>
   </div>
 </div>
 
@@ -204,30 +204,22 @@ let productosAgregados = [];
 let urgenciaSeleccionada = "Media";
 let usuarioLogueado = { nombre: "", correo: "" };
 
-// --- LÓGICA DE COMBOS (AUTOCOMPLETADO) ---
+// --- COMBOS AUTOCOMPLETADO ---
 function abrirCombo(id) {
-  // Cerrar otros
   document.querySelectorAll('.combo-dropdown').forEach(d => d.style.display = 'none');
-  
   const drop = document.getElementById('drop' + id);
   let items = [];
   
   if(id === 'Canal') items = datosListas.canales;
   if(id === 'Departamento') items = datosListas.departamentos;
-  if(id === 'Municipio') {
-    const dep = document.getElementById('selDepartamento').value;
-    items = datosListas.municipios[dep] || [];
-  }
+  if(id === 'Municipio') items = datosListas.municipios[document.getElementById('selDepartamento').value] || [];
   if(id === 'Sucursal') {
     const canal = document.getElementById('selCanal').value;
     const mun = document.getElementById('selMunicipio').value;
     items = datosListas.sucursales.filter(s => s.canal === canal && s.mun === mun).map(s => s.suc);
   }
   if(id === 'Marca') items = datosListas.marcas;
-  if(id === 'Producto') {
-    const marca = document.getElementById('selMarca').value;
-    items = datosListas.productos[marca] || [];
-  }
+  if(id === 'Producto') items = datosListas.productos[document.getElementById('selMarca').value] || [];
 
   renderDrop(id, items);
 }
@@ -236,18 +228,9 @@ function filtrarCombo(id) {
   const input = document.getElementById('sel' + id).value.toLowerCase();
   const drop = document.getElementById('drop' + id);
   const items = drop.querySelectorAll('.combo-item:not(.no-results)');
-  let encontrados = 0;
-
   items.forEach(item => {
-    const text = item.innerText.toLowerCase();
-    if(text.includes(input)) {
-      item.style.display = 'block';
-      encontrados++;
-    } else {
-      item.style.display = 'none';
-    }
+    item.style.display = item.innerText.toLowerCase().includes(input) ? 'block' : 'none';
   });
-
   drop.style.display = 'block';
 }
 
@@ -255,7 +238,7 @@ function renderDrop(id, array) {
   const drop = document.getElementById('drop' + id);
   drop.innerHTML = '';
   if(!array || array.length === 0) {
-    drop.innerHTML = '<div class="combo-item no-results">Sin opciones disponibles</div>';
+    drop.innerHTML = '<div class="combo-item no-results">Sin opciones</div>';
   } else {
     array.forEach(val => {
       const div = document.createElement('div');
@@ -269,11 +252,9 @@ function renderDrop(id, array) {
 }
 
 function seleccionarItem(id, val) {
-  const input = document.getElementById('sel' + id);
-  input.value = val;
+  document.getElementById('sel' + id).value = val;
   document.getElementById('drop' + id).style.display = 'none';
 
-  // Lógica de cascada
   if(id === 'Departamento') {
     document.getElementById('selMunicipio').value = '';
     document.getElementById('selMunicipio').disabled = false;
@@ -283,10 +264,7 @@ function seleccionarItem(id, val) {
   if(id === 'Municipio' || id === 'Canal') {
     const c = document.getElementById('selCanal').value;
     const m = document.getElementById('selMunicipio').value;
-    if(c && m) {
-      document.getElementById('selSucursal').disabled = false;
-      document.getElementById('selSucursal').placeholder = "Selecciona sucursal...";
-    }
+    if(c && m) document.getElementById('selSucursal').disabled = false;
   }
   if(id === 'Marca') {
     document.getElementById('selProducto').value = '';
@@ -294,19 +272,21 @@ function seleccionarItem(id, val) {
   }
 }
 
-// Cerrar al hacer clic fuera
 document.addEventListener('click', (e) => {
-  if(!e.target.closest('.combo-wrapper')) {
-    document.querySelectorAll('.combo-dropdown').forEach(d => d.style.display = 'none');
-  }
+  if(!e.target.closest('.combo-wrapper')) document.querySelectorAll('.combo-dropdown').forEach(d => d.style.display = 'none');
 });
 
-// --- RESTO DE FUNCIONES ORIGINALES ---
+// --- LÓGICA DE NEGOCIO ---
 async function cargarDatosIniciales() {
   try {
     const res = await fetch(APPS_SCRIPT_URL + "?action=getListas");
     datosListas = await res.json();
-  } catch(e) { mostrarToast("Error al cargar base de datos"); }
+  } catch(e) { mostrarToast("Error al conectar con el servidor"); }
+}
+
+function handleCredentialResponse(response) {
+    const data = parseJwt(response.credential);
+    if (data && data.email) validarAcceso(data.email);
 }
 
 function parseJwt(token) {
@@ -316,11 +296,6 @@ function parseJwt(token) {
         const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
         return JSON.parse(jsonPayload);
     } catch (e) { return null; }
-}
-
-function handleCredentialResponse(response) {
-    const data = parseJwt(response.credential);
-    if (data && data.email) validarAcceso(data.email);
 }
 
 function intentarAccesoManual() {
@@ -336,7 +311,7 @@ function validarAcceso(correo) {
         usuarioLogueado = ej;
         mostrarToast("Bienvenido, " + ej.nombre);
         irPaso(2);
-    } else { mostrarToast("Acceso denegado: Correo no autorizado"); }
+    } else { mostrarToast("Correo no autorizado"); }
 }
 
 function ajustarCantidad(delta) {
@@ -348,8 +323,8 @@ function agregarProducto() {
   const marca = document.getElementById('selMarca').value.trim();
   const prod = document.getElementById('selProducto').value.trim();
   const cant = document.getElementById('inputCantidad').value;
-  if(!marca || !prod) return mostrarToast("Falta marca o producto");
-  if(productosAgregados.some(p => p.producto === prod)) return mostrarToast("Producto ya agregado");
+  if(!marca || !prod) return mostrarToast("Completa marca y producto");
+  if(productosAgregados.some(p => p.producto === prod)) return mostrarToast("Producto ya en la lista");
   productosAgregados.push({ marca, producto: prod, cantidad: cant });
   renderItems();
   document.getElementById('selProducto').value = '';
@@ -357,34 +332,31 @@ function agregarProducto() {
 
 function renderItems() {
   const div = document.getElementById('itemsList');
-  if(productosAgregados.length === 0) {
-      div.innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size:13px">No hay productos en la lista</p>';
-      return;
-  }
-  div.innerHTML = productosAgregados.map((p, i) => `
+  div.innerHTML = productosAgregados.length === 0 ? '<p style="text-align:center; color:var(--text-muted); font-size:13px">Lista vacía</p>' :
+    productosAgregados.map((p, i) => `
     <div class="item-card">
-        <div><div class="item-brand">${p.marca}</div><div style="font-size:14px; font-weight:500">${p.producto}</div><div style="font-size:12px; color:var(--text-muted)">Cantidad: ${p.cantidad}</div></div>
+        <div><div class="item-brand">${p.marca}</div><div style="font-size:14px; font-weight:500">${p.producto}</div><div style="font-size:12px; color:var(--text-muted)">Cant: ${p.cantidad}</div></div>
         <button onclick="productosAgregados.splice(${i},1);renderItems()" style="border:none; background:#fee2e2; color:#b91c1c; padding:8px; border-radius:6px; cursor:pointer">✕</button>
     </div>`).join('');
 }
 
 function irPaso(p) {
   if (p > pasoActual) {
-      if (pasoActual === 2 && !document.getElementById('selSucursal').value) return mostrarToast("Selecciona sucursal");
-      if (pasoActual === 3 && productosAgregados.length === 0) return mostrarToast("Agrega al menos un producto");
+      if (pasoActual === 2 && !document.getElementById('selSucursal').value) return mostrarToast("Falta sucursal");
+      if (pasoActual === 3 && productosAgregados.length === 0) return mostrarToast("Añade productos");
   }
   if (p === 4) {
       document.getElementById('resumenReporte').innerHTML = `
-        <div style="margin-bottom:8px"><strong>Ejecutivo:</strong> ${usuarioLogueado.nombre}</div>
-        <div style="margin-bottom:8px"><strong>Sucursal:</strong> ${document.getElementById('selSucursal').value}</div>
-        <div style="margin-bottom:8px"><strong>Municipio:</strong> ${document.getElementById('selMunicipio').value}</div>
+        <div><strong>Ejecutivo:</strong> ${usuarioLogueado.nombre}</div>
+        <div><strong>Sucursal:</strong> ${document.getElementById('selSucursal').value}</div>
         <hr style="border:none; border-top:1px solid var(--border); margin:8px 0">
-        <div><strong>Productos:</strong> ${productosAgregados.length} items agregados.</div>`;
+        <div><strong>Items:</strong> ${productosAgregados.length} productos registrados.</div>`;
   }
   document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
   document.getElementById('step' + p).classList.add('active');
   document.getElementById('progressFill').style.width = ((p-1)/3)*100 + "%";
   pasoActual = p;
+  window.scrollTo(0,0);
 }
 
 function setUrgencia(val, btn) {
@@ -398,24 +370,54 @@ async function enviarReporte() {
   const txt = document.getElementById('btnTexto');
   const sp = document.getElementById('btnSpinner');
   btn.disabled = true; txt.style.display = 'none'; sp.style.display = 'block';
+  
   const payload = {
     ejecutivo: usuarioLogueado.nombre, correo: usuarioLogueado.correo,
     canal: document.getElementById('selCanal').value, departamento: document.getElementById('selDepartamento').value,
     municipio: document.getElementById('selMunicipio').value, sucursal: document.getElementById('selSucursal').value,
     productos: productosAgregados, urgencia: urgenciaSeleccionada, observaciones: document.getElementById('observaciones').value
   };
+  
   try {
     const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
     const data = await res.json();
     if(data.success) {
-        document.getElementById('step4').style.display = 'none';
+        document.getElementById('step4').classList.remove('active');
         document.getElementById('successScreen').style.display = 'block';
         document.getElementById('codigoReporte').innerText = data.codigo;
     }
   } catch(e) { 
-    mostrarToast("Error al enviar el reporte"); 
+    mostrarToast("Error de red"); 
     btn.disabled = false; txt.style.display = 'block'; sp.style.display = 'none'; 
   }
+}
+
+// Función CRÍTICA para evitar recargar página y perder el caché
+function nuevoReporte() {
+  productosAgregados = [];
+  urgenciaSeleccionada = "Media";
+  
+  // Limpiar campos visuales (excepto el correo)
+  document.getElementById('selCanal').value = '';
+  document.getElementById('selDepartamento').value = '';
+  document.getElementById('selMunicipio').value = '';
+  document.getElementById('selMunicipio').disabled = true;
+  document.getElementById('selSucursal').value = '';
+  document.getElementById('selSucursal').disabled = true;
+  document.getElementById('selMarca').value = '';
+  document.getElementById('selProducto').value = '';
+  document.getElementById('selProducto').disabled = true;
+  document.getElementById('inputCantidad').value = '1';
+  document.getElementById('observaciones').value = '';
+  document.getElementById('itemsList').innerHTML = '';
+  
+  // Resetear botones urgencia
+  document.querySelectorAll('.urgency-pill').forEach(b => b.className = 'urgency-pill');
+  document.getElementById('u-Media').classList.add('sel-med');
+
+  // Volver a la pantalla de ubicación (paso 2) ya logueado
+  document.getElementById('successScreen').style.display = 'none';
+  irPaso(2);
 }
 
 function mostrarToast(m) {
