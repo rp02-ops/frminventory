@@ -71,8 +71,8 @@
 <body>
 
 <script>
-  // Cambia esta URL por la de tu implementación publicada
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxLnjnI3Vp0Ney75Ut8DZNVyty6xcrREYEIseKNmUHPqTazL8HXQZamgwmh-jPenONyXw/exec";
+  // Cambia esta URL por la de tu implementación publicada (/exec)
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwmgPl0aWAzcUxQxtFhdczkOyUdvUTAgMEqeTnHNIVS7ouwUmrHxQ8EnndwlGt9Iq-1fg/exec";
 </script>
 
 <div class="header">
@@ -99,7 +99,6 @@
   <div class="step" id="step2">
     <div class="step-label">Paso 2 de 4</div>
     <div class="step-title">Ubicación</div>
-    
     <div class="field">
       <label>Canal <span class="req">*</span></label>
       <div class="combo-wrapper">
@@ -107,7 +106,6 @@
         <div id="dropCanal" class="combo-dropdown"></div>
       </div>
     </div>
-
     <div class="field">
       <label>Departamento <span class="req">*</span></label>
       <div class="combo-wrapper">
@@ -115,7 +113,6 @@
         <div id="dropDepartamento" class="combo-dropdown"></div>
       </div>
     </div>
-
     <div class="field">
       <label>Municipio <span class="req">*</span></label>
       <div class="combo-wrapper">
@@ -123,7 +120,6 @@
         <div id="dropMunicipio" class="combo-dropdown"></div>
       </div>
     </div>
-
     <div class="field">
       <label>Sucursal <span class="req">*</span></label>
       <div class="combo-wrapper">
@@ -131,7 +127,6 @@
         <div id="dropSucursal" class="combo-dropdown"></div>
       </div>
     </div>
-
     <div class="nav-btns"><button class="btn-next" onclick="irPaso(3)">Continuar</button></div>
   </div>
 
@@ -204,7 +199,7 @@ let productosAgregados = [];
 let urgenciaSeleccionada = "Media";
 let usuarioLogueado = { nombre: "", correo: "" };
 
-// --- COMBOS AUTOCOMPLETADO ---
+// --- COMBOS ---
 function abrirCombo(id) {
   document.querySelectorAll('.combo-dropdown').forEach(d => d.style.display = 'none');
   const drop = document.getElementById('drop' + id);
@@ -276,12 +271,12 @@ document.addEventListener('click', (e) => {
   if(!e.target.closest('.combo-wrapper')) document.querySelectorAll('.combo-dropdown').forEach(d => d.style.display = 'none');
 });
 
-// --- LÓGICA DE NEGOCIO ---
+// --- LÓGICA ---
 async function cargarDatosIniciales() {
   try {
     const res = await fetch(APPS_SCRIPT_URL + "?action=getListas");
     datosListas = await res.json();
-  } catch(e) { mostrarToast("Error al conectar con el servidor"); }
+  } catch(e) { mostrarToast("Error cargando base de datos"); }
 }
 
 function handleCredentialResponse(response) {
@@ -305,7 +300,7 @@ function intentarAccesoManual() {
 }
 
 function validarAcceso(correo) {
-    if (!datosListas.ejecutivos) return mostrarToast("Cargando base de datos...");
+    if (!datosListas.ejecutivos) return mostrarToast("Todavía cargando base de datos...");
     const ej = datosListas.ejecutivos.find(e => e.correo.toLowerCase() === correo.toLowerCase().trim());
     if (ej) {
         usuarioLogueado = ej;
@@ -323,8 +318,8 @@ function agregarProducto() {
   const marca = document.getElementById('selMarca').value.trim();
   const prod = document.getElementById('selProducto').value.trim();
   const cant = document.getElementById('inputCantidad').value;
-  if(!marca || !prod) return mostrarToast("Completa marca y producto");
-  if(productosAgregados.some(p => p.producto === prod)) return mostrarToast("Producto ya en la lista");
+  if(!marca || !prod) return mostrarToast("Selecciona marca y producto");
+  if(productosAgregados.some(p => p.producto === prod)) return mostrarToast("Producto repetido");
   productosAgregados.push({ marca, producto: prod, cantidad: cant });
   renderItems();
   document.getElementById('selProducto').value = '';
@@ -332,7 +327,7 @@ function agregarProducto() {
 
 function renderItems() {
   const div = document.getElementById('itemsList');
-  div.innerHTML = productosAgregados.length === 0 ? '<p style="text-align:center; color:var(--text-muted); font-size:13px">Lista vacía</p>' :
+  div.innerHTML = productosAgregados.length === 0 ? '<p style="text-align:center; color:var(--text-muted); font-size:13px">No hay productos en lista</p>' :
     productosAgregados.map((p, i) => `
     <div class="item-card">
         <div><div class="item-brand">${p.marca}</div><div style="font-size:14px; font-weight:500">${p.producto}</div><div style="font-size:12px; color:var(--text-muted)">Cant: ${p.cantidad}</div></div>
@@ -343,7 +338,7 @@ function renderItems() {
 function irPaso(p) {
   if (p > pasoActual) {
       if (pasoActual === 2 && !document.getElementById('selSucursal').value) return mostrarToast("Falta sucursal");
-      if (pasoActual === 3 && productosAgregados.length === 0) return mostrarToast("Añade productos");
+      if (pasoActual === 3 && productosAgregados.length === 0) return mostrarToast("Añade al menos 1 producto");
   }
   if (p === 4) {
       document.getElementById('resumenReporte').innerHTML = `
@@ -369,8 +364,11 @@ async function enviarReporte() {
   const btn = document.getElementById('btnEnviar');
   const txt = document.getElementById('btnTexto');
   const sp = document.getElementById('btnSpinner');
-  btn.disabled = true; txt.style.display = 'none'; sp.style.display = 'block';
   
+  btn.disabled = true; 
+  txt.style.display = 'none'; 
+  sp.style.display = 'block';
+
   const payload = {
     ejecutivo: usuarioLogueado.nombre, correo: usuarioLogueado.correo,
     canal: document.getElementById('selCanal').value, departamento: document.getElementById('selDepartamento').value,
@@ -379,25 +377,33 @@ async function enviarReporte() {
   };
   
   try {
-    const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
-    const data = await res.json();
-    if(data.success) {
+    // Usamos fetch con una técnica para evitar el bloqueo de red de Google
+    const res = await fetch(APPS_SCRIPT_URL, { 
+      method: 'POST', 
+      mode: 'no-cors', // Evita el error de CORS aunque no devuelve JSON
+      body: JSON.stringify(payload) 
+    });
+
+    // Como usamos 'no-cors', no podemos leer el JSON, 
+    // así que después de 2 segundos asumimos éxito si no hubo error de conexión.
+    setTimeout(() => {
         document.getElementById('step4').classList.remove('active');
         document.getElementById('successScreen').style.display = 'block';
-        document.getElementById('codigoReporte').innerText = data.codigo;
-    }
+        document.getElementById('codigoReporte').innerText = "PROCESADO"; 
+    }, 1500);
+
   } catch(e) { 
-    mostrarToast("Error de red"); 
+    mostrarToast("Error de conexión"); 
     btn.disabled = false; txt.style.display = 'block'; sp.style.display = 'none'; 
   }
 }
 
-// Función CRÍTICA para evitar recargar página y perder el caché
+// Función para reiniciar formulario SIN recargar la página
 function nuevoReporte() {
   productosAgregados = [];
   urgenciaSeleccionada = "Media";
   
-  // Limpiar campos visuales (excepto el correo)
+  // Limpiar campos visuales
   document.getElementById('selCanal').value = '';
   document.getElementById('selDepartamento').value = '';
   document.getElementById('selMunicipio').value = '';
@@ -415,7 +421,7 @@ function nuevoReporte() {
   document.querySelectorAll('.urgency-pill').forEach(b => b.className = 'urgency-pill');
   document.getElementById('u-Media').classList.add('sel-med');
 
-  // Volver a la pantalla de ubicación (paso 2) ya logueado
+  // Volver a la pantalla de ubicación (ya estás logueado)
   document.getElementById('successScreen').style.display = 'none';
   irPaso(2);
 }
@@ -426,6 +432,7 @@ function mostrarToast(m) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 
+// Carga inicial
 cargarDatosIniciales();
 </script>
 </body>
